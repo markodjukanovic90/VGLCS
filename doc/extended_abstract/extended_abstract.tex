@@ -1,0 +1,74 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+\usepackage{graphicx}
+\usepackage{amssymb}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following two lines
+% to display URLs in blue roman font according to Springer's eBook style:
+%\usepackage{color}
+%\renewcommand\UrlFont{\color{blue}\rmfamily}
+%\urlstyle{rm}
+%
+\begin{document}
+	
+	\title{On Solving the Multiple Variable Gapped Longest Common Subsequence Problem}
+	%
+	\titlerunning{On Solving the MVGLCSP}
+	
+	\author{	Marko Djukanović\inst{1,2, 6}  \and Nikola Balaban\inst{2}  \and
+		Christian Blum\inst{3}  \and 
+		Aleksandar Kartelj\inst{4}  \and
+		Sašo Džeroski\inst{5}  \and
+		Žiga Zebec\inst{6}
+	}
+	%
+	\authorrunning{Djukanovic et al.}
+	
+	\institute{ University of Nova Gorica, Nova Gorica, Slovenia \\ \email{marko.dukanovic@ung.si} \and 
+	Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina \\ \email{nikola.balaban@student.pmf.unibl.org}, \email{marko.djukanovic@pmf.unibl.org} \and
+		Artificial Intelligence Research Institute (IIIA-CSIC), Barcelona, Spain \\
+		\email{christian.blum@iia.csic.es} \and 
+		Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\ \email{kartelj@matf.rs} \\ \and
+		Jožef Stefan Institute, Ljubljana, Slovenia \ \\ \email{saso.dzeroski@ijs.si}  \\
+		\and
+		Institute of Information Sciences (IZUM), Maribor, Slovenia \\
+		\email{ziga.zebec@izum.si}
+	}
+	%
+	\maketitle              % typeset the header of the contribution
+	%
+	%\begin{abstract}
+	%The abstract should briefly summarize the contents of the paper in
+	%150--250 words.
+	
+	%\keywords{First keyword  \and Second keyword \and Another keyword.}
+	%\end{abstract}
+	
+	\vspace{-0.2cm}
+	
+	The \textit{Longest Common Subsequence Problem} (LCSP)~\cite{DJUKANOVIC2020106499} is a well-known combinatorial optimization problem with numerous applications in   computational biology, particularly in the analysis of molecular  sequences. Given an arbitrary   set $S=\{s_1,\ldots,s_m\}$ of input sequences over an alphabet $\Sigma$, the goal is to determine the longest possible subsequence common to all $s_i \in S$. In recent decades, many practically motivated variants of the LCSP have been proposed by considering additional structural or biological constraints such as  the constrained, arc-preserving, repetition-free version, etc. This work is focused on solving the \textit{Variable Gapped} LCSP (VGLCSP), introduced in~\cite{penga2011longest} and theoretically examined in~\cite{adamson2023longest}. This problem extends the standard LCSP by imposing flexible distance limits (``gaps'') between consecutive symbols in the resulting subsequence, allowing these gaps to vary along the input sequences. Formally, for each input sequence $s_i \in S$, a gap function $G_{s_i}\colon \{1,\ldots,|s_i|\}\mapsto \mathbb{N}$ defines the maximum distance allowed between consecutive characters of a subsequence. That is, if the characters of a subsequence $s$ appear at the positions $i^1_i < \ldots < i^{{|s|}}_i$ in $s_i$, we say that the gap constraint is satisfied if $i^x_i - i^{x-1}_i \le G_{s_i}[i^x_i] + 1$ for all $x=2,\ldots,|s|$. A common subsequence $s$ is considered feasible if the corresponding gap constraints hold across all sequences in $S$. The VGLCSP represents a flexible and realistic model of sequence alignment, which is particularly useful for comparing DNA or protein sequences with variable structural distances. 	Although exact dynamic programming approaches exist for the two-sequence case ($m=2$), their computational complexity becomes prohibitive for larger $m$. To the best of our knowledge, no effective exact or approximate approaches currently exist for the generalized VGLCSP, a clearly NP-hard problem.
+	
+	Building on the well-established state-space representation of the LCSP~\cite{DJUKANOVIC2020106499}, we propose a general \textit{state graph} formulation for the VGLCSP. Each node represents a partial feasible subsequence, characterized by the vector of current positions in each input sequence and the subsequence length. Specifically, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix string $s_i[1]\cdots s_i[p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all the gaps $G_{s_i}$ are preserved with $s^v$. A directed arc $\alpha=(v_1 v_2)$, labeled $lett(\alpha)={a} \in \Sigma$, exists between states $v_1$ and $v_2$ if $l^{v_2} = l^{v_1} + 1$ and $s^{v_2} = s^{v_1} \cdot {a}$. To expand a state $v$, all letters that occur in each suffix of $s_i$ defined by respective positions $p^{L,v}_i$  are considered. For each such letter $a$, the minimal positions $p^{L,a}_i \geq p^{L,v}_i$ of its appearances are identified fulfilling $p^{L,a}_i - p^{L,v}_i \le G_{s_i}(p^{L,a}_i)$. The resulting child node, if not suboptimal, is given by $w=(p^{L,a}+1, l^v+1)$. The root node  $r:=((1,\ldots,1),0)$ represents the empty subsequence, while goal states correspond to non-extendable feasible subsequences. Unlike the standard LCSP, the VGLCSP admits multiple (possibly exponentially many) root nodes. For example, in sequences $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$, the state $((1,1),0)$ cannot reach any state with the position vector $(5,5)$ via transitions, missing optimal subsequence $\texttt{AAA}$. This  motivates the methodology of \textit{Iterative Multi-Source Beam Search} (IMSBS). BS is a popular meta-heuristic approach that performs in a breadth-first-search manner, controlled by the size of beam $\beta$ and a heuristic $h$. In the IMSBS, BS is iteratively executed with a set of promising root nodes as an initial beam, selected from a dynamically maintained global pool of root nodes, controlling diversification of the approach. %by selecting new starting points of subsequent iterations of IMSBS. 
+	Each iteration performs a complete BS, guided by a heuristic  $h$ based on letter frequencies, minimal residual substring lengths, or probability-weighted estimates.
+	
+	Preliminary experiments on synthetically generated instances demonstrate that IMSBS consistently outperforms the single-root BS baseline initialized at $r=(\textbf{1},0)$. The results reveal clear benefits of multi-source exploration and highlight differences between heuristic strategies in terms of efficiency and solution quality. These findings open promising directions for designing more advanced hybrid and learning-assisted approaches to tackle the generalized VGLCSP.  \vspace{0.1cm} \\
+   \footnotesize{\textbf{Acknowledgments.}   This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
+	
+	\vspace{-0.5cm}
+	
+	\bibliographystyle{splncs04}
+	\bibliography{bib}
+	%
+	
+\end{document}
