@@ -1,0 +1,53 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{DJUKANOVIC2020106499}
+Finding longest common subsequences: New anytime {A*} search results. Applied
+  Soft Computing  \textbf{95},  106499 (2020)
+
+\bibitem{adamson2023longest}
+Adamson, D., Kosche, M., Ko{\ss}, T., Manea, F., Siemer, S.: Longest common
+  subsequence with gap constraints. In: International Conference on
+  Combinatorics on Words. pp. 60--76. Springer (2023)
+
+\bibitem{adi2010repetition}
+Adi, S.S., Braga, M.D., Fernandes, C.G., Ferreira, C.E., Martinez, F.V., Sagot,
+  M.F., Stefanes, M.A., Tjandraatmadja, C., Wakabayashi, Y.: Repetition-free
+  longest common subsequence. Discrete Applied Mathematics  \textbf{158}(12),
+  1315--1324 (2010)
+
+\bibitem{bergroth2000survey}
+Bergroth, L., Hakonen, H., Raita, T.: A survey of longest common subsequence
+  algorithms. In: Proceedings Seventh International Symposium on String
+  Processing and Information Retrieval. SPIRE 2000. pp. 39--48. IEEE (2000)
+
+\bibitem{blum2016metaheuristics}
+Blum, C., Festa, P.: Metaheuristics for String Problems in Bio-informatics,
+  vol.~6. John Wiley \& Sons (2016)
+
+\bibitem{farhana2015constrained}
+Farhana, E., Rahman, M.S.: Constrained sequence analysis algorithms in
+  computational biology. Information Sciences  \textbf{295},  247--257 (2015)
+
+\bibitem{jiang2004longest}
+Jiang, T., Lin, G., Ma, B., Zhang, K.: The longest common subsequence problem
+  for arc-annotated sequences. Journal of Discrete Algorithms  \textbf{2}(2),
+  257--270 (2004)
+
+\bibitem{lainscsek2015delay}
+Lainscsek, C., Sejnowski, T.J.: Delay differential analysis of time series.
+  Neural computation  \textbf{27}(3),  594--614 (2015)
+
+\bibitem{mousavi2012improved}
+Mousavi, S.R., Tabataba, F.: An improved algorithm for the longest common
+  subsequence problem. Computers \& Operations Research  \textbf{39}(3),
+  512--520 (2012)
+
+\bibitem{penga2011longest}
+Penga, Y.H., Yangb, C.B.: The longest common subsequence problem with variable
+  gapped constraints. In: Proceedings of the 28th Workshop on Combinatorial
+  Mathematics and Computation Theory, Penghu, Taiwan. pp. 17--23 (2011)
+
+\end{thebibliography}

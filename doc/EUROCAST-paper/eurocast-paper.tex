@@ -64,8 +64,8 @@
 	\maketitle              % typeset the header of the contribution
 	%
 	\begin{abstract}
-	     This paper tackles the variable gapped longest common subsequence problem, a variant of the well-known longest common subsequence (LCS) problem with an arbitrary large set of input strings. The problem has an application in comparing molecular sequences allowing structural distance constraints between nucleotides,  and time series analysis where the events occur within specified temporal delays. The proposed methodology first employs   root-based state graph definition, and the definition of the full state space given as the union of, in general, a large number of root-based state graphs. To deal with this issue,  
-	      an iterative beam search approach is employed by utilizing a global, dynamically generated set of root nodes to control the diversification of the approach.   To guide the search of standalone beam search, several heuristic guidances from the LCS literature are probed. For the first time, the computational experiments on this general problem are performed by generating {300} synthetic problem instances. Our iterative approach has shown the best performance when compared to the baseline beam search and \textcolor{red}{a greedy approach} employing comparable amount of time for the former two. Moreover, for the special case with two input strings, our iterative   strategy approach could obtain an optimal solution on more than 80\% of problem instances with two input strings,  solved by all three dynamic approaches from literature.  
+	     This paper tackles the variable gapped longest common subsequence problem, a variant of the well-known longest common subsequence (LCS) problem with an arbitrary large set of input strings. The problem has an application in comparing molecular sequences allowing structural distance constraints between nucleotides,  and time series analysis where the events occur within specified temporal delays. The proposed methodology first employs   root-based state graph definition, and the definition of the  state space given as the union of, in general, a large number of root-based state graphs. To deal with this issue,  
+	      an iterative beam search approach is employed by utilizing a global, dynamically generated set of promising root nodes to control the diversification of the approach.   To guide the search of standalone beam search, several heuristic guidances from the LCS literature are probed. For the first time, the computational experiments on this general problem are performed by generating {320} synthetic problem instances. Our iterative approach has shown the best performance when compared to the baseline beam search and an iterative {a greedy approach} employing comparable amount of time. Moreover,  for the case with two input strings, our iterative   strategy approach competes fairly against the specialized    three dynamic approaches from literature, and significantly better from the other two heuristic variants. 
 	\keywords{Longest common subsequences  \and Beam Search  \and Bioinformatics \and Gap constraints}
 	\end{abstract}
 	%
@@ -409,10 +409,10 @@ The \textsc{Imsbs} is implemented in Python 3.11, and evaluated on the HPC VEGA 
      		\cmidrule(lr){10-11} 	\\ 
      		$m$ & $n$ & $|\Sigma|$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ &$\overline{obj}$  & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ \\
      		\hline
-   2 &   50 &         2 &              38.1 &          0.01 & 38.1 &          \textbf{0.01} &              38.1 &          0.01  & 38.1 & 79.42 \\
+   2 &   50 &         2 &              38.1 &          0.01 & 38.1 &          \textbf{0.01} &              38.1 &          0.01  & 38.1 & 69.43 \\
   2 &   50 &         4 &              30.3 &          \textbf{0.01} &              30.3 &          0.02 &              30.3 &          0.02 & 30.3  & 18.0 \\ \hline
   2 &  100 &         2 &              77.4 &          0.1 &              77.4 &          \textbf{0.03} &              77.4 &          0.047 & -- & -- \\
-  2 &  100 &         4 &              62.3 &          0.07 &              62.3 &         \textbf{ 0.06} &              62.3 &          0.09 & 0.00 & 1952.0 \\ \hline
+  2 &  100 &         4 &              62.3 &          0.07 &              62.3 &         \textbf{ 0.06} &              62.3 &          0.09 & 0.00 & 1800.0 \\ \hline
   
   2 &  200 &         2 &             156.4 &          0.75 &             156.4 &          \textbf{0.128} &             156.4 &          0.16  & -- & -- \\
   2 &  200 &         4 &             127.2 &          0.59 &             127.2 &          \textbf{0.251} &             127.2 &          0.32  & -- & -- \\ \hline
@@ -435,34 +435,31 @@ The \textsc{Imsbs} is implemented in Python 3.11, and evaluated on the HPC VEGA 
      
 \begin{figure}[htbp]
 	\centering
-	\begin{minipage}{0.32\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/bs_vs_dp.png}
-		\caption*{(a) BS approach}
+	\begin{minipage}{0.48\textwidth}
+        \includegraphics[width=\linewidth]{figures/bs_imsbs_vs_dp_quality_distribution.png} 
+        \caption*{(a) Distribution quality of BS vs.\ IMSBS w.r.t.\ optimal solutions  } 
 	\end{minipage}
 	\hfill
-	\begin{minipage}{0.32\textwidth}
+	\begin{minipage}{0.48\textwidth}
 		\centering
-		\includegraphics[width=\linewidth]{figures/imsbs_vs_dp.png}
-		\caption*{(b) IMSBS approach}
+		\includegraphics[width=\linewidth]{figures/heuristic_vs_DP_optimal.pdf}
+		\caption*{(b) Qualities of BS vs.\ IMSBS w.r.t.\ optimal solutions (1.0) }
 	\end{minipage}
-	\hfill
-	\begin{minipage}{0.32\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/vs_dp_ratio.png}
-		\caption*{(c) Qualities of BS vs.\ IMSBS w.r.t.\ optimal solutions (1.0) for instances with $m=2$}
-	\end{minipage}
+	
 	\caption{Number of instances for BS and IMSBS achieving a specific ratio between the quality of obtained (approximate) solutions and the quality of the known optimal solution for $m=2$.}
 	\label{fig:optimal-vs-heuristic}
-\end{figure}      \fxnote{TODO: came up to here!!}
+\end{figure}      
     
-    Concerning efficiency of \textsc{Bs} and \textsc{Imsbs} on those instances solved optimaly by dynamic programming (that is, the instances with $m=2$), Figure~\ref{fig:optimal-vs-heuristic} shows the number of instances (on $y$-axis) achieving specific ratios between the quality of solutions of \textsc{Bs} (a) or \textsc{Imsbs} ($b$) and the known optimal solutions  (on $x$-axis). As noted, \textsc{Imsbs} for \textcolor{red}{50 (out of 60)} instances an optimal solution, much more than the \textsc{Bs} approach.  For the remaining 10 instances where \textsc{Imsbs} cold not reach an optimal solution, it achieved a solution with at least 80\% of the quality of optimal solution, which showing its robustness. 
+    Concerning efficiency of \textsc{Bs} and \textsc{Imsbs} on those instances solved optimaly by dynamic programming (those instances with $m=2$), Figure~\ref{fig:optimal-vs-heuristic} shows distribution of instances (on $y$-axis) achieving specific ratios of the produced  quality of \textsc{Bs} and \textsc{Imsbs} in comparison to the known optimal solution quality; ($b$) and relative  ratio  (on $x$-axis) between the average quality of   these two algorithms and the quality of the known optimal solutions. As noted, \textsc{Imsbs} for  {49 (out of 80)} instances close-to-optimal    solution has reached by \textsc{Imsbs}. For 75\% of problem instances, a solution obtained by \textsc{Imsbs} is at least 80\% of the optimal solution. These numbers are much lower in case of the \textsc{Bs} approach.  
     
     \section{Conclusions and Future Work}
     \label{sec: conclusions}
     
-    In this work, we studied a generalized version of the Longest Common Subsequence (LCS) problem for an arbitrary number of sequences, a problem with broad applications in bioinformatics and comparison of DNA and RNA molecules structurally. The Variable Gapped LCS problem considered here extends the classical LCS formulation by constraining the allowable distances between matched characters, reflecting biological scenarios in which spatially closer nucleotides interact more strongly on each other than distant ones. We designed a beam-search-based solution framework, beginning with a baseline beam search over a formally defined state-space graph, and then introduced an enhanced iterative multi-source beam search (IMSBS) that combines local exploration from promising root nodes with a global strategy for selecting these nodes based on previously collected search information. The experimental evaluation compared three heuristic algorithms under several heuristic functions, showing that IMSBS consistently produced the highest-quality solutions, often \textcolor{red}{achieving over 90\% of the optimal value} while requiring comparable or less computation time than the baseline beam search. For the special case with
-    $m=2$, we additionally compared three exact dynamic-programming approaches from the literature with a designed ILP model, confirming the advanced dynamic programming variant solved all instances in the shortest amount of time in contrast to the ILP unable to solve any larger instances. Future research directions include designing more sophisticated heuristics that directly incorporate gap constraints into scoring functions, optimizing IMSBS to reuse previously explored regions of the state space, generating realistic biological instances for a real-world case study, and scaling experiments to  longer sequences. %and applying automated hyper-parameter tuning frameworks such as irace or Optuna to further improve solution quality.
+    In this work, we studied a generalized version of the Longest Common Subsequence (LCS) problem for an arbitrary number of sequences, a problem with broad applications in bioinformatics and comparison of DNA and RNA molecules structurally. The Variable Gapped LCS problem considered here extends the classical LCS formulation by constraining the allowable distances between matched characters, reflecting biological scenarios in which spatially closer nucleotides interact more strongly on each other than more distant ones. We designed a beam-search-based solution framework, beginning with a baseline beam search over a formally defined state-space graph, and extending it to an enhanced iterative multi-source beam search (IMSBS) approach that combines local exploration from promising root nodes with a global strategy for selecting these nodes based on previously collected search information. The experimental evaluation compared three settings of this iterative framework under several heuristic functions, showing that IMSBS consistently produced the highest-quality solutions, most time  {achieving over 80--90\% of the known optimal solutions with two input strings}, while requiring comparable or less computation time than the baseline beam search. For the special case with
+    $m=2$, we additionally compared three exact dynamic-programming approaches from the literature with a newly designed ILP model, confirming the advanced dynamic programming variant solved all instances in the shortest amount of time when compared to the ILP. 
+    
+    Future research directions include designing more sophisticated heuristics that directly incorporate gap constraints into scoring functions, optimizing \textsc{Imsbs} to reuse previously explored regions of the state space, generating realistic biological instances for a real-world case study, and scaling experiments to  longer sequences. 
+    
 	\paragraph{\textbf{Acknowledgments.}} This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them. 
 	
 	
