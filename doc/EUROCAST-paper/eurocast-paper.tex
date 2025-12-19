@@ -110,8 +110,7 @@ p^{L,a}_i - p^{L,v}_i \le G_{s_i}(p^{L,a}_i), i=1, \ldots, m.
 A child node is then defined by
 $w = (p^{L,a} + 1,\; l^v + 1)$, if not dominated by another child nodes.  
 For the purpose of efficient calculation of child nodes and their positions, we make use of the following data structure, labelled \texttt{Succ}.  It is a 3-dimensional integer list of $(i, j, a)$, where $i$ refers to the sequences $s_i$, the $1 \leq j \leq |s_i|$ refers to the position inside the sequence $s_i$ and symbol 
-$a\in \Sigma$. The $q=$\texttt{Succ}[$i, j, a$] represents the smallest index $q \leq j$ so that $s_i[q]=a$, and the gap constraint is satisfied at that position, i.e., $q-j \leq G_i(q) + 1$. If no such position, -1 is assigned. The stru
-
+$a\in \Sigma$. The $q=$\texttt{Succ}[$i, j, a$] represents the smallest index $q \leq j$ so that $s_i[q]=a$, and the gap constraint is satisfied at that position, i.e., $q-j \leq G_i(q) + 1$. If no such position, -1 is assigned.  
 
 The root state is given by $r = ((1,\ldots,1), 0)$, representing the empty subsequence, while goal states correspond to non-expandable feasible states. The search space that starts with $r$ as the root node is denoted by ${Space}(r)$. The space clearly depends on the selected root node from where the search starts, as pointed in the next paragraph. 
 
@@ -450,7 +449,7 @@ The \textsc{Imsbs} is implemented in Python 3.11, and evaluated on the HPC VEGA 
 	\label{fig:optimal-vs-heuristic}
 \end{figure}      
     
-    Concerning efficiency of \textsc{Bs} and \textsc{Imsbs} on those instances solved optimaly by dynamic programming (those instances with $m=2$), Figure~\ref{fig:optimal-vs-heuristic} shows distribution of instances (on $y$-axis) achieving specific ratios of the produced  quality of \textsc{Bs} and \textsc{Imsbs} in comparison to the known optimal solution quality; ($b$) and relative  ratio  (on $x$-axis) between the average quality of   these two algorithms and the quality of the known optimal solutions. As noted, \textsc{Imsbs} for  {49 (out of 80)} instances close-to-optimal    solution has reached by \textsc{Imsbs}. For 75\% of problem instances, a solution obtained by \textsc{Imsbs} is at least 80\% of the optimal solution. These numbers are much lower in case of the \textsc{Bs} approach.  
+    Concerning efficiency of \textsc{Bs} and \textsc{Imsbs} on those instances solved optimaly by dynamic programming (those instances with $m=2$), Figure~\ref{fig:optimal-vs-heuristic} shows distribution of instances (on $y$-axis) achieving specific ratios of the produced  quality of \textsc{Bs} and \textsc{Imsbs} in comparison to the known optimal solution quality; ($b$) and relative  ratio  (on $x$-axis) between the average quality of   these two algorithms and the quality of the known optimal solutions. As noted, \textsc{Imsbs} for  {49 (out of 80)} instances close-to-optimal    solution has reached by \textsc{Imsbs}. For 75\% of problem instances, a solution obtained by \textsc{Imsbs} is at least 80\% of the optimal solution. These numbers are much lower in case of the \textsc{Bs} approach.  On the other hand, for the remaining instances the results show that there is still room for improvements concerning a design of a more robust guiding function, clearly emphasized in the future work paragraph. 
     
     \section{Conclusions and Future Work}
     \label{sec: conclusions}
