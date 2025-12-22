@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.8.10)  19 DEC 2025 09:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.8.10)  22 DEC 2025 14:11
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -730,43 +730,40 @@ LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 6
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-)
-Underfull \vbox (badness 2065) has occurred while \output is active []
-
- [1
+) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 93--95
+LaTeX Font Info:    Trying to load font information for T1+cmss on input line 9
+7.
 
- []
-
-[2]
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
+File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+)
+FiXme Note: 'Give an example of an VGLCS problem instance with solution ... ' o
+n input line 97.
+ [2] [3]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[3]
-Underfull \hbox (badness 10000) in paragraph at lines 164--166
 
+Overfull \hbox (8.51433pt too wide) in paragraph at lines 204--205
+ \T1/cmr/m/it/10 Mo-ti-va-tion for Multi-Source Beam Search.[] \T1/cmr/m/n/10 U
+n-like the clas-si-cal LCSP, the VGLCSP
  []
 
-[4]
-Underfull \hbox (badness 2600) in paragraph at lines 177--178
+[4] [5]
+Underfull \hbox (badness 2600) in paragraph at lines 250--251
 []\T1/cmr/m/n/9 Sequences $\OML/cmm/m/it/9 s[]; [] ; s[]$\T1/cmr/m/n/9 ; Gap fu
 nc-tions $\OML/cmm/m/it/9 G[]\OT1/cmr/m/n/9 (\OMS/cmsy/m/n/9 ^^A\OT1/cmr/m/n/9 
 )$\T1/cmr/m/n/9 ; beam width $\OML/cmm/m/it/9 ^^L > \OT1/cmr/m/n/9 0$\T1/cmr/m/
 n/9 ;
  []
 
-[5]
-LaTeX Font Info:    Trying to load font information for T1+cmss on input line 2
-28.
- (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
-File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-)
+[6]
 FiXme Note: 'TODO: if we come up with some learning heuristic -- should left fo
-r the extended version -- journal-extendable.' on input line 228.
- [6]
-Overfull \hbox (19.33208pt too wide) in paragraph at lines 247--251
+r the extended version -- journal-extendable.' on input line 301.
+ [7]
+Overfull \hbox (19.33208pt too wide) in paragraph at lines 322--325
 \T1/cmr/m/n/10 For each com-bi-na-tion of in-stance pa-ram-e-ters $\OML/cmm/m/i
 t/10 n \OMS/cmsy/m/n/10 2 f\OT1/cmr/m/n/10 50\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10
  100\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 200\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 50
@@ -777,77 +774,73 @@ m/n/10 5\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 10\OMS/cmsy/m/n/10 g$\T1/cmr/m/n/10
  []
 
 
-Overfull \hbox (5.15155pt too wide) in paragraph at lines 247--251
-\T1/cmr/m/n/10 at $\T1/cmtt/m/n/10 https : / / github . com / markodjukanovic90
- / NikolaBalabanDiplomski / tree /
+Overfull \hbox (5.84583pt too wide) in paragraph at lines 322--325
+\T1/cmr/m/n/10 found at $\T1/cmtt/m/n/10 https : / / github . com / markodjukan
+ovic90 / NikolaBalabanDiplomski /
  []
 
-<figures/bs_tuning_quality.png, id=57, 722.7pt x 361.35pt>
+<figures/bs_tuning_quality.png, id=60, 722.7pt x 361.35pt>
 File: figures/bs_tuning_quality.png Graphic file (type png)
 <use figures/bs_tuning_quality.png>
-Package pdftex.def Info: figures/bs_tuning_quality.png  used on input line 258.
+Package pdftex.def Info: figures/bs_tuning_quality.png  used on input line 334.
 
 (pdftex.def)             Requested size: 166.61449pt x 120.00125pt.
-<figures/bs_tuning_time.png, id=59, 722.7pt x 361.35pt>
+<figures/bs_tuning_time.png, id=62, 722.7pt x 361.35pt>
 File: figures/bs_tuning_time.png Graphic file (type png)
 <use figures/bs_tuning_time.png>
-Package pdftex.def Info: figures/bs_tuning_time.png  used on input line 265.
+Package pdftex.def Info: figures/bs_tuning_time.png  used on input line 341.
 (pdftex.def)             Requested size: 166.61449pt x 120.00125pt.
-[7 <./figures/bs_tuning_quality.png> <./figures/bs_tuning_time.png>]
-<figures/imsbs_tuning.png, id=67, 722.7pt x 361.35pt>
+<figures/imsbs_tuning.png, id=63, 722.7pt x 361.35pt>
 File: figures/imsbs_tuning.png Graphic file (type png)
 <use figures/imsbs_tuning.png>
-Package pdftex.def Info: figures/imsbs_tuning.png  used on input line 281.
+Package pdftex.def Info: figures/imsbs_tuning.png  used on input line 355.
 (pdftex.def)             Requested size: 166.61781pt x 83.30724pt.
-<figures/imsbs_tuning_time.png, id=68, 722.7pt x 361.35pt>
+<figures/imsbs_tuning_time.png, id=64, 722.7pt x 361.35pt>
 File: figures/imsbs_tuning_time.png Graphic file (type png)
 <use figures/imsbs_tuning_time.png>
-Package pdftex.def Info: figures/imsbs_tuning_time.png  used on input line 288.
+Package pdftex.def Info: figures/imsbs_tuning_time.png  used on input line 362.
 
 (pdftex.def)             Requested size: 166.61781pt x 83.30724pt.
- [8 <./figures/imsbs_tuning.png> <./figures/imsbs_tuning_time.png>] [9] [10]
-<figures/bs_imsbs_vs_dp_quality_distribution.png, id=81, 867.24pt x 361.35pt>
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[8] [9 <./figures/bs_tuning_quality.png> <./figures/bs_tuning_time.png> <./figu
+res/imsbs_tuning.png> <./figures/imsbs_tuning_time.png>] [10] [11]
+<figures/bs_imsbs_vs_dp_quality_distribution.png, id=84, 867.24pt x 361.35pt>
 File: figures/bs_imsbs_vs_dp_quality_distribution.png Graphic file (type png)
 <use figures/bs_imsbs_vs_dp_quality_distribution.png>
 Package pdftex.def Info: figures/bs_imsbs_vs_dp_quality_distribution.png  used 
-on input line 439.
+on input line 509.
 (pdftex.def)             Requested size: 166.61781pt x 69.42361pt.
-
-Underfull \hbox (badness 1590) in paragraph at lines 440--440
-[]|\T1/cmr/m/n/10 (a) Dis-tri-bu-tion qual-ity of BS vs.
- []
-
-<figures/heuristic_vs_DP_optimal.pdf, id=82, 867.24pt x 361.35pt>
+<figures/heuristic_vs_DP_optimal.pdf, id=85, 867.24pt x 361.35pt>
 File: figures/heuristic_vs_DP_optimal.pdf Graphic file (type pdf)
 <use figures/heuristic_vs_DP_optimal.pdf>
 Package pdftex.def Info: figures/heuristic_vs_DP_optimal.pdf  used on input lin
-e 445.
+e 515.
 (pdftex.def)             Requested size: 166.61781pt x 69.42361pt.
-[11 <./figures/bs_imsbs_vs_dp_quality_distribution.png> <./figures/heuristic_vs
-_DP_optimal.pdf>]
-Overfull \hbox (7.14996pt too wide) in paragraph at lines 458--460
-\T1/cmr/m/n/10 clas-si-cal LCS for-mu-la-tion by con-strain-ing the al-low-able
- dis-tances be-tween matched
+ [12 <./figures/bs_imsbs_vs_dp_quality_distribution.png> <./figures/heuristic_v
+s_DP_optimal.pdf>]
+Overfull \hbox (4.40173pt too wide) in paragraph at lines 532--533
+\T1/cmr/m/n/10 that di-rectly in-cor-po-rate gap con-straints into scor-ing fun
+c-tions, op-ti-miz-ing IMSBS
  []
 
+(./eurocast-paper.bbl
+Underfull \vbox (badness 1215) has occurred while \output is active []
 
-Overfull \hbox (10.78796pt too wide) in paragraph at lines 463--464
-\T1/cmr/m/n/10 Curie CO-FUND Post-doc-toral Pro-gramme grant agree-ment No.1010
-81355-- SMASH
- []
-
-(./eurocast-paper.bbl [12]) [13]
-Underfull \hbox (badness 10000) in paragraph at lines 474--478
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 493--495
+ [13])
+[14]
+Underfull \hbox (badness 10000) in paragraph at lines 543--547
 
  []
 
 
-Overfull \hbox (0.57823pt too wide) detected at line 509
+Underfull \hbox (badness 10000) in paragraph at lines 562--564
+
+ []
+
+
+Overfull \hbox (0.57823pt too wide) detected at line 578
 []\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i; j\OT1/cmr/m/n/10 ) = \OMS/cmsy/m/n/10 f\
 OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i[]; j[]\OT1/cmr/m/n/10 ) \OMS/cmsy/m/n/10 2 \
 OML/cmm/m/it/10 M \OMS/cmsy/m/n/10 j \OML/cmm/m/it/10 i[] < i;  j[] < j;  i \OM
@@ -858,30 +851,30 @@ S/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 i[] \OMS/cmsy/m/n/10 ^^T \OML/cmm/m/it/10 G[
  []
 
 
-FiXme Summary: Number of notes: 1,
+FiXme Summary: Number of notes: 2,
 (FiXme)        Number of warnings: 0,
 (FiXme)        Number of errors: 0,
 (FiXme)        Number of fatal errors: 0,
-(FiXme)        Total: 1.
+(FiXme)        Total: 2.
 
-[14] [15] (./eurocast-paper.aux) ) 
+[15] [16] (./eurocast-paper.aux) ) 
 Here is how much of TeX's memory you used:
- 17228 strings out of 479648
- 338676 string characters out of 5886115
+ 17224 strings out of 479648
+ 338634 string characters out of 5886115
  627292 words of memory out of 5000000
- 34855 multiletter control sequences out of 15000+600000
- 496087 words of font info for 96 fonts, out of 8000000 for 9000
+ 34853 multiletter control sequences out of 15000+600000
+ 494713 words of font info for 94 fonts, out of 8000000 for 9000
  475 hyphenation exceptions out of 8191
- 84i,11n,131p,1848b,804s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 84i,11n,131p,1749b,804s stack positions out of 5000i,500n,10000p,200000b,80000s
  </home/marko/.texlive2021/texmf-var/fonts/pk
 /ljfour/jknappen/ec/ecbi1000.600pk> </home/marko/.texlive2021/texmf-var/fonts/p
 k/ljfour/jknappen/ec/eccc0900.600pk> </home/marko/.texlive2021/texmf-var/fonts/
 pk/ljfour/jknappen/ec/eccc1000.600pk> </home/marko/.texlive2021/texmf-var/fonts
-/pk/ljfour/jknappen/ec/ecss0900.600pk> </home/marko/.texlive2021/texmf-var/font
+/pk/ljfour/jknappen/ec/ecrm0700.600pk> </home/marko/.texlive2021/texmf-var/font
 s/pk/ljfour/jknappen/ec/ecrm0600.600pk> </home/marko/.texlive2021/texmf-var/fon
-ts/pk/ljfour/jknappen/ec/ecrm0700.600pk> </home/marko/.texlive2021/texmf-var/fo
-nts/pk/ljfour/jknappen/ec/ectt1000.600pk> </home/marko/.texlive2021/texmf-var/f
-onts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/marko/.texlive2021/texmf-var/
+ts/pk/ljfour/jknappen/ec/ectt1000.600pk> </home/marko/.texlive2021/texmf-var/fo
+nts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/marko/.texlive2021/texmf-var/f
+onts/pk/ljfour/jknappen/ec/ecss0900.600pk> </home/marko/.texlive2021/texmf-var/
 fonts/pk/ljfour/jknappen/ec/ecti1000.600pk> </home/marko/.texlive2021/texmf-var
 /fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/marko/.texlive2021/texmf-va
 r/fonts/pk/ljfour/jknappen/ec/tcrm0900.600pk> </home/marko/.texlive2021/texmf-v
@@ -909,10 +902,10 @@ cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
 6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><
 /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/sh
 are/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on eurocast-paper.pdf (15 pages, 447224 bytes).
+Output written on eurocast-paper.pdf (16 pages, 447346 bytes).
 PDF statistics:
- 706 PDF objects out of 1000 (max. 8388607)
- 166 compressed objects within 2 object streams
+ 708 PDF objects out of 1000 (max. 8388607)
+ 168 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  43 words of extra memory for PDF output out of 10000 (max. 10000000)
 
