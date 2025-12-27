@@ -3,14 +3,14 @@ from pulp import PULP_CBC_CMD, CPLEX_CMD
 from utils import *
 import sys
 import time as tx
-import orloge # pip install orloge
+import orloge # pip install orlogecd 
 from os import remove
 from math import ceil
 from os import name
 import random as rd
 
 ## GLOBAL VARS:
-cplex_path=r'/home/marko/Desktop/cplex/cplex/bin/x86-64_linux/cplex'
+cplex_path=r'/ceph/hpc/home/djukanovicm/VGLCS/cplex/bin/x86-64_linux/cplex'
 
 def non_conflict(pair1, pair2, G_1, G_2):
     
@@ -61,6 +61,10 @@ def solve_vglcs_ilp_with_predecessors(A, B, G_A, G_B, time_limit_in_seconds=1200
     if len(components) > 0: #add the fixed constraints:
         for (i, j) in components:
             prob += x[i, j] == 1
+
+    #auxilary constraints:  $s_{i, j}=1 \Rightarrow x_{i',j'}=0, \forall (i' \leq i-1, j' \leq j-1)$": TODO
+    for (i, j) in M:
+        prob += pulp.lpSum( x[i_p, j_p] for (i_p, j_p) in M if i_p <= i-1 and j_p <= j-1 ) <= (1 - s[i, j]) * len(M)    
     
     
     #conflict constraints w.r.t. LCS conflict:
@@ -69,8 +73,9 @@ def solve_vglcs_ilp_with_predecessors(A, B, G_A, G_B, time_limit_in_seconds=1200
             if p1 != p2:
                 if non_conflict(p1, p2, G_A, G_B)==False:
                    prob += ( x[ p1[0], p1[1] ]  + x[ p2[ 0 ] , p2[1] ] ) <= 1
+    
     # Step 6: Solve&Collect
-    random_number=rd.randint(0, 100000000)  
+    random_number=rd.randint(0, 10000000000)  
     log_file=f"log_info_{random_number}.log"
     
     prob.solve(CPLEX_CMD( path=cplex_path, timeLimit=time_limit_in_seconds, logPath=log_file, msg=False, threads=1))   #PULP_CBC_CMD(msg=1, timeLimit=time_limit_in_seconds))
@@ -122,6 +127,6 @@ if __name__ == "__main__":
     print(selected_pairs)
     #print(status)
     print(sol_feas)
-    
     #save into a file:
     save_in_file(file_out, info_into_write)
+

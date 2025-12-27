@@ -584,6 +584,8 @@ Future research directions include designing more sophisticated heuristics that 
 		(i \geq i' \textrm{ and } j \leq j'), \textrm{ then:}
 		\quad x_{i,j} + x_{i',j'} \leq 1
 		\]
+		\item Auxiliary constraints: $s_{i, j}=1 \Rightarrow x_{i',j'}=0, \forall (i' \leq i-1, j' \leq j-1)$. The constraints are expressed in the following form: 
+		$$ \sum_{(i', j') \mid i'\leq i \wedge j'\leq j} x_{i' j'} + s_{i, j} \leq 1, \forall (i, j) \in M$$
 	\end{enumerate}
 	
 
