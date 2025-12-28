@@ -361,6 +361,59 @@ def _mk_root_node(pos: Tuple[int, ...], m: int) -> Node:
     # Root za IBMS ima prazan seq, i parent_jump=0 za bilježenje.
     return Node(pos=pos, seq="", parent_jump=tuple([0]*m), parent=None)
 
+def build_prev_table(sequences: List[str], Sigma: List[str]) -> List[Dict[str, List[int]]]:
+    """
+    Prev[i][a][j] = max p < j s.t. sequences[i][p] == a, else -1.
+    """
+    Prev: List[Dict[str, List[int]]] = []
+    for s in sequences:
+        n = len(s)
+        prev_i = {a: [-1] * (n + 1) for a in Sigma}
+        last = {a: -1 for a in Sigma}
+        for j in range(n + 1):
+            for a in Sigma:
+                prev_i[a][j] = last[a]
+            if j < n:
+                last[s[j]] = j
+        Prev.append(prev_i)
+    return Prev
+
+def is_true_root_like(pos: Tuple[int, ...],
+                      gaps: List[List[int]],
+                      Prev: List[Dict[str, List[int]]],
+                      Sigma: List[str]) -> bool:
+    """
+    True  -> zadrži kao root (nema nijednog zajedničkog 'a' u svim gap prozorima).
+    False -> odbaci (postoji zajednički 'a' => postoji roditelj => nije root).
+    """
+    m = len(pos)
+
+    # ako je pos[i] == -1, to je global root; tretiraj kao korijen
+    if any(p < 0 for p in pos):
+        return True
+
+    # računaj L_i za svaku sekvencu (donja granica prozora)
+    L = []
+    for i in range(m):
+        p = pos[i]
+        g = gaps[i][p]           # G_i(p_i)
+        L.append(p - g - 1)      # L_i
+
+    # tražimo da postoji *isti* a koji je prisutan u svakom prozoru
+    for a in Sigma:
+        ok = True
+        for i in range(m):
+            p = pos[i]
+            q = Prev[i][a][p]    # najveći indeks < p gdje je a
+            if q < L[i]:
+                ok = False
+                break
+        if ok:
+            # našli smo zajednički a u svim prozorima => pos nije korijen
+            return False
+
+    return True
+
 def imbs_glcs(
     sequences: List[str],
     gaps: List[List[int]],
@@ -391,6 +444,10 @@ def imbs_glcs(
     }
     
     Sigma_h5 = sorted(set().union(*sequences))
+
+    Sigma = Sigma_h5
+    Prev = build_prev_table(sequences, Sigma)
+
     C_h5 = build_suffix_counts(sequences, Sigma_h5)
     seq_lens = [len(s) for s in sequences]
     if heuristic == "h8":
@@ -445,12 +502,18 @@ def imbs_glcs(
                 # succs = pruned
 
                 # --- nema potomaka -> generiši r^w ---
+                skip_root_check = False
                 if not succs:
                     for rpos in _new_roots_from_node(node, sequences, gaps):
-                        # dodaj samo ako može nadmašiti globalni best i nije viđen
-                        if rpos not in R_seen and _feasible_root(rpos, sequences, len(best_seq)):
-                            harvested_roots.add(rpos)
-                    continue # nema kandidata iz ovog čvora
+                        if rpos in R_seen:
+                            continue
+                        if not _feasible_root(rpos, sequences, len(best_seq)):
+                            continue
+                        # izbaci one koji nisu "pravi" korijeni
+                        if skip_root_check or not is_true_root_like(rpos, gaps, Prev, Sigma):
+                            continue
+                        harvested_roots.add(rpos)
+                    continue
 
                 # --- inače standardno proširujemo beam ---
                 for succ in succs:
@@ -665,4 +728,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
