@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Tuple, Dict, Set, Iterable, Optional
-from utils import check_feasibility_n, load_n_instances
+from utils1 import check_feasibility_n, load_n_instances
 import collections
 import heapq
 import argparse
@@ -597,6 +597,8 @@ def imbs_glcs(
         if return_node is not None:
             best_local = return_node.seq
             while return_node.parent is not None:
+                if return_node.pos[0] == -1: #TODO
+                    break
                 steps.append(return_node.pos)
                 return_node = return_node.parent
             steps.reverse()
@@ -689,8 +691,9 @@ def imbs_glcs(
         }
 
         for _ in range(max_iters):
+            
             if not beam:
-                break
+                break  
 
             candidates: List[Node] = []
 
@@ -726,6 +729,8 @@ def imbs_glcs(
             seq = node.seq[::-1]  # reverse backward-built sequence
             #print("best seq: ", seq)
             while node.parent is not None:
+                if node.pos[0] == -1: #we come to the end 
+                    break
                 steps.append(node.pos)
                 node = node.parent
             #steps.reverse() #increasing order of match occurances in the list of tuples
@@ -762,15 +767,21 @@ def imbs_glcs(
         # 2) BS iz ovog korijena (forward)
         seq_local, steps_local, last_pos_local, new_roots, the_root_with_best_path = run_local_beam_from_sources(take)
         #new_roots should be evaluated in the next iterations  
-        #print(the_root_with_best_path)
-        
+
+        #print("seq_local:", seq_local, "\n len best: ", len(best_seq))
         # 3) ažuriranje globalnog besta ako je poboljšan
-        length_refined = len(seq_local) + 0 if not the_root_with_best_path or the_root_with_best_path not in cache.keys() else len(cache[ the_root_with_best_path ][0])
-        if length_refined > len(best_seq):
+        length_refined = len(seq_local) + (0 if not the_root_with_best_path or the_root_with_best_path not in cache.keys() else len(cache[ the_root_with_best_path ][0]))
+        if length_refined >= len(best_seq):
             
-            best_seq = cache[ the_root_with_best_path ][0] + sequences[0][the_root_with_best_path[0]] +  seq_local #length_refined
-            best_steps = cache[ the_root_with_best_path ][1] + [the_root_with_best_path] + steps_local
-            print("Best steps: ", best_steps, " =============> ", cache[the_root_with_best_path], " root: ", the_root_with_best_path)
+            if the_root_with_best_path[0] >= 0: #not the (basic) root node 
+                best_seq = cache[ the_root_with_best_path ][0] + sequences[0][the_root_with_best_path[0]] +  seq_local #length_refined
+                best_steps = cache[ the_root_with_best_path ][1] + [the_root_with_best_path] + steps_local
+            else:
+                best_seq = cache[ the_root_with_best_path ][0] + "" +  seq_local #length_refined
+                best_steps = cache[ the_root_with_best_path ][1]  + steps_local
+            
+            #print("Best steps: ", best_steps, " =============> ", cache[the_root_with_best_path], " root: ", the_root_with_best_path)
+        
         # 4) ubacivanje novih korijena u R ako su feasible i nisu već viđeni
         for pos in new_roots:
 
@@ -778,7 +789,7 @@ def imbs_glcs(
                 R.append(pos)
                 R_seen.add(pos)
         #print("|R|=", len(R))
-    return best_seq, best_steps 
+    return best_seq, best_steps   
     
     
 
