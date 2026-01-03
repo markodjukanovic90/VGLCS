@@ -5,6 +5,7 @@ from utils1 import check_feasibility_n, load_n_instances
 import collections
 import heapq
 import argparse
+import time 
 
 @dataclass
 class Node:
@@ -219,7 +220,7 @@ def score(node: Node, sequences: List[str], gaps: List[List[int]], *, heuristic:
             score *= p_val
         return score
     raise ValueError(f"Unknown heuristic: {heuristic}")
-
+  
 
 #Beam Search (Algoritam 4)
 
@@ -234,6 +235,7 @@ def beam_search_glcs(
     lam: float = 1.0,
     k: int = 5,
     max_iters: int = 10000,
+    time_limit: int = 1800
 ) -> Tuple[str, List[Tuple[int, ...]], Optional[Tuple[int, ...]]]:
     """
     Parametri
@@ -282,10 +284,16 @@ def beam_search_glcs(
         score_args['Sigma_h5'] = Sigma_h5
         score_args['seq_lens'] = seq_lens
 
-
+    
+    time_start = time.time()
+    
     for _ in range(max_iters):
         if not beam:
             break
+        # Provera vremenskog ograničenja
+        if time.time() - time_start > time_limit:
+            break
+
         candidates: List[Node] = []
 
         # Proširivanje svakog čvora u bimu
@@ -327,7 +335,7 @@ def beam_search_glcs(
             return_node = return_node.parent
         steps.reverse()
 
-    return best, steps
+    return best, steps, time.time() - time_start
 
 def _first_indices_no_gap(seq: str, start_idx: int) -> Dict[str, int]:
     """
@@ -397,6 +405,9 @@ def _mk_root_node(pos: Tuple[int, ...], m: int) -> Node:
     # Root za IBMS ima prazan seq, i parent_jump=0 za bilježenje.
     return Node(pos=pos, seq="", parent_jump=tuple([0]*m), parent=None)
 
+def _mk_root_node_with_nonempty_seq(pos: Tuple[int, ...], m: int, cache: Dict) -> Node:
+    # Root za IBMS ima prazan seq, i parent_jump=0 za bilježenje.
+    return Node(pos=pos, seq=cache[pos][0], parent_jump=tuple([0]*m), parent=None)
 
 def build_prev_table(sequences: List[str], Sigma: List[str]) -> List[Dict[str, List[int]]]:
     
@@ -474,7 +485,8 @@ def imbs_glcs(
     beta: float = 1.0,
     lam: float = 1.0,
     k: int = 5,
-    max_iters: int = 10000        
+    max_iters: int = 10000, 
+    time_limit: int = 1800        
 ) -> Tuple[str, List[Tuple[int, ...]]]:
     """
     Iterative Multi-Source Beam Search (Algoritam 6).
@@ -518,20 +530,22 @@ def imbs_glcs(
     R_seen: Set[Tuple[int, ...]] = {global_root}
 
     # --- unutrašnja lokalna beam pretraga koja počinje iz skupa korijena izvora ---
-    def run_local_beam_from_sources(sources: List[Tuple[int, ...]]) -> Tuple[ str, List[Tuple[int, ...]], Optional[Tuple[int, ...]], List[Tuple[int, ...]  ], List[Tuple[int, ...]] ]:
+    # -- cache za čuvanje rezultata backward BS-a za korijene --
+    def run_local_beam_from_sources(sources: List[Tuple[int, ...]], cache: dict) -> Tuple[ str, List[Tuple[int, ...]], Optional[Tuple[int, ...]], List[Tuple[int, ...]  ], List[Tuple[int, ...]]  ]:
         """
         Vraća:
           (best_seq_local, best_steps_local, last_pos_of_best, harvested_new_roots)
         """
         #print("run_local_beam_from_sources")
         # Inicijalizacija bima sa zadanim izvorima
-        beam: List[Node] = [_mk_root_node(source, m) for source in sources]
+        beam: List[Node] =  [_mk_root_node_with_nonempty_seq(source, m, cache) for source in sources] #_mk_root_node
         best_local = ""
         return_node = None
 
         harvested_roots: Set[Tuple[int, ...]] = set()
         
         iters = 0
+
         while beam and iters < max_iters:
             iters += 1
             candidates: List[Node] = []
@@ -552,12 +566,15 @@ def imbs_glcs(
 
                 # --- nema potomaka -> generiši r^w ---
                 skip_root_check = False
-                if not succs:
-                    for rpos in _new_roots_from_node(node, sequences, gaps):
+                if not succs: # ako je kompletan cvor bez potomaaka -> generiši nove kandidate za korijene cvorove 
+                    for rpos in _new_roots_from_node(node, sequences, gaps): #gen. nove korjene (zanemari gap ogranicenja)
+                        
                         if rpos in R_seen:  
-                            continue
-                        if not _feasible_root(rpos, sequences, len(best_seq)):
-                            continue
+                            continue 
+                        
+                        #if not _feasible_root(rpos, sequences, len(best_seq)):
+                        #    continue
+                        
                         # izbaci one koji nisu "pravi" korijeni
                         if skip_root_check: #or not is_true_root_like(rpos, gaps, Prev, Sigma):
                             continue
@@ -567,6 +584,7 @@ def imbs_glcs(
                 # --- inače standardno proširujemo beam ---
                 for succ in succs:
                     candidates.append(succ)
+
                     if len(succ.seq) > len(best_local):
                         best_local = succ.seq
                         return_node = succ #the best 
@@ -593,11 +611,10 @@ def imbs_glcs(
         steps: List[Tuple[int, ...]] = []
         last_pos = return_node.pos if return_node is not None else None
         
-        
         if return_node is not None:
             best_local = return_node.seq
             while return_node.parent is not None:
-                if return_node.pos[0] == -1: #TODO
+                if return_node.pos[0] == -1: #(-1, ..., -1)  global root -- we stop here
                     break
                 steps.append(return_node.pos)
                 return_node = return_node.parent
@@ -726,7 +743,7 @@ def imbs_glcs(
 
         if best_node is not None:
             node = best_node
-            seq = node.seq[::-1]  # reverse backward-built sequence
+            seq = node.seq[::-1]  + sequences[0][start_pos[0]] # reverse backward-built sequence
             #print("best seq: ", seq)
             while node.parent is not None:
                 if node.pos[0] == -1: #we come to the end 
@@ -743,53 +760,58 @@ def imbs_glcs(
 
     # --- IMBS outer loop ---
     cache = {} # save the nodes that are processed backward 
-    
-    for _ in range(imbs_iters):
+    time_start = time.time()
+
+    for _ in range(imbs_iters):  
+
+        #time exceeded, break condition 
+        if time.time() - time_start > time_limit:
+            break
+
         if not R:
             break
 
-        # 1) izaberi korijen iz R
+        # 1) izaberi korijen iz R (ranking acc. to UB2)
         nodes = [_mk_root_node(pos, m) for pos in R]
         ranked_nodes = sorted(
             nodes,
             key=lambda n: score(n, sequences, gaps, heuristic="h5", C_h5=C_h5, Sigma_h5=Sigma_h5, seq_lens=seq_lens),
             reverse=True
         )
+        #take top-k roots
         R = [n.pos for n in ranked_nodes]
         take = R[:number_of_roots]
         R = R[number_of_roots:]
         
-        #Take "roots" for evaluation with bacward BS: TODO
+        #Take "roots" for evaluation with bacward BS
         for p_root in take:
             sol, coordinates = beam_search_glcs_backward(sequences, gaps, p_root)
             cache[ p_root ] = tuple([ sol, coordinates ] )
         
         # 2) BS iz ovog korijena (forward)
-        seq_local, steps_local, last_pos_local, new_roots, the_root_with_best_path = run_local_beam_from_sources(take)
+        seq_local, steps_local, last_pos_local, new_roots, the_root_with_best_path = run_local_beam_from_sources(take, cache)
         #new_roots should be evaluated in the next iterations  
 
         #print("seq_local:", seq_local, "\n len best: ", len(best_seq))
+
         # 3) ažuriranje globalnog besta ako je poboljšan
-        length_refined = len(seq_local) + (0 if not the_root_with_best_path or the_root_with_best_path not in cache.keys() else len(cache[ the_root_with_best_path ][0]))
+        length_refined = len(seq_local) #+ (0 if not the_root_with_best_path or the_root_with_best_path not in cache.keys() else len(cache[ the_root_with_best_path ][0]))
         if length_refined >= len(best_seq):
             
-            if the_root_with_best_path[0] >= 0: #not the (basic) root node 
-                best_seq = cache[ the_root_with_best_path ][0] + sequences[0][the_root_with_best_path[0]] +  seq_local #length_refined
-                best_steps = cache[ the_root_with_best_path ][1] + [the_root_with_best_path] + steps_local
-            else:
-                best_seq = cache[ the_root_with_best_path ][0] + "" +  seq_local #length_refined
-                best_steps = cache[ the_root_with_best_path ][1]  + steps_local
+            best_seq = seq_local #cache[ the_root_with_best_path ][0] + sequences[0][the_root_with_best_path[0]] +  seq_local #length_refined
+            best_steps = cache[ the_root_with_best_path ][1] + [the_root_with_best_path] + steps_local
             
+                
             #print("Best steps: ", best_steps, " =============> ", cache[the_root_with_best_path], " root: ", the_root_with_best_path)
         
         # 4) ubacivanje novih korijena u R ako su feasible i nisu već viđeni
-        for pos in new_roots:
+        for pos in new_roots:  
 
-            if pos not in R_seen and _feasible_root(pos, sequences, len(best_seq)):
+            if pos not in R_seen: #and _feasible_root(pos, sequences, len(best_seq)):
                 R.append(pos)
                 R_seen.add(pos)
-        #print("|R|=", len(R))
-    return best_seq, best_steps   
+
+    return best_seq, best_steps, time.time() - time_start       
     
     
 
@@ -859,14 +881,14 @@ def main():
     args = parse_args()
 
     sequences, gaps = load_n_instances(args.input)
-    final_seq, final_steps = "", []  # initialize to avoid UnboundLocalError
+    final_seq, final_steps, runtime = "", [], 0  # initialize to avoid UnboundLocalError
     
 
     import time
     start = time.time()
 
     if args.algorithm == "imbs":
-        final_seq, final_steps = imbs_glcs(
+        final_seq, final_steps, runtime = imbs_glcs(
             sequences,
             gaps,
             beam_width=args.beam_width,
@@ -877,11 +899,12 @@ def main():
             beta=args.beta,
             lam=args.lam,
             k=args.k,
-            max_iters=args.max_iters
+            max_iters=args.max_iters, 
+            time_limit=1800 # 30 minutes time limit
         )
 
     elif args.algorithm == "bs":
-        final_seq, final_steps = beam_search_glcs(
+        final_seq, final_steps, runtime = beam_search_glcs(
             sequences,
             gaps,
             beam_width=args.beam_width,
@@ -890,11 +913,10 @@ def main():
             beta=args.beta,
             lam=args.lam,
             k=args.k,
-            max_iters=args.max_iters
+            max_iters=args.max_iters, 
+            time_limit=1800 # 30 minutes time limit
         )
 
-    end = time.time()
-    runtime = end - start
 
     # Ensure final_steps is never None for feasibility check
     if final_steps is None:
