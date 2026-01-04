@@ -219,18 +219,17 @@ Within the \textit{Iterative Multi-Source Beam Search} (IMSBS) framework, BS is 
 The beam search itself employs several heuristic components to intensify the search toward high-quality feasible solutions. These heuristics include estimates based on letter frequencies, minimal residual substring lengths, and probability-weighted bounds, which are described in detail in the subsequent sections. \\
 
 
-The overall procedure is summarized in Algorithm~\ref{alg:imbs}. Initially, the pool of root nodes $\mathcal{R}$ is initialized with the root state $r = ((1,\ldots,1), 0)$, corresponding to the empty partial solution, and the current best solution is set to $s_{\mathrm{best}} = \varepsilon$. The algorithm iterates until either the pool $\mathcal{R}$ becomes empty or a predefined maximum number of beam search calls is reached.
+The overall procedure is summarized in Algorithm~\ref{alg:imbs}. Initially, the pool of root nodes $\mathcal{R}$ is initialized with the root state $r = ((1,\ldots,1), 0)$, corresponding to the empty partial solution, and the current best solution is set to $s_{\mathrm{best}} = \varepsilon$. The algorithm iterates until either the pool $\mathcal{R}$ becomes empty, a predefined maximum number of beam search calls is reached, or time has exceeded.
 
-At each iteration, a fixed number of the most promising root nodes from $\mathcal{R}$—controlled by the parameter \emph{number\_of\_sources\_from\_R} and ranked according to a heuristic evaluation $h'$—are extracted and stored in a temporary beam $\mathcal{L}$. This beam serves as the initial point for the current beam search, which is executed using beam width $\beta$ and heuristic guidance function $h$.
-
-During the beam search, all completed (i.e., non-expandable) nodes are processed as follows. If a completed node corresponds to a solution that improves upon the current best, the incumbent solution $s_{\mathrm{best}}$ is updated accordingly. Each completed node is then independently expanded in an LCS-like manner, ignoring gap constraints, to generate a set of successor nodes. For a generated child node $w$ with position vector $\mathbf{p}^w$, if
-\[
-|s_i| - p^w_i + 1 \leq |s_{\mathrm{best}}|
-\quad \text{holds for at least one } i \in [m],
-\]
-the node is discarded as it cannot lead to an improvement over the current best solution. Otherwise, a corresponding root candidate $r^w = (\mathbf{p}^w, 0)$ is inserted into the pool $\mathcal{R}$, provided that it has not already been part in the previous iterations.
-
-Once the current beam search terminates, a new iteration is initiated with a freshly selected set of root nodes from $\mathcal{R}$, as long as the termination conditions are not met. The pool $\mathcal{R}$ is maintained as a priority queue implemented via a binary heap, ensuring efficient extraction of the most promising root nodes.
+At each iteration, a fixed number of the most promising root nodes from $\mathcal{R}$--controlled by the parameter  \emph{sources\_from\_R} and ranked according to a heuristic evaluation $h'$--are taken,  extracted and stored in a temporary beam $\mathcal{L}$. These nodes are further refined by executing one effective backward beam search procedure per each node $v \in \mathcal{L}$ which serves as the root node of the search ($BS^{\uparrow}(v)$). The procedure works similarly as the baseline BS by expanding nodes according to the gap constraints, i.e., a letter $a \in \Sigma$ is a feasible extension of partial solution associated with node $u =(p^u, l^u)$ iff it appears in all $s_i[1, p^u], i=1, \ldots, m$ and for the largest indices $p^w_i < p^u_i$  such that $s_i[p^w_i]=a$, it holds $ p^u_i - p^w_i  \leq G_i[p^u_i] + 1 $, $i=1, \ldots, m$. The child node is given by $w = (p^w - \textbf{1}, l^u +1 )$. The procedure is repeated until beam is empty by returning the longest found solution $s^{bwrd}$ from $v$. Note that, in this way, the reverse string of  $s_{bwrd}$  is a feasible VGLCS solution. This partial solution is accompanied to the refined node $ v \in \mathcal{L}$, which is updated to $v=(p^v, |(s_{bwrd})^{rev}|)$ along with the accompanying partial solution, and passed to the forward beam search procedure. 
+ 
+ After the refinement of nodes from $\mathcal{L}$, this set enters in as the initial beam, initiating execution of the beam search with the beam width $\beta$ and the heuristic guidance ($l^v + h(v)$, for each node $v$). During the beam search phase, all completed (i.e., non-expandable) nodes are processed as follows. If a completed node corresponds to a solution that improves upon the current best, it becomes a new incumbent solution. Each completed node is then independently expanded in an LCS-like manner, ignoring the gap constraints, by generating a set of candidate root nodes. Generated candidate nodes %$w$ with position vector $\mathbf{p}^w$, if
+%\[
+%|s_i| - p^w_i + 1 \leq |s_{\mathrm{best}}|
+%\quad \text{holds for at least one } i \in [m],
+%\]
+%the node is discarded as it cannot lead to an improvement over the current best solution.
+ $r^w = (\mathbf{p}^w, 0)$ are inserted into the pool $\mathcal{R}$, provided that it has not already been part during the previous iterations.  Once the beam search procedure has terminated, a new \textsc{Imsbs} iteration is initiated with a freshly selected set of root nodes from $\mathcal{R}$, until one of the termination conditions is met. The pool $\mathcal{R}$ may be maintained as a priority queue implemented via a binary heap, to ensure efficient extraction of the most promising candidates for root nodes.
 
      
     
@@ -239,28 +238,30 @@ Once the current beam search terminates, a new iteration is initiated with a fre
     	\caption{Iterated Multi-source Beam Search (IMSBS) Framework }
     	\label{alg:imbs}
     	\begin{algorithmic}[1]
-    		\Require Sequences $s_1, \dots, s_m$; Gap functions $G_{s_i}(\cdot)$; beam width $\beta>0$; ${number\_sources\_from\_R}>0$; $beam\_iters>0$, heuristics $h, h'$
+    		\Require Sequences $s_1, \dots, s_m$; Gap functions $G_{s_i}(\cdot)$; beam width $\beta>0$; ${sources\_from\_R}>0$; $beam\_iters>0$, heuristics $h, h'$, time limit $t_{{lim}}$
     		\Ensure Approximate common subsequence $s_{\textrm{best}}$
     		
     		\State Initialize $\mathcal{R} \gets \{ (\mathbf{1},0) \}$ \Comment{A set of root nodes}
     		\State $iter \gets 0$
     		\State $s_{\textrm{best}} \gets  \varepsilon$
     		
-    		\While{$\mathcal{R} \neq \emptyset \wedge iter < beam\_iters $ }
-    		\State Select $\mathcal{L} \subseteq \mathcal{R}$  ${number\_sources\_from\_R}$ nodes, \State Remove the selected nodes from $\mathcal{R}$
-    		\Comment{$\mathcal{R}$ can be a pr. queue ordered by heuristic $h'$}
-    		\State Execute beam search $BS( \mathcal{L}, h)$
+    		\While{$\mathcal{R} \neq \emptyset \wedge iter < beam\_iters  \wedge t_{lim}$ not exceeded }
+    		\State Select $\mathcal{L} \subseteq \mathcal{R}$  ${sources\_from\_R}$  and remove them from $\mathcal{R}$ \Comment{Prioritized by heuristic score $h'$}
+    		%\Comment{$\mathcal{R}$ can be a pr. queue ordered by heuristic $h'$}
+    		\State $Best\_path\_w \gets$ Refine each $w \in \mathcal{L}$ by executing a backward BS($w$)
+    		\State $\mathcal{L} \ni w  \gets (p^w, l^w)$, $l^w$ the length of path $Best\_path\_w$ 
+    		\State Execute beam search $BS( \mathcal{L})$ \Comment{Prioritized acc. to  $l^v+h(v)$}
     		
-    		\ForAll{complete nodes $v$ at $BS(\mathcal{L}, h)$}
-    		\ForAll{Symbol $a \in \Sigma$}
+    		\ForAll{complete nodes $v$ within $BS(\mathcal{L}, h)$}
+    		  \State Update $s_{\textrm{best}}$ if a new longest path has been found \Comment{Merge (longest) paths obtained by  backward and forward BS calls  }
+    		\ForAll{ $a \in \Sigma$}
     		\State $p^w \gets$ minimum positions in the sequences so that $\ge p^v$ and $s_i[p^w_i] = a$ (ignore all gap constraints)
-    		\If{$|s_{\textrm{best}}| < \min_{i=1,\dots,m} \{ |s_i| - p^w_i + 1 \}$}    \Comment{cut-off}
-    		\State Add $r^w = (p^w,0)$ in the set  $\mathcal{R}$ (if previously have not added)
-    		\EndIf
+    		%\If{$|s_{\textrm{best}}| < l^w + \min_{i=1,\dots,m} \{ |s_i| - p^w_i + 1 \}$}    \Comment{cut-off}
+    		\State Add $r^w = (p^w,0)$ in the set  $\mathcal{R}$ (if has not previously been  added)
+    		% \EndIf
     		\EndFor
     		\EndFor
-    		
-    		\State Update $s_{\textrm{best}}$ if a new longest subsequence  in $BS(\mathcal{L}, h)$ has been found
+    	
     		\State $iter \gets iter + 1$
     		\EndWhile
     		
@@ -269,11 +270,12 @@ Once the current beam search terminates, a new iteration is initiated with a fre
     \end{algorithm}
     The core advantages of the IMSBS approach over the baseline BS are: 
     \begin{itemize}
-    	\item It provides a heuristic balance between complete beam search execution (local exploration of promising paths) and the generation of new sources (global coverage of the search space).
-    	\item Filtering suboptimal root nodes reduces unnecessary iterations and enables pruning of dominated paths.
+    	\item A provision of  balance between complete beam search execution (local exploration of promising paths) and the generation of new sources (global coverage of the search space).
+    	\item Preventing from  suboptimal candidate root nodes reduces by executing the backward beam search passes.
     \end{itemize}
 
-    \subsection{Heuristic guidances}
+
+    \paragraph{Heuristic guidances. }
     
     Several heuristics to guide search are utilized within the IMSBS (as the candidate for $h$ and $h'$). 
     \begin{itemize}
@@ -288,15 +290,15 @@ Once the current beam search terminates, a new iteration is initiated with a fre
     	\textrm{UB}_2(\mathbf{v}) =  \sum_{\sigma \in \Sigma} 
     	\min\left(  |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)
     \end{equation}
-    In essence, this heuristic counts the maximum number of characters that can still match in the (optimal) solution based on the frequency of each character. This score can be computed efficiently in \(O(m)\) time using preprocessing (i.e., constructing suitable data structures), see~\cite{DJUKANOVIC2020106499}. 
-     \item \textit{A probability-based heuristic} guidance by the Mousavi and Tabataba's matrices from~\cite{mousavi2012improved} in the context of the LCS problem. These probabilities are based on the idea of determining a probability for the event realization that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ over an alphabet $\Sigma$.  The probabilities for each  $i=1,\ldots, k$ and  $j=1, \ldots, n$, are pre-processed by a matrix $\mathcal{P}$ of probabilities of dimension $k\times n$ by a dynamic programming recurrence. Assuming the independence betwen input sequences, at each level of beam search the nodes are evaluated by determining the probabilities for each partial solutions  across that level to be expanded by $\overline{k}$ letters (this value is heuristically evaluated, as proposed in~\cite{mousavi2012improved}). Denote that heuristic guidance   by $h_{\textrm{prob}}$. 
-     \item TODO: \fxnote{TODO: if we come up with some learning heuristic -- should left for the extended version -- journal-extendable.}
+    In essence, this heuristic counts the maximum number of characters that can still match in the (optimal) solution based on the frequency of each character. This score can be computed efficiently in \(O(m)\) time using preprocessing (i.e., constructing suitable data structures), see the details in~\cite{DJUKANOVIC2020106499}. 
+     \item \textit{A probability-based heuristic} guidance by the Mousavi and Tabataba's matrices from~\cite{mousavi2012improved} in the context of the LCS problem. These probabilities are based on the idea of determining a probability for the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ over an alphabet $\Sigma$.  The probabilities for each  $i=1,\ldots, k$ and  $j=1, \ldots, n$, are pre-processed by a matrix $\mathcal{P}$ of probabilities with dimension $k\times n$ effectively generated by a dynamic programming. Assuming independence between input sequences,  the nodes/partial solutions within the same level of beam search are evaluated by determining the associated probabilities of their expansions by $\overline{k}$ letters (this value is heuristically evaluated, as proposed in~\cite{mousavi2012improved}). Denote that heuristic guidance   by $h_{\textrm{prob}}$. 
+     %\item TODO: \fxnote{TODO: if we come up with some learning heuristic -- should left for the extended version -- journal-extendable.}
    \end{itemize}
     
 	
 \section{Experimental Evaluation}\label{sec: experiments}
    
-In this section, we compare the performance of heuristic approaches designed for the VGLCSP with an arbitrary number of sequences \( m \geq 2 \). Specifically, we consider the following methods:
+In this section, we compare the performance of heuristic approaches explicitly designed for the  VGLCSP with an arbitrary number of sequences \( m \geq 2 \). Specifically, the following methods are included:
 
 \begin{itemize}
 	\item \textsc{Bs}: a baseline beam search approach that starts from the root node \( r \) as the initial beam and performs a single iteration of IMSBS.
@@ -338,7 +340,7 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
  	\label{fig:bs_tuning}
  \end{figure}
  
- After preliminary experiments, we fixed ${\text{number\_sources\_from\_R}} = 10$ and \emph{beam\_iters} = 50, as high-quality results were already achieved with this number of iterations. Root nodes kept in the global set are prioritized according to $h' = \textrm{UB}_2$, which consistently improves IMSBS performance compared to using $\textrm{UB}_1$.    The remaining parameters of the IMSBS approach were tuned via a simple grid search over the following values: $h \in \{\textrm{UB}_1, \textrm{UB}_2, h_{\text{prob}}\}$ and $\beta \in \{100, 500, 2000\}$, see Fig.~\ref{fig:imsbs_tuning}.
+ First, we fixed $t_{lim}=1800$ CPU seconds.   By conducting a series of preliminary experiments, we decided to fix ${{sources\_from\_R}} = 10$ and $\emph{beam\_iters} = 100$ as good results were already achieved employing these numbers. Root nodes kept in the global set are prioritized according to $h' = \textrm{UB}_2$, which consistently improves IMSBS performance compared to using $\textrm{UB}_1$.  Remaining parameters of the IMSBS approach were tuned via a simple grid search over the following values: $h \in \{\textrm{UB}_1, \textrm{UB}_2, h_{\text{prob}}\}$ and $\beta \in \{100, 500, 2000\}$, see Fig.~\ref{fig:imsbs_tuning}. As a well-performing setting of the standalone backward beam search used for refining the generated root nodes in $R$, we fixed $h=\textrm{UB}_2$ and $\beta=10$. 
  
  \begin{figure}[!h]
  	\centering
@@ -359,16 +361,14 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
  	\label{fig:imsbs_tuning}
  \end{figure}
  
- To ensure comparable average runtime between IMSBS and the baseline \textsc{Bs} approach, we use the following IMSBS configuration in our experiments: $h = \textrm{UB}_2$ and $\beta = 500$. These values balance runtime relative to \textsc{Bs} while maintaining reasonable solution quality.  Similarly, for the \textsc{Imsbs-greedy} approach with fixed $\beta = 1$, we allow a budget of 5000 beam search iterations (\emph{beam\_iters} = 5000), while all other parameters remain the same as for \textsc{Imsbs}.
+ To keep comparable average runtime between IMSBS and the baseline \textsc{Bs} approach, we use the following \textsc{Imsbs} configuration in our experiments: $h = \textrm{UB}_2$ and $\beta = 500$. These values balance runtime relative to \textsc{Bs} while maintaining reasonable solution quality.  Similarly, for the \textsc{Imsbs-greedy} approach with fixed $\beta = 1$, while all other parameters remain the same as in the \textsc{Imsbs}.
  
   
-  \subsection{Numerical results for heuristic approaches }
+  \subsection{Comparison between the heuristic approaches }
   Numerical results for all three heuristic approaches are reported in Table~\ref{tab:numerical_results_general_m}, which is organized into two main parts. 
   The first three columns describe the instance characteristics: the number of sequences ($m$), the sequence length ($n$), and the alphabet size ($|\Sigma|$). 
-  The remaining columns report the performance of the three heuristic approaches: \textsc{Bs}, \textsc{Imsbs-greedy}, and \textsc{Imsbs}.  
-  
-  For each algorithm, two performance indicators are provided: the average objective value $\overline{obj}$ and the average running time in seconds $\overline{t}$, computed over 10 instances per group. 
-  This layout allows a direct comparison of solution quality and computational effort across algorithms under identical instance settings.
+  The remaining columns report the performance of the three heuristic approaches: \textsc{Bs}, \textsc{Imsbs-greedy}, and \textsc{Imsbs}, each in its own block. For each algorithm, two performance indicators are provided: the average objective value $\overline{obj}$ and the average running time in seconds $\overline{t}$, computed over 10 instances per group. 
+  %This layout allows a direct comparison of solution quality and computational effort across algorithms under identical instance settings.
   
     
     
@@ -383,43 +383,40 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
     		$m$ & $n$ & $|\Sigma|$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$ & $\overline{t}[s]$ \\
     		\hline
 \midrule
-   2 & 50 & 2 & 33.6 & 0.02 & 26.1 & 0.00 & \textbf{35.0} & 0.04 \\
-   2 & 50 & 4 & 30.1 & 0.89 & 24.8 & 0.00 & \textbf{30.1} & 0.14 \\
-   2 & 100 & 2 & 48.9 & 1.74 & 41.5 & 0.00 & \textbf{65.1} & 0.44 \\
-   2 & 100 & 4 & \textbf{62.1} & 9.75 & 50.5 & 0.00 & 61.6 & 0.67 \\
-   2 & 200 & 2 & 99.1 & 14.76 & 67.7 & 0.01 & \textbf{123.3} & 3.20 \\
-   2 & 200 & 4 & 120.5 & 38.56 & 74.8 & 0.01 & \textbf{120.9} & 3.55 \\
-   2 & 500 & 2 & 65.3 & 21.05 & 77.3 & 0.03 & \textbf{184.9} & 62.69 \\
-   2 & 500 & 4 & 214.6 & 155.30 & 152.4 & 0.02 & \textbf{222.8} & 35.27 \\ \hline
-   
-   3 & 50 & 2 & 17.5 & 0.02 & 17.4 & 0.00 & \textbf{25.8} & 0.05 \\
-   3 & 50 & 4 & \textbf{21.7} & 0.17 & 16.1 & 0.00 & \textbf{21.7} & 0.09 \\
-   3 & 100 & 2 & 19.7 & 0.07 & 25.2 & 0.00 & \textbf{46.6} & 1.42 \\
-   3 & 100 & 4 & 34.1 & 2.50 & 21.1 & 0.00 & \textbf{42.3} & 2.49 \\
-   3 & 200 & 2 & 15.2 & 0.15 & 29.2 & 0.01 & \textbf{73.6} & 9.63 \\
-   3 & 200 & 4 & 85.3 & 24.99 & 38.3 & 0.01 & \textbf{91.3} & 33.44 \\
-   3 & 500 & 2 & 12.6 & 0.10 & 36.0 & 0.04 & \textbf{57.0} & 21.62 \\
-   3 & 500 & 4 & 90.7 & 80.60 & 52.6 & 0.03 & \textbf{149.2} & 171.48 \\ \hline
-   
-   5 & 50 & 2 & 4.8 & 0.00 & 9.4 & 0.00 & \textbf{15.3} & 0.06 \\
-   5 & 50 & 4 & 8.9 & 0.01 & 7.1 & 0.00 & \textbf{12.2} & 0.11 \\
-   5 & 100 & 2 & 6.3 & 0.00 & 10.3 & 0.01 & \textbf{16.2} & 0.16 \\
-   5 & 100 & 4 & 5.3 & 0.01 & 7.4 & 0.01 & \textbf{18.7} & 0.41 \\
-   5 & 200 & 2 & 5.3 & 0.01 & 14.5 & 0.01 & \textbf{19.2} & 0.31 \\
-   5 & 200 & 4 & 6.4 & 0.02 & 10.6 & 0.02 & \textbf{22.6} & 0.68 \\
-   5 & 500 & 2 & 5.9 & 0.09 & 15.2 & 0.08 & \textbf{21.5} & 1.32 \\
-   5 & 500 & 4 & 6.8 & 0.10 & 13.4 & 0.08 & \textbf{20.5} & 1.15 \\ \hline
-   
-10 & 50 & 2 & 1.7 & 0.00 & 3.7 & 0.00 & \textbf{5.9} & 0.12 \\
-10 & 50 & 4 & 1.9 & 0.00 & 2.7 & 0.00 & \textbf{4.4} & 0.31 \\
-10 & 100 & 2 & 1.1 & 0.00 & 4.6 & 0.01 & \textbf{5.2} & 0.22 \\
-10 & 100 & 4 & 2.2 & 0.01 & 2.8 & 0.01 & \textbf{4.1} & 0.47 \\
-10 & 200 & 2 & 2.5 & 0.01 & 5.2 & 0.04 & \textbf{6.7} & 0.28 \\
-10 & 200 & 4 & 2.2 & 0.01 & 3.7 & 0.04 & \textbf{3.9} & 0.43 \\
-10 & 500 & 2 & 1.8 & 0.08 & 5.9 & 0.22 & \textbf{6.3} & 1.00 \\
-10 & 500 & 4 & 1.9 & 0.08 & 4.2 & 0.23 & \textbf{4.6} & 1.27 \\  
+       2 &       50 &         2 &            33.6 &         0.02 &                     33.1 &                  0.00 &         \textbf{37.7} &      0.06 \\
+2 &       50 &         4 &            30.1 &         0.98 &                     27.7 &                  0.00 &         \textbf{30.1} &      0.16 \\
+2 &      100 &         2 &            48.9 &         2.07 &                     64.5 &                  0.01 &         \textbf{72.8} &      0.94 \\
+2 &      100 &         4 &            \textbf{62.1} &        11.19 &                     56.9 &                  0.01 &         61.6 &      0.91 \\
+2 &      200 &         2 &            99.1 &        18.56 &                     95.5 &                  0.02 &        \textbf{136.4} &      6.21 \\
+2 &      200 &         4 &           120.5 &        38.15 &                    116.1 &                  0.05 &        \textbf{124.9} &      6.58 \\
+2 &      500 &         2 &            65.3 &        23.27 &                    153.6 &                  0.07 &        \textbf{265.7} &    119.75 \\
+2 &      500 &         4 &           214.6 &       163.69 &                    227.7 &                  0.12 &        \textbf{294.4} &     60.49 \\ \hline
+3 &       50 &         2 &            17.5 &         0.03 &                     27.2 &                  0.00 &         \textbf{31.2} &      0.14 \\
+3 &       50 &         4 &            21.7 &         0.18 &                     21.5 &                  0.00 &         \textbf{22.9} &      0.19 \\
+3 &      100 &         2 &            19.7 &         0.06 &                     41.8 &                  0.01 &         \textbf{58.5} &      3.15 \\
+3 &      100 &         4 &            34.1 &         2.35 &                     43.4 &                  0.03 &         \textbf{48.4} &      5.58 \\
+3 &      200 &         2 &            15.2 &         0.16 &                     63.6 &                  0.02 &         \textbf{90.0} &     22.48 \\
+3 &      200 &         4 &            85.3 &        23.45 &                     77.2 &                  0.08 &         \textbf{97.1} &     72.25 \\
+3 &      500 &         2 &            12.6 &         0.10 &                     69.9 &                  0.07 &        \textbf{102.9} &     53.56 \\
+3 &      500 &         4 &            90.7 &        86.35 &                    104.2 &                  0.29 &        \textbf{187.7} &    412.27 \\ \hline
+5 &       50 &         2 &             4.8 &         0.00 &                     14.9 &                  0.00 &         \textbf{20.0} &      0.36 \\
+5 &       50 &         4 &             8.9 &         0.01 &                     13.6 &                  0.06 &         \textbf{15.3} &      0.79 \\
+5 &      100 &         2 &             6.3 &         0.01 &                     17.7 &                  0.01 &         \textbf{22.4} &      0.57 \\
+5 &      100 &         4 &             5.3 &         0.01 &                     \textbf{23.2} &                 10.85 &         22.1 &      1.44 \\
+5 &      200 &         2 &             5.3 &         0.01 &                     21.6 &                  0.03 &         \textbf{26.6} &      1.07 \\
+5 &      200 &         4 &             6.4 &         0.02 &                     \textbf{32.5} &                604.11 &         {25.7} &      2.10 \\
+5 &      500 &         2 &             5.9 &         0.10 &                     25.5 &                  0.14 &         \textbf{27.9} &      3.22 \\
+5 &      500 &         4 &             6.8 &         0.10 &                     \textbf{43.6} &               1341.25 &         26.9 &      3.52 \\ \hline
+10 &       50 &         2 &             1.7 &         0.00 &                      8.8 &                  2.28 &          \textbf{9.1} &      0.47 \\ 
+10 &       50 &         4 &             1.9 &         0.00 &                      \textbf{7.0} &                508.36 &          6.1 &      1.46 \\
+10 &      100 &         2 &             1.1 &         0.00 &                     \textbf{14.0} &               1421.10 &          8.6 &      0.54 \\
+10 &      100 &         4 &             2.2 &         0.01 &                      \textbf{8.9} &               1800.45 &          {6.3} &      1.51 \\
+10 &      200 &         2 &             2.5 &         0.01 &                     \textbf{13.2} &               1710.49 &         10.3 &      0.77 \\
+10 &      200 &         4 &             2.2 &         0.02 &                      \textbf{7.9} &               1800.54 &          6.1 &      1.74 \\
+10 &      500 &         2 &             1.8 &         0.08 &                     \textbf{13.8} &               1611.70 &          {9.5} &      1.53 \\
+10 &      500 &         4 &             1.9 &         0.09 &                      \textbf{8.2} &               1800.46 &          6.1 &      2.37 \\
 	\hline \hline
-\textbf{Avg.} &  &  &  32.38 & 10.97 & 27.24 & 0.03 &  \textbf{48.08} & 11.08  \\ \hline \hline
+\textbf{Avg.} &  &  &  32.38 & 10.97 & 46.82 & 394.14 &  \textbf{59.73} & 24.63  \\ \hline \hline
  \end{tabular}}
     \end{table}
     
@@ -427,14 +424,15 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
     
     %beam_width-500_heuristic-h5_imbs-iters-50_num-roots-10: check here what is wrong ... 
  
-  Based on the numerical results presented in Table~\ref{tab:numerical_results_general_m}, the following conclusions can be drawn:
+  Based on the numerical results presented in Table~\ref{tab:numerical_results_general_m}, the following conclusions may be drawn: 
   
   \begin{itemize}
-  	\item \textit{Solution quality comparison.} The \textsc{Imsbs} approach produces the highest solution quality in 31 out of 32 instance groups, on average surpassing the baseline \textsc{Bs} approach by approximately 50\% in relative improvement. The baseline \textsc{Bs} performs equally well or better in only 2 groups. The weakest (but also fastest) approach on average is \textsc{Imsbs-greedy}, which performs competitively (and clearly better than \textsc{Bs}) only for instances with a larger number of input sequences ($m = 10$). This indicates that starting the beam search solely from the root node $(1, 1, \ldots, 1)$ can be suboptimal when many gap constraints must be satisfied. Exploring additional root nodes often improves the diversity of the search and consequently the quality of the final solutions.
+  	\item \textit{Solution quality comparison.} The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating that selecting a right root node is essential in  achieving high-quality solutions for this problem. 
+  	 The baseline \textsc{Bs} performs equally well or better in only a single case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches at 10 (out of 32) cases, mostly for the instances with larger $m=10$, and shorter final solutions where it gets strategically better to frequently jump from one to another part of the search space in order to achieve better solutions rather than empower the intensification around a solution.  Exploring additional root nodes serves to improve the diversity of the search. This is exactly where  \textsc{Imsbs-greedy} comes into the play. 
   	
-  	\item \textit{Runtime comparison.} The \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes. As expected, \textsc{Imsbs-greedy} has a significantly smaller average runtime due to inexpensive beam search iterations ($\beta = 1$), in contrast to the more computationally intensive iterations used by the other two approaches.
+  	\item \textit{Runtime comparison.} The \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes.  \textsc{Imsbs-greedy} has a significantly larger average runtime due to a higher number of executed iterations ($beam\_iters = 10,000$), in contrast to more computationally intensive iterations used by the other two approaches (limited to $beam\_iters = 100$).
   	
-  	\item \textit{Other conclusions.} The behavior of \textsc{Bs} can be explained by the fact that for small $m$, starting from the root node $r = (1, \ldots, 1)$ is generally favorable, allowing the beam search to progress deeply and identify high-quality subsequences, particularly for higher beam widths. This is especially the case for instances with $m = 2$, where the difference in solution quality between \textsc{Bs} and \textsc{Imsbs} is noticeable but not dramatic. For larger $m$, the gap between the solutions of the two approaches becomes substantial. Overall, \textsc{Imsbs} demonstrates greater robustness and stability as the number of input sequences increases.
+  	\item \textit{Other conclusions.}  Overall, \textsc{Imsbs} demonstrates greater robustness and stability as the number of input sequences increases in comparison to the baseline \textsc{Bs} approach. 
   	
   	%As illustrated in Figure~XX, both BS and IMSBS frequently attain near-optimal or optimal solutions for smaller $n$ and larger alphabets. The BS approach reaches at least 65\% of the optimum for the majority of instances, whereas IMSBS achieves 80\% or more. For approximately 50 out of the 60 instances, both methods achieve at least 90\% of the optimal solution length, as shown in Figure~XX.
   \end{itemize}
@@ -446,7 +444,7 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
    \begin{itemize}
    	\item \textsc{Dp}: the basic dynamic programming algorithm;
    	\item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm;
-   	\item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup. All three DP approaches are from~\cite{penga2011longest}. Note that the original paper proposes answering ISMQ using Union-Find operations; however, due to lack of implementation details, we used a dequeue-based approach in our implementation.
+   	\item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup. All three DP approaches are from~\cite{penga2011longest}. Note that the original paper proposes answering ISMQ using Union-Find operations; however, due to lack of implementation details, we decided to employ a dequeue-based approach in our implementation.
    	\item \textsc{Ilp}: an integer linear programming method proposed in this work (see Appendix~\ref{app:ilp}), motivated by ILP models for LCS problems~\cite{blum2016metaheuristics}.
    \end{itemize}
    
@@ -469,8 +467,8 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
      		\cmidrule(lr){10-11} 	\\ 
      		$m$ & $n$ & $|\Sigma|$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ &$\overline{obj}$  & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ \\
      		\hline
-   2 &   50 &         2 &              38.1 &          0.01 & 38.1 &          \textbf{0.01} &              38.1 &          0.01  & 38.1 & 89.43 \\
-  2 &   50 &         4 &              30.3 &          \textbf{0.01} &              30.3 &          0.02 &              30.3 &          0.02 & 30.3  & 18.0 \\ \hline
+   2 &   50 &         2 &              38.1 &          0.01 & 38.1 &          \textbf{0.01} &              38.1 &          0.01  & 38.1 & 168.3 \\
+  2 &   50 &         4 &              30.3 &          \textbf{0.01} &              30.3 &          0.02 &              30.3 &          0.02 & 30.3  & 28.0 \\ \hline
   2 &  100 &         2 &              77.4 &          0.1 &              77.4 &          \textbf{0.03} &              77.4 &          0.05 & -- & -- \\
   2 &  100 &         4 &              62.3 &          0.07 &              62.3 &         \textbf{0.06} &              62.3 &          0.09 & 0.00 & 1800.0 \\ \hline
   
@@ -488,9 +486,9 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
   Based on the numerical results presented in Table~\ref{tab:results-2d-literature}, the following conclusions can be drawn:
   
   \begin{itemize}
-  	\item All three dynamic programming approaches are highly efficient and are able to find optimal solutions for all 80 problem instances.
-  	\item The runtimes required by the DP approaches to obtain optimal solutions are relatively short, mostly remaining below 10 seconds.
-  	\item The \textsc{Ilp} approach is able to solve only the smallest instances with $n=50$, and its execution times are roughly two orders of magnitude higher than those of the DP approaches. For larger instances, especially those with $n=200$, the ILP approach is unable to solve even the initial (root) relaxations.
+  	\item All three dynamic programming approaches are highly efficient, solving all 80 problem instances.
+  	\item The runtimes of DPs required to obtain optimal solutions are relatively short, mostly remaining below 10 seconds.
+  	\item The \textsc{Ilp} approach is able to solve only the smallest instances with $n=50$; its execution times are roughly two orders of magnitude higher than those of the DP approaches. For larger instances, especially those with $n=200$, the ILP approach is unable to solve even the initial (root) relaxations.
   \end{itemize}
   
   \begin{figure}[htbp]
@@ -508,18 +506,19 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
   	\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
   	\label{fig:optimal-vs-heuristic}
   \end{figure}
-  
-  Regarding the efficiency of \textsc{Bs} and \textsc{Imsbs} on instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution for 49 out of 80 instances. For 75\% of the problem instances, the solution obtained by \textsc{Imsbs} is at least 80\% of the optimal solution, whereas these numbers are significantly lower for the \textsc{Bs} approach.   These results indicate that while \textsc{Imsbs} performs considerably better than \textsc{Bs}, there remains room for improvement in designing a more robust guiding function especially for small alphabet size, as discussed in the future work section.
+
+  Concerning efficiency of \textsc{Bs} and \textsc{Imsbs} on instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution in 63 out of 80 instances. These numbers are significantly lower in the case of  \textsc{Bs} approach.   While in the case of instances with $|\Sigma|=4$ (and $m=2$) the difference in solution qualities between these two approaches is slightly in favor of \textsc{Imsbs}, in the case of instance with  small-sized alphabet the  \textsc{Imsbs} approach performs clearly better than the \textsc{Bs} approach.   
+  %Shortly, there remains room for improvement in designing a more robust guiding function especially for small alphabet size, as discussed in the future work section.
   
     
 \section{Conclusions and Future Work}
 \label{sec: conclusions}
 
-In this work, we studied a generalized version of the Longest Common Subsequence (LCS) problem for an arbitrary number of sequences, a problem with broad applications in bioinformatics, particularly for comparing DNA and RNA molecules structurally. The Variable Gapped LCS problem considered here extends the classical LCS formulation by constraining the allowable distances between matched characters, reflecting biological scenarios in which spatially closer nucleotides interact more strongly than distant ones.
+In this work, we studied a generalized version of the Longest Common Subsequence (LCS) problem for an arbitrary number of sequences, a problem with broad applications in bioinformatics, particularly for comparing DNA and RNA molecules structurally. The Variable Gapped LCS problem considered here extends the classical LCS formulation by constraining the allowable distances between matched characters, reflecting biological scenarios in which spatially closer nucleotides interact more strongly than distant ones, but also to time-series analyses when events occur within specified time delays. 
 
-We proposed a beam-search-based solution framework, starting with a baseline beam search over a formally defined state-space graph and extending it to an enhanced Iterative Multi-Source Beam Search (IMSBS) approach. IMSBS combines local exploration from promising root nodes with a global strategy for selecting these nodes based on previously collected search information. Experimental results show that IMSBS consistently produces the highest-quality solutions, often achieving 80--90\% of the known optimal solutions for two input sequences, while requiring comparable or less computation time than the baseline beam search. For the special case with $m=2$, we additionally compared three exact dynamic programming approaches from the literature with a newly designed ILP model. The results confirm that the advanced DP variant solved all instances in the shortest amount of time, while the ILP approach was limited to smaller instances.
+We proposed a beam-search-based solution framework, starting with a baseline beam search over a formally defined state-space graph. It is further extended to an enhanced Iterative Multi-Source Beam Search (IMSBS) approach. IMSBS combines local exploration from promising root nodes with a global strategy for selecting candidates for root nodes based on previously collected search information. Experimental results show that IMSBS consistently produces the highest-quality solutions over baseline beam search strategy. In the case of instances with shorter feasible sequences, the strategy of frequently jumping from one feasible region to another in the search space appears as the best option, that is the IMSBS approach when the beam width is fixed to one.  Concerning exact solving, we  compared three exact dynamic programming approaches from the literature with a newly designed ILP model. The results confirmed the advanced DP variant solved all instances in the shortest amount of time, while the ILP approach was limited to smaller instances.  Additionally, IMSBS approach has frequently achieved close-to-optimum results for two-input-sequence problem case, while requiring comparable or less computation time than the baseline beam search.
 
-Future research directions include designing more sophisticated heuristics that directly incorporate gap constraints into scoring functions, optimizing IMSBS to efficiently reuse previously explored regions of the state space, generating realistic biological instances for real-world case studies, and scaling experiments to longer sequences.
+Future research directions include designing more sophisticated heuristics that directly incorporate gap constraints into scoring functions, optimizing IMSBS to efficiently reuse previously explored regions of the state space, testing designed approaches on real-world biological instances, and scaling experiments to longer sequences.
  \paragraph{\textbf{Acknowledgments.}} This publication is co-funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme (grant agreement No.~101081355 -- SMASH), and by the Republic of Slovenia and the European Union through the European Regional Development Fund. Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.
 
 	\bibliographystyle{splncs04}
