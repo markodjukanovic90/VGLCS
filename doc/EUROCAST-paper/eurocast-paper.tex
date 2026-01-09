@@ -16,6 +16,7 @@
 \usepackage{algpseudocode}
 \usepackage{tikz}
 \usepackage{fixme}
+\usepackage{cancel}
 \usepackage{url}
 \usepackage{booktabs}
 \usetikzlibrary{arrows.meta, positioning}
@@ -82,7 +83,7 @@ In this work, we focus on the \textit{Variable Gapped Longest Common Subsequence
 
 Formally, for each input sequence $s_i \in S$, a gap constraint is defined by a function
 \[
-G_i \colon \{1,\ldots,|s_i|\} \mapsto \mathbb{N}.
+G_i \colon \{2,\ldots,|s_i|\} \mapsto \mathbb{N}.
 \]
 If the characters of a common subsequence $s$ occur at positions
 $i^1_i < \cdots < i^{|s|}_i$ in sequence $s_i$, then the gap constraint is satisfied if
@@ -110,7 +111,7 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
 	The remainder of the paper is organized as follows. Section~\ref{sec: state_graph} introduces the state graph representation of the problem. In Section~\ref{sec: imsbs}, we present the design of our main methodological contribution, namely the iterative multi-source beam search approach. Section~\ref{sec: experiments} reports the computational results, comparing the proposed method with a baseline standalone beam search and a greedy heuristic, as well as with specialized approaches for the case of two input sequences. Finally, Section~\ref{sec: conclusions} concludes the paper and outlines directions for future research.
 	
 	
-	\section{Root-based State Space Formulation}\label{sec: state_graph}
+	\section{  Root-based State Space Formulation}\label{sec: state_graph}
 	
      Building on the state-space representation for the LCSP introduced in~\cite{DJUKANOVIC2020106499}, we develop a \emph{root-based state graph} model for the Variable Gapped Longest Common Subsequence Problem (VGLCSP). Each state represents one or more feasible partial solutions characterized by a vector of positions induced by the input sequences and by the current subsequence length.
      
@@ -172,7 +173,7 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
 		\node[state, below right=of s0] (s2) {((4,3),2)};
 		%\node[state, below=of s2] (s3) {(4,3)};
 		\node[state, below=of s2, fill=gray] (s4) {((5,4),3)}; % krajnje, ali ne koristi se ovde
-		\node[state, left=of s4, fill=gray] (s5) {((3, 5), 2)}; % krajnje, ali ne koristi se ovde
+		\node[state, left=of s4, fill=white] (s5) {((3, 5), 2)}; % krajnje, ali ne koristi se ovde
 		
 		% Grane (samo validne poklapanja)
 		\draw[edge] (s0) -- node[above] {\small A} (s1);
@@ -180,14 +181,16 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
 		\draw[edge] (s1) -- node[above] {\small C} (s2);
 		%\draw[edge] (s2) -- node[right] {\small A} (s3);
 		%\draw[edge] (s3) -- node[right] {\texttt{A}} (s4);
-		\draw[edge] (s1) -- node[right] {\texttt{B}} (s5);
+		\draw[edge] (s1) -- node[right, fill=red] {$\cancel{\texttt{B}}$} (s5);  
 		% Oznake
 		\node[above=0.3cm of s0] {\textbf{Root state}};
 		%\node[below=1.5cm of s3] {\small \textbf{Krajnje stanje}};
 		\draw[edge] (s2) -- node[right] {\texttt{A}} (s4);
 		
 	\end{tikzpicture}}
-	\caption{State graph $Space(((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} i \texttt{ACAB}. Two final/terminal states are displayed in gray. }
+	\caption{State graph $Space(((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$. Two final/terminal state is displayed in gray. The white-filled node  is the valid LCS node, but not as defined by the root-based space formulation (the second gap has been  violated). % \fxnote{Add VGLCS example}
+	}
+
 	\label{fig:vgcs-grafstanja}
 \end{figure}
 
@@ -198,23 +201,23 @@ As an illustrative example, consider the sequence set
 \[
 S = \{ s_1 = \texttt{ATGGAAAA},\; s_2 = \texttt{ATCCAAAA} \},
 \]
-with gap constraints $G_{s_1} = G_{s_2} = 1$, depicted in Fig.~\ref{fig:vgcs-grafstanja}. In this instance, from the initial state $((1,1),0)$ any state with position vector $\mathbf{p}^L = (5,5)$ cannot reach  via standard directed transitions. As a result, the optimal common subsequence \texttt{AAA} is unreachable when the search is initiated exclusively from the initial root state $((1,1),0)$, and is therefore missed by traditional search strategies.
+with gap constraints $G_{s_1} = G_{s_2} = 1$, depicted in Fig.~\ref{fig:vgcs-grafstanja}. In this instance, from the initial state $((1,1),0)$ any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  via the standard directed transitions. As a result, the optimal common subsequence \texttt{AAA} is unreachable when the search is initiated exclusively from the root $((1,1),0)$, and is therefore missed by traditional search strategies.
 
 To address this issue, the full state space of a VGLCSP instance is naturally defined as
 \[
 \bigcup_{q \in \mathcal{R}} \mathrm{Space}(q),
 \]
-where $\mathcal{R}$ denotes the set of all root states, i.e., states with position vectors $\mathbf{p}^{L,q}$ that cannot be reached from any other state through regular directed transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time in the worst case, and is thus infeasible for instances with large $m$ or $n$.
+where $\mathcal{R}$ denotes the set of all root states, i.e., states with position vectors $\mathbf{p}^{L,q}$ that cannot be reached from any other state by direct transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time in the worst case, and is thus infeasible for instances with large $m$ or $n$.
 
-This structural characteristic of the VGLCSP motivates the proposed \textit{Iterative Multi-Source Beam Search} (IMSBS) approach, which is specifically designed to dynamically explore multiple promising regions of the state space jumping from one rooted subgraph to another. By iteratively identifying and expanding a set of candidate root states, IMSBS effectively mitigates the disconnection effects induced by gap constraints and enables the discovery of high-quality solutions that would otherwise remain inaccessible to single-source search methods.
+This structural characteristic of the VGLCSP motivates the proposed methodology titled \textit{Iterative Multi-Source Beam Search} (IMSBS) approach, which is specifically designed to dynamically explore multiple promising regions of the state space moving from one rooted subgraph to another one. By iteratively identifying and expanding a set of candidate root states, IMSBS effectively mitigates the disconnection effects induced by gap constraints and enables the discovery of high-quality solutions that would otherwise remain inaccessible to single-source search methods.
 
 
 	
 	\section{Iterative Multi-source Beam Search Framework}\label{sec: imsbs}
 	
-\textit{Beam search} (BS) is a well-established tree-search metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each level, and by a heuristic evaluation function $h$, which guides the selection of the most promising nodes for further expansion.
+\textit{Beam search} (BS) is a well-established tree-search metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each level, and by a heuristic function $h$, which guides the selection of the most promising candidates for further expansion.
 
-Within the \textit{Iterative Multi-Source Beam Search} (IMSBS) framework, BS is executed iteratively, each time initialized with a beam $\mathcal{L}$ consisting of several promising root nodes. These root nodes are dynamically selected from a global pool $\mathcal{R}$, whose role is to promote diversification across different regions of the state space. Each BS execution thus explores the neighborhood of multiple starting points rather than relying on a single root.
+Within the \textit{Iterative Multi-Source Beam Search} (IMSBS) framework, BS is executed iteratively, each time initialized with a new beam $\mathcal{L}$ consisting of several promising candidates for root nodes. These nodes are dynamically selected from a global pool $\mathcal{R}$, whose role is to promote diversification across different regions of the state space. Each BS execution thus explores the neighborhood of multiple starting points rather than relying on a single root $r$.
 
 The beam search itself employs several heuristic components to intensify the search toward high-quality feasible solutions. These heuristics include estimates based on letter frequencies, minimal residual substring lengths, and probability-weighted bounds, which are described in detail in the subsequent sections. \\
 
@@ -239,25 +242,29 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     	\label{alg:imbs}
     	\begin{algorithmic}[1]
     		\Require Sequences $s_1, \dots, s_m$; Gap functions $G_{s_i}(\cdot)$; beam width $\beta>0$; ${sources\_from\_R}>0$; $beam\_iters>0$, heuristics $h, h'$, time limit $t_{{lim}}$
-    		\Ensure Approximate common subsequence $s_{\textrm{best}}$
+    		\Ensure Approximate common subsequence $s_{\textrm{best}}$ which fulfills the gap constraints
     		
     		\State Initialize $\mathcal{R} \gets \{ (\mathbf{1},0) \}$ \Comment{A set of root nodes}
     		\State $iter \gets 0$
     		\State $s_{\textrm{best}} \gets  \varepsilon$
     		
     		\While{$\mathcal{R} \neq \emptyset \wedge iter < beam\_iters  \wedge t_{lim}$ not exceeded }
-    		\State Select $\mathcal{L} \subseteq \mathcal{R}$  ${sources\_from\_R}$  and remove them from $\mathcal{R}$ \Comment{Prioritized by heuristic score $h'$}
+    		\State Select $\mathcal{L} \subseteq \mathcal{R}$  ${sources\_from\_R}$  and remove them from $\mathcal{R}$ \Comment{ $\mathcal{R}$ prioritized by   $h'$}
     		%\Comment{$\mathcal{R}$ can be a pr. queue ordered by heuristic $h'$}
-    		\State $s_{bwrd}^w\gets$ Refine each $w \in \mathcal{L}$ by executing a backward beam search BS$^{\uparrow}(w)$
-    		\State $\mathcal{L} \ni w  \gets (p^w, l^w)$, $l^w$ the length of $s_{bwrd}^w$ 
-    		\State Execute beam search BS$( \mathcal{L})$ \Comment{Prioritized acc. to  $l^v+h(v)$}
+    		\ForAll{$w \in \mathcal{L}$}
+    		    \State $s_{bwrd}^w\gets$ Refine each $w \in \mathcal{L}$ by executing a backward beam search BS$^{\uparrow}(w)$
+    		    \State  $l^w \gets |s_{bwrd}^w|$  \Comment{Update $l^w$}
+    		\EndFor
+    		
+    		\State Execute (forward) beam search BS$( \mathcal{L})$ \Comment{Prioritized acc. to  $l^v+h(v)$}
     		
     		\ForAll{complete nodes $v$ within BS$(\mathcal{L})$}
     		  \State Update $s_{\textrm{best}}$ if a new longest path has been found \Comment{Merge (longest) paths obtained by  backward BS$^{\uparrow}$ and forward BS calls  }
-    		\ForAll{ $a \in \Sigma$}
-    		\State $p^w \gets$ minimum positions in the sequences so that $\ge p^v$ and $s_i[p^w_i] = a$ (ignore all gap constraints)
-    		%\If{$|s_{\textrm{best}}| < l^w + \min_{i=1,\dots,m} \{ |s_i| - p^w_i + 1 \}$}    \Comment{cut-off}
-    		\State Add $r^w = (p^w,0)$ in the set  $\mathcal{R}$ (if has not previously been  added)
+    		   \ForAll{ $a \in \Sigma$} \Comment{Find closest matching positions for each letter}
+    		    \State $p^w \gets$ minimum positions   so that $\ge p^v$ and $s_i[p^w_i] = a$ (ignore all gap constraints)
+    		    %\If{$|s_{\textrm{best}}| < l^w + \min_{i=1,\dots,m} \{ |s_i| - p^w_i + 1 \}$}    \Comment{cut-off}
+
+    		    \State $\mathcal{R} \gets$ $\mathcal{R} \cup \{r^w = (p^w,0)\}$   (if has not previously been  added) \Comment{Update $\mathcal{R}$}
     		% \EndIf
     		\EndFor
     		\EndFor
@@ -273,7 +280,10 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     	\item A provision of  balance between complete beam search execution (local exploration of promising paths) and the generation of new sources (global coverage of the search space).
     	\item Preventing from  suboptimal candidate root nodes reduced by executing backward beam search procedure.
     \end{itemize}
-
+    
+-- One BS (backward): reversed 
+-- Same BS code 
+-- 
 
     \paragraph{Heuristic guidances. }
     
