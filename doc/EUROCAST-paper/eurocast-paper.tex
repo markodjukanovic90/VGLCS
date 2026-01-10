@@ -106,7 +106,8 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
 	|s|_{\Sigma'} = \sum_{\sigma \in \Sigma'} |s|_{\sigma}.
 	\]
 	
-	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences. Unless stated otherwise, $m \in \mathbb{N}$ represents the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$.
+	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, and by $S^{rev} = \{s_1^{rev}, \ldots, s_m^{rev}\}$.  Unless stated otherwise, $m \in \mathbb{N}$ represents the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$. Last but not least, for a gap constraint $G_i$, its reverse constraint is denoted by  $G_i^{rev}$, and is given as $G_i^{rev}(j):=G_i(|s_i|-j+1)$, for each $j=1, \ldots, |s_i|$. 
+	
 	
 	The remainder of the paper is organized as follows. Section~\ref{sec: state_graph} introduces the state graph representation of the problem. In Section~\ref{sec: imsbs}, we present  design of our main methodological contribution, namely the iterative multi-source beam search approach. Section~\ref{sec: experiments} reports the computational results, comparing the proposed method with a baseline standalone beam search and an iterative greedy heuristic, as well as with several specially designed  approaches for the case of two input sequences. Finally, Section~\ref{sec: conclusions} concludes the paper and outlines directions for future research.
 	
@@ -209,9 +210,52 @@ This structural characteristic of the VGLCSP motivates the proposed methodology 
 	
 	\section{Iterative Multi-source Beam Search Framework}\label{sec: imsbs}
 	
-\textit{Beam search} (BS) is a well-established tree-search metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each level, and by a heuristic function $h$, which guides the selection of the most promising candidates for further expansion.
+\textit{Beam search} (BS) is a well-established tree-search metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each level, and by a heuristic function $h$, which guides the selection of the most promising candidates for further expansion. The BS algorithm which starts with a set of root nodes $R$ as its initial beam,  is pseudo-coded in~Algorithm~\ref{alg:bs}. 
 
-Within the \textit{Iterative Multi-Source Beam Search} (IMSBS) framework, BS is executed iteratively, each time initialized with a new beam $\mathcal{L}$ consisting of several promising candidates for root nodes. These nodes are dynamically selected from a global pool $\mathcal{R}$, whose role is to promote diversification across different regions of the state space. Each BS execution thus explores the neighborhood of multiple starting points rather than relying on a single root $r$.
+\begin{algorithm}
+	\caption{Rooted Beam Search}
+	\label{alg:bs}
+	\begin{algorithmic}[1]
+		
+		\Function{RootedBeamSearch}{$R, S, \{G_i\}_{i=1}^m, \beta, h$}
+		\Comment{$r$: root node, $S=\{s_1,\dots,s_m\}$, gap constraints $G_i$, beam width $\beta$, heuristic $h$}
+		
+		\State $s_{\text{best}} \gets \varepsilon$
+		\State $B \gets R$ \Comment{Starting beam}
+		\State $V_{\text{complete}} \gets \emptyset$
+		
+		\While{$B \neq \emptyset$}
+		\State $Children \gets \emptyset$
+		
+		\ForAll{$v \in B$}
+		\If{$v$ is complete}
+		\State $V_{\text{complete}} \gets V_{\text{complete}} \cup \{v\}$
+		
+		\If{$v.l^v > |s_{\text{best}}|$}
+		\State $s^v \gets$ Extract partial solution associated with $v$
+		\State $s_{\text{best}} \gets s^v$
+		\EndIf
+		
+		\State \textbf{continue}
+		\EndIf
+		
+		\State $C_v \gets$ \Call{Expand}{$v, S, \{G_i\}_{i=1}^m$}
+		\State $Children \gets Children \cup C_v$
+		\EndFor
+		
+		\State \Call{Sort}{$Children, h$} \Comment{decreasing order}
+		\State $B \gets Children[ \colon \beta]$
+		\EndWhile
+		
+		\State \Return $s_{\text{best}}, V_{\text{complete}}$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+
+
+
+Within the \textit{Iterative Multi-Source Beam Search} (IMSBS) framework, standalone BS procedure is executed iteratively, each time initialized with a new beam $\mathcal{L}$ consisting of several promising candidates for root nodes. These nodes are dynamically selected from a global pool $\mathcal{R}$, whose role is to promote diversification across different regions of the state space. Each BS execution thus explores the neighborhood of multiple starting points rather than relying on a single root $r$.
 
 The beam search itself employs several heuristic components to intensify the search toward high-quality feasible solutions. These heuristics include estimates based on letter frequencies, minimal residual substring lengths, and probability-weighted bounds, which are described in detail in the subsequent sections. \\
 
@@ -228,8 +272,6 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
 %the node is discarded as it cannot lead to an improvement over the current best solution.
  $r^w = (\mathbf{p}^w, 0)$ are inserted into the pool $\mathcal{R}$, provided that it has not already been part during the previous iterations.  Once the beam search procedure has terminated, a new \textsc{Imsbs} iteration is initiated with a freshly selected set of root nodes from $\mathcal{R}$, until one of the termination conditions is met. The pool $\mathcal{R}$ may be maintained as a priority queue implemented via a binary heap, to ensure efficient extraction of the most promising candidates for root nodes.
 
-     
-    
     %pseudocode:
     \begin{algorithm}[!ht]
     	\caption{Iterated Multi-source Beam Search (IMSBS) Framework }
@@ -246,16 +288,24 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     		\State Select $\mathcal{L} \subseteq \mathcal{R}$  ${sources\_from\_R}$  and remove them from $\mathcal{R}$ \Comment{ $\mathcal{R}$ prioritized by   $h'$}
     		%\Comment{$\mathcal{R}$ can be a pr. queue ordered by heuristic $h'$}
     		\ForAll{$w \in \mathcal{L}$}
-    		    \State $s_{bwrd}^w\gets$ Refine each $w \in \mathcal{L}$ by executing a backward beam search BS$^{\uparrow}(w)$
-    		    \State  $l^w \gets |s_{bwrd}^w|$  \Comment{Update $l^w$}
+    		    \State $s_{fwrd}^w, \_ \gets$ 
+    		    \textsc{RootedBeamSearch}(  
+    		    $(\{ (|s_i| - p^w_i-1)_{i=1}^m, 0\}, S^{rev}, G^{rev}, \beta', h')$
+    		     \Comment{Refine each $w \in \mathcal{L}$}
+    		    \State  $l^w \gets |s_{bwrd}^w|$  \Comment{Update $l^w$, assign the reverse of $s_{bwrd}^w$ to $w$}
     		\EndFor
     		
-    		\State Execute (forward) beam search BS$( \mathcal{L})$ \Comment{Prioritized acc. to  $l^v+h(v)$}
+    		\State \State $s_{b}, V_{complete}
+    		\gets$ 
+    		\textsc{RootedBeamSearch}( $\mathcal{L}, S, G, \beta, h)$ \Comment{Prioritized acc. to  $l^v+h(v)$}
+    		\If{$|s_b| > s_{best}$}
+    		    \State $s_{best} \gets s_b$
+    		\EndIf
     		
-    		\ForAll{complete nodes $v$ within BS$(\mathcal{L})$}
-    		  \State Update $s_{\textrm{best}}$ if a new longest path has been found \Comment{Merge (longest) paths obtained by  backward BS$^{\uparrow}$ and forward BS calls  }
+    		\ForAll{$v \in V_{complete}$}
+    		   
     		   \ForAll{ $a \in \Sigma$} \Comment{Find closest matching positions for each letter}
-    		    \State $\textbf{p}^w_{a} \gets$ minimum positions   so that $\ge \textbf{p}^v$ and $s_i[(p^w_a)_i] = a$ (ignore all gap constraints)
+    		    \State $\textbf{p}^w_{a}= ({p}^w_{i, a})_{i=1}^m \gets$ minimum position  $p^w_{i, a} > {p}_i^v$ and $s_i[p^w_{i, a}] = a$ (ignore all gap constraints)
     		    %\If{$|s_{\textrm{best}}| < l^w + \min_{i=1,\dots,m} \{ |s_i| - p^w_i + 1 \}$}    \Comment{cut-off}
 
     		    \State $\mathcal{R} \gets$ $\mathcal{R} \cup \{r^w = (\textbf{p}^w_a, 0)\}$   (if has not previously been  added) \Comment{Update $\mathcal{R}$}
@@ -275,11 +325,7 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     	\item Preventing from  suboptimal candidate root nodes reduced by executing backward beam search procedure.
     \end{itemize}
   
-  \fxnote{ TODO: Pseudocode 
--- One BS (backward): reversed 
--- Same BS code}
-
-    \paragraph{Heuristic guidances. }
+  \paragraph{Heuristic guidances. }
     
     Several heuristics to guide search are utilized within the IMSBS (as the candidate for $h$ and $h'$). 
     \begin{itemize}
