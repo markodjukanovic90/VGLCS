@@ -151,7 +151,7 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
      
      The (basic) root state is defined as $
      r = ((1,\ldots,1),\, 0),$ 
-     corresponding to the empty subsequence. Goal states are feasible states that cannot be further expanded. The search space rooted at $r$ is denoted by $\mathrm{Space}(r)$, consisting of all nodes (and corresponding transitions) that can be reached via root node $r$.  As will be discussed in the following section, the structure of this space heavily depends on the choice of the root state from which the search is initiated. As, an example, we illustrated  the state space depicted in Fig.~\ref{fig:vgcs-grafstanja}. 
+     corresponding to the empty subsequence. Goal states are feasible states that cannot be further expanded. The search space rooted at $r$ is denoted by $\mathrm{Space}(r)$, consisting of all nodes (and corresponding transitions) that can be reached via root node $r$.  As will be discussed in the following section, the structure of this space heavily depends on the choice of the root state from which the search is initiated. As an example, we illustrate  the state space of an instance,  depicted in Fig.~\ref{fig:vgcs-grafstanja}. 
      
      
 % U nekom delu LaTeX dokumenta:
@@ -210,7 +210,7 @@ This structural characteristic of the VGLCSP motivates the proposed methodology 
 	
 	\section{Iterative Multi-source Beam Search Framework}\label{sec: imsbs}
 	
-\textit{Beam search} (BS) is a well-established tree-search metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each level, and by a heuristic function $h$, which guides the selection of the most promising candidates for further expansion. The BS algorithm which starts with a set of root nodes $R$ as its initial beam,  is pseudo-coded in~Algorithm~\ref{alg:bs}. 
+\textit{Beam search} (BS) is a well-established tree-search metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each level, and by a heuristic function $h$, which guides the selection of the most promising candidates for further expansion. The BS algorithm which starts with a set of root nodes $R$ as its initial beam,  is pseudo-coded in~Algorithm~\ref{alg:bs} and the procedure labelled \textsc{RootedBeamSearch}.  
 
 \begin{algorithm}
 	\caption{Rooted Beam Search}
