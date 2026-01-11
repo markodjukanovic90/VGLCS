@@ -260,17 +260,18 @@ Within the \textit{Iterative Multi-Source Beam Search} (IMSBS) framework, standa
 The beam search itself employs several heuristic components to intensify the search toward high-quality feasible solutions. These heuristics include estimates based on letter frequencies, minimal residual substring lengths, and probability-weighted bounds, which are described in detail in the subsequent sections. \\
 
 
-The overall procedure is summarized in Algorithm~\ref{alg:imbs}. Initially, the pool of root nodes is initialized with $\mathcal{R}=\{ ((1,\ldots,1), 0)\}$, corresponding to the empty partial solution, the current best solution is set to $s_{\mathrm{best}} = \varepsilon$. The algorithm iterates until either  $\mathcal{R}$ becomes empty, a predefined maximum number of beam search calls is reached, or allowed time limit has exceeded.
+The overall procedure is summarized in Algorithm~\ref{alg:imbs}. Initially, the pool of root nodes is set to $\mathcal{R}=\{r = ((1,\ldots,1), 0)\}$, corresponding to the empty partial solution, while the current best solution to $s_{\mathrm{best}} = \varepsilon$. The algorithm iterates until either  $\mathcal{R}$ becomes empty, a predefined maximum number of beam search calls is reached, or allowed time limit has exceeded.
 
-At each iteration, a fixed number of the most promising root nodes from $\mathcal{R}$--controlled by the parameter  \emph{sources\_from\_R} and ranked according to a heuristic evaluation $h'$--are taken,  extracted and stored in a temporary beam $\mathcal{L}$. These nodes are further refined by executing one effective backward beam search procedure per each node $v \in \mathcal{L}$ which serves as the root node of the search ($BS^{\uparrow}(v)$). The procedure works similarly as the baseline BS by expanding nodes according to the gap constraints. In details, a letter $a \in \Sigma$ is a feasible extension of partial solution associated with node $v =(p^v, l^v)$ iff it appears in all $s_i[1, p^v_i], i=1, \ldots, m$ and for the largest indices $p^w_i < p^u_i$  such that $s_i[p^w_i]=a$, it holds $ p^v_i - p^w_i  \leq G_i[p^v_i] + 1 $, $i=1, \ldots, m$. The child node is given by $w = (p^w - \textbf{1}, l^u +1 )$. The procedure has repeated until beam is empty returning the longest found solution $s^{bwrd}$ from $v$. Note that, in this way, the reverse string of  $s_{bwrd}$  is a feasible VGLCS solution. This partial solution is associated to the refined node $ v \in \mathcal{L}$, which is updated to $v=(p^v, |(s_{bwrd})^{rev}|)$, passed to the forward beam search procedure. 
+At each iteration, a fixed number of the most promising root nodes from $\mathcal{R}$--controlled by the parameter  \emph{sources\_from\_R} and ranked according to heuristic $h'$--are taken,  extracted and stored in a temporary beam $\mathcal{L}$. These nodes are further refined, executing one effective backward beam search procedure for each node $w \in \mathcal{L}$ as its root node. The procedure works similarly as the baseline BS by expanding nodes with accordance to the gap constraints but in the reversed manner, from the right hand side of each sequence, moving the search towards their leading positions. In essence, for each $w \in \mathcal{L}$, the same \textsc{RootedBeamSearch} is executed on the reversed input sequences $S^{rev}$ and the reversed gap constraints $(G_i^{rev})_{i=1}^m$ with an initial beam consisting of the node $((|s_i|-p^w -1)_{i=1}^m, 0)$. 
  
- After the refinement of nodes from $\mathcal{L}$, this set enters in as the initial beam, initiating execution of the beam search with the beam width $\beta$ and the heuristic guidance ($l^v + h(v)$, for each node $v$). During the beam search phase, all completed (i.e., non-expandable) nodes are processed as follows. If a completed node corresponds to a solution that improves upon the current best, it becomes a new incumbent solution. Each completed node is then independently expanded in an LCS-like manner, ignoring the gap constraints, generating a set of candidate root nodes. Generated candidate nodes %$w$ with position vector $\mathbf{p}^w$, if
-%\[
-%|s_i| - p^w_i + 1 \leq |s_{\mathrm{best}}|
-%\quad \text{holds for at least one } i \in [m],
-%\]
-%the node is discarded as it cannot lead to an improvement over the current best solution.
- $r^w = (\mathbf{p}^w, 0)$ are inserted into the pool $\mathcal{R}$, provided that it has not already been part during the previous iterations.  Once the beam search procedure has terminated, a new \textsc{Imsbs} iteration is initiated with a freshly selected set of root nodes from $\mathcal{R}$, until one of the termination conditions is met. The pool $\mathcal{R}$ may be maintained as a priority queue implemented via a binary heap, to ensure efficient extraction of the most promising candidates for root nodes.
+ 
+%In details, a letter $a \in \Sigma$ is a feasible extension of partial solution associated with node $v =(p^v, l^v)$ iff it appears in all $s_i[1, p^v_i], i=1, \ldots, m$ and for the largest indices $p^w_i <  p^u_i$  such that $s_i[p^w_i]=a$, it holds $ p^v_i - p^w_i  \leq G_i[p^v_i] + 1 $, for each $i=1, \ldots, m$. The child node is given by $w = (p^w - \textbf{1}, l^u +1 )$.
+
+ The procedure has completed returning the  solution $s^w_{bwrd}$. Note that, in this way, the reverse string of $s_{bwrd}$  is a feasible VGLCS solution. This partial solution is further assigned to the refined node $ w \in \mathcal{L}$, which is updated to $w=(p^w, |(s^w_{bwrd})^{rev}|)$, and passed to the forward beam search procedure. 
+ 
+ After the refinement of each $w \in \mathcal{L}$, this set enters in as the initial beam, initiating execution of \textsc{RootedBeamSearch}  with the beam width $\beta$ and the heuristic guidance  $h(v)$.  During this phase, all completed (i.e., non-expandable) nodes are collected in a list $V_{complete}$ which is then returned along with the found solution $s_{b}$. Further,  
+ if a complete node from $V_{complete}$ corresponds to a solution that improves upon the current best, it becomes a new incumbent solution. Each such node is then independently expanded in an LCS-like manner, ignoring all gap constraints, in that way generating a set of candidate root nodes. Generated candidate nodes  
+ $r^w = (\mathbf{p}^w, 0)$ are inserted into the pool $\mathcal{R}$, provided that it has not already been part during the previous iterations.  Once the beam search procedure has been terminated, a new \textsc{Imsbs} iteration is initiated with a freshly selected set of root nodes from $\mathcal{R}$, until one of the termination conditions is met. The pool $\mathcal{R}$ may be maintained as a priority queue implemented via a binary heap, to ensure efficient extraction of the most promising candidates for root nodes.
 
     %pseudocode:
     \begin{algorithm}[!ht]
@@ -288,16 +289,16 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     		\State Select $\mathcal{L} \subseteq \mathcal{R}$  ${sources\_from\_R}$  and remove them from $\mathcal{R}$ \Comment{ $\mathcal{R}$ prioritized by   $h'$}
     		%\Comment{$\mathcal{R}$ can be a pr. queue ordered by heuristic $h'$}
     		\ForAll{$w \in \mathcal{L}$}
-    		    \State $s_{fwrd}^w, \_ \gets$ 
+    		    \State $s_{bwrd}^w, \_ \gets$ 
     		    \textsc{RootedBeamSearch}(  
     		    $(\{ (|s_i| - p^w_i-1)_{i=1}^m, 0\}, S^{rev}, G^{rev}, \beta', h')$
     		     \Comment{Refine each $w \in \mathcal{L}$}
-    		    \State  $l^w \gets |s_{bwrd}^w|$  \Comment{Update $l^w$, assign the reverse of $s_{bwrd}^w$ to $w$}
+    		    \State  $l^w \gets |(s_{bwrd}^w)^{rev}|$  \Comment{Update $l^w$, assign the reverse of $s_{bwrd}^w$ to $w$}
     		\EndFor
     		
     		\State \State $s_{b}, V_{complete}
     		\gets$ 
-    		\textsc{RootedBeamSearch}( $\mathcal{L}, S, G, \beta, h)$ \Comment{Prioritized acc. to  $l^v+h(v)$}
+    		\textsc{RootedBeamSearch}( $\mathcal{L}, S, G, \beta, h)$ 
     		\If{$|s_b| > s_{best}$}
     		    \State $s_{best} \gets s_b$
     		\EndIf
@@ -331,13 +332,13 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     \begin{itemize}
     	\item  \textit{``Look-ahead'' for the remaining length:}
     	\begin{equation}
-    		\textrm{UB}_1(\mathbf{v}) = \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)
+    		\textrm{UB}_1(\mathbf{v}) = l^v + \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)
     	\end{equation}
     	This is an estimate of the potential extension of the sequence up to the end of the shortest remaining sequence.
     	
     	\item  \textit{Character Frequency Alignment:}
     \begin{equation}
-    	\textrm{UB}_2(\mathbf{v}) =  \sum_{\sigma \in \Sigma} 
+    	\textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
     	\min\left(  |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)
     \end{equation}
     In essence, this heuristic counts the maximum number of characters that can still match in the (optimal) solution based on the frequency of each character. This score can be computed efficiently in \(O(m)\) time using preprocessing (i.e., constructing suitable data structures), see the details in~\cite{DJUKANOVIC2020106499}. 
