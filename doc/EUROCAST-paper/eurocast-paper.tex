@@ -545,20 +545,20 @@ The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the 
   \begin{figure}[htbp]
   	\centering
   	\begin{minipage}{0.48\textwidth}
-  		\includegraphics[width=\linewidth]{figures/bs_imsbs_vs_dp_quality_distribution.png} 
-  		\caption*{(a) Distribution of solution quality for \textsc{Bs} vs.\ \textsc{Imsbs} with respect to the optimal solutions.} 
+  		\includegraphics[width=\linewidth]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
+  		\caption*{(a) Relative solution quality percentage distribution for each heuristic approach with respect to the optimal solutions.} 
   	\end{minipage}
   	\hfill
   	\begin{minipage}{0.48\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth]{figures/heuristic_vs_DP_optimal.pdf}
-  		\caption*{(b) Relative solution quality of \textsc{Bs} and \textsc{Imsbs} compared to the optimal solutions.}
+  		\includegraphics[width=\linewidth]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
+  		\caption*{(b) Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
   	\end{minipage}
   	\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
   	\label{fig:optimal-vs-heuristic}
   \end{figure}
 
-  Concerning efficiency of \textsc{Bs} and \textsc{Imsbs} on instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution in 63 out of 80 instances. These numbers are significantly lower in the case of  baseline \textsc{Bs} approach.   While in the case of instances with $|\Sigma|=4$ (and $m=2$), difference in the solution qualities between these two approaches is slightly in favor of \textsc{Imsbs}, in the case of instance with  small-sized alphabet the  \textsc{Imsbs} approach performs clearly better than the \textsc{Bs} approach.   
+  Concerning efficiency of \textsc{Bs}, \textsc{Imsbs-Greedy}, and \textsc{Imsbs} on the instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution in 63 out of 80 instances. These numbers are significantly lower in the case of other two heuristic approaches.   While in the case of instances with $|\Sigma|=4$ (and $m=2$), difference in the solution qualities between these two approaches is slightly in favor of \textsc{Imsbs}, in the case of instance with  small-sized alphabet ($|\Sigma|=2$) the  \textsc{Imsbs} approach clearly outperforms the other two approaches. Obviously, for the group of instances with $n=500$ and $|\Sigma|=2$ there is a room for further improvement. This is due to the fact that the LCS heuristics perform weakly on the instances with smaller alphabet size and larger sequence length~\cite{DJUKANOVIC2020106499} thus one has to look for other alternatives, as discussed in the future work section.
   %Shortly, there remains room for improvement in designing a more robust guiding function especially for small alphabet size, as discussed in the future work section.
   
     
