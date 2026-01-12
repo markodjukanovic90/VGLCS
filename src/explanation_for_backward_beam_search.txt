@@ -1,0 +1,16 @@
+OK, based on this, I need also a beam search backward procedure. It starts with a Tuple (positions vector) p and try to expand this node in a backward manner, going from back to front of positions of the input sequences S ={s_1, ... , s_m}. This means, each node in this procedure is expanded in a way that first all letters that appear in each s_i[:p_i] are detected. This can be done by using proper datastructure Prev: def build_prev_table(sequences: List[str], Sigma: List[str]) -> List[Dict[str, List[int]]]:
+    """
+    Prev[i][a][j] = max p < j s.t. sequences[i][p] == a, else -1.
+    """
+    Prev: List[Dict[str, List[int]]] = []
+    for s in sequences:
+        n = len(s)
+        prev_i = {a: [-1] * (n + 1) for a in Sigma}
+        last = {a: -1 for a in Sigma}
+        for j in range(n + 1):
+            for a in Sigma:
+                prev_i[a][j] = last[a]
+            if j < n:
+                last[s[j]] = j
+        Prev.append(prev_i)
+    return Prev  -- Further, only those letters a whose positions of next appearances (Prev[i][pi][a]) are within p_i-G_i[p_i]+1 steps one from each other are saved for proper extensions. If letter a is a proper transitions, p^v = p^v_i= Prev[i][pi][a] - 1 is a vector of positions of child node p^v. Update node attributes of p^v accordingly (len etc.) This means also update the longest so-far found path from p along the way. The beam runs until it is empty. returning the longest path (positions) with the solution from p. 
