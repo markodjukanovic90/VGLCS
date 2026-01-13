@@ -14,7 +14,13 @@ public:
 
     // Gap nizovi
     std::vector<std::vector<int>> gaps;
-
+    
+    // Prev
+    std::vector<std::vector<<std::vector, int>>> Prev;
+    
+    // Succ: 
+    std::vector<std::vector<<std::vector, int>>> Succ;
+    
     // Abeceda Σ (jedinstveni simboli)
     std::vector<char> Sigma;
     
@@ -50,7 +56,12 @@ public:
     void buildAlphabet();
     void buildSuffixCounts();
     void buildCharToInt();
-    void buildPrevTable();  
+    // neede for backward BS
+    void buildPrevTable();
+    // needed for forwards BS 
+    void buildSuccTable();
+    //probability-based heuristic    
+    void buildPTable(int max_n);
     int numSequences() const { return sequences.size(); }
 };
 

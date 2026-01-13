@@ -106,4 +106,74 @@ void Instance::buildPrevTable() {
     }
 }
 
+void Instance::buildSuccTable() {
+    int S = sequences.size();
+    int K = Sigma.size();
+
+    Succ.clear();
+    Succ.resize(S);
+
+    for (int i = 0; i < S; ++i) {
+        const std::string& s = sequences[i];
+        const std::vector<int>& g = gaps[i];
+        int n = s.size();
+
+        // Succ[i][c][j]
+        Succ[i].assign(K, std::vector<int>(n + 1, -1));
+
+        // For each character in Sigma
+        for (int c = 0; c < K; ++c) {
+            char a = Sigma[c];
+
+            // Collect all positions where s[pos] == a
+            std::vector<int> positions;
+            for (int pos = 0; pos < n; ++pos) {
+                if (s[pos] == a)
+                    positions.push_back(pos);
+            }
+
+            // For each j, find smallest feasible x
+            for (int j = 0; j <= n; ++j) {
+                int best = -1;
+
+                for (int x : positions) {
+                    if (x < j)
+                        continue;
+
+                    // gap feasibility check
+                    if (x - j <= g[x] + 1) {
+                        best = x;
+                        break;
+                    }
+                }
+
+                Succ[i][c][j] = best;
+            }
+        }
+    }
+}
+
+
+void Instance::buildPTable(int max_n) {
+    int sigma = Sigma.size();
+
+    if (sigma <= 0)
+        throw std::runtime_error("Alphabet must be built before P-table");
+
+    // allocate P[max_n+1][max_n+1]
+    P.assign(max_n + 1, std::vector<double>(max_n + 1, 0.0));
+
+    // P[i][0] = 1
+    for (int i = 0; i <= max_n; ++i)
+        P[i][0] = 1.0;
+
+    // P[0][j>0] remains 0
+
+    for (int n = 1; n <= max_n; ++n) {
+        for (int k = 1; k <= max_n; ++k) {
+            P[n][k] =
+                (P[n - 1][k - 1] + (sigma - 1) * P[n - 1][k]) / sigma;
+        }
+    }
+}
 
