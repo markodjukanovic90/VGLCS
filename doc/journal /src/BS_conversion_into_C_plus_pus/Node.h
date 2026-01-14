@@ -34,61 +34,69 @@ public:
     }
 
     // ============================================================
-    // Generisanje nasljednika (ekvivalent generate_successors)
+    // Generate child nodes (ekvivalent generate_successors)
     // ============================================================
     static std::vector<Node*> generateSuccessors(
         Node* node,
-        const std::vector<std::string>& sequences,
-        const std::vector<std::vector<int>>& gaps
+        Instance* inst
     ) {
+        const std::vector<std::string>& sequences = inst->sequences;
+        const std::vector<std::vector<int>>& gaps = inst->gaps;
         const int m = sequences.size();
 
         // per_seq_maps[i] : map<char, index>
         std::vector<std::unordered_map<char, int>> perSeqMaps(m);
 
         for (int i = 0; i < m; ++i) {
-            perSeqMaps[i] = firstValidIndices(
-                sequences[i],
-                node->pos[i] + 1,
-                gaps[i],
-                node->pos[i]
-            );
-        }
+            std::unordered_map<char, int> map;
+            for(int j = 0; j < inst->Sigma.size(); ++j) {
+                char ch = inst->Sigma[j];
+                map[ch] = inst->Succ[i][ch][node->pos[i] + 1];
+            }   
+            perSeqMaps[i] = map;            
 
+            //firstValidIndices(
+            //    sequences[i],
+            //    node->pos[i] + 1,
+            //    gaps[i],
+            //    node->pos[i]
+            //
+        }
+        
         // --------------------------------------------------------
         // Presjek karaktera koje sve sekvence mogu mečovati
         // --------------------------------------------------------
         std::set<char> commonChars;
         bool first = true;
-
-        for (const auto& mp : perSeqMaps) {
-            std::set<char> chars;
-            for (const auto& kv : mp) chars.insert(kv.first);
-
-            if (first) {
-                commonChars = chars;
-                first = false;
-            } else {
-                std::set<char> tmp;
-                std::set_intersection(
-                    commonChars.begin(), commonChars.end(),
-                    chars.begin(), chars.end(),
-                    std::inserter(tmp, tmp.begin())
-                );
-                commonChars.swap(tmp);
-            }
+        
+        for(int j = 0; j < inst->Sigma.size(); ++j) {
+                char ch = inst->Sigma[j];
+                // pitaj da li se ch nalazi u svim mapama (index i odozgo) i da je različit od -1
+                bool found_in_all = true;
+                for (int i = 0; i < m; ++i) {
+                    if (perSeqMaps[i].find(ch) == perSeqMaps[i].end() ||
+                        perSeqMaps[i][ch] == -1) {
+                        found_in_all = false;
+                        break;
+                    }
+                }
+                if (found_in_all) {
+                    commonChars.insert(ch);
+                }
         }
+        
 
-        if (commonChars.empty())
+        if (commonChars.empty()) // this is the complete node 
             return {};
 
         // --------------------------------------------------------
-        // Uklanjanje dominirajućih simbola
+        // Removal of dominated characters from @commonChars
         // --------------------------------------------------------
+
         std::set<char> dominated;
 
         for (char c : commonChars) {
-            for (char o : commonChars) {
+            for (char o : commonChars) { //run through the pairs of different characters (c, o)
                 if (c == o) continue;
 
                 bool dominates = true;
@@ -96,7 +104,7 @@ public:
                     int dc = perSeqMaps[i].at(c);
                     int do_ = perSeqMaps[i].at(o);
                     if (!(dc <= do_ &&
-                          gaps[i][do_] + dc + 1 >= do_)) {
+                          gaps[i][do_] + dc + 1 >= do_)) {  // breaking symmetric condition
                         dominates = false;
                         break;
                     }
@@ -106,11 +114,11 @@ public:
             }
         }
 
-        for (char d : dominated)
+        for (char d : dominated) // remove dominated chars from commonChars
             commonChars.erase(d);
 
         // --------------------------------------------------------
-        // Kreiranje novih Node-ova
+        // Kreate new (child) nodes 
         // --------------------------------------------------------
         std::vector<Node*> successors;
 
@@ -118,7 +126,7 @@ public:
             std::vector<int> idxVector(m);
 
             for (int i = 0; i < m; ++i)
-                idxVector[i] = perSeqMaps[i].at(ch);
+                idxVector[i] = perSeqMaps[i].at(ch); // new vector of positions 
 
             Node* child = new Node(
                 idxVector,
@@ -132,23 +140,19 @@ public:
         return successors;
     }
     
-    // =====================GENERATE NODES IN BACKWARD MANNER ======================================= 
-    // ============================================================
 // Generate successors in BACKWARD manner
 // (equivalent to generate_backward_successors in Python)
 // ============================================================
+
 static std::vector<Node*> generateBackwardSuccessors(
-    Node* node, Instace* inst,
+    Node* node, Instance* inst,
 ) {
     const std::vector<std::string>& sequences = inst->sequences;
     const std::vector<std::vector<int>>& gaps = inst->gaps;
-    const std::vector<std::unordered_map<char, std::vector<int>>>& Prev =   inst->Prev;
+    const std::vector<std::unordered_map<char, std::vector<int>>>& Prev   =   inst->Prev;
     const std::set<char>& Sigma = inst->Sigma;
 
     const int m = sequences.size();
-    // p-vector (copy current positions)
-    std::vector<int> p = node->pos;
-
     std::vector<Node*> successors;
 
     for (char a : Sigma) {
@@ -156,7 +160,7 @@ static std::vector<Node*> generateBackwardSuccessors(
         bool feasible = true;
 
         for (int i = 0; i < m; ++i) {
-            int pi = p[i];
+            int pi = node->pos[i];
 
             if (pi < 0) {
                 feasible = false;
@@ -165,11 +169,12 @@ static std::vector<Node*> generateBackwardSuccessors(
 
             // Prev[i][a][pi]
             auto it = Prev[i].find(a);
-            if (it == Prev[i].end()) {
+            // if not found or index is -1, not feasible   
+            if (it == Prev[i].end() || *it->second == -1) { 
                 feasible = false;
                 break;
             }
-
+            //otherwise retrive the prev index
             const std::vector<int>& prev_vec = it->second;
 
             if (pi >= static_cast<int>(prev_vec.size())) {
@@ -184,7 +189,7 @@ static std::vector<Node*> generateBackwardSuccessors(
                 break;
             }
 
-            // gap constraint
+            // gap constraint fulfillment 
             if (pi - pa - 1 > gaps[i][pi]) {
                 feasible = false;
                 break;

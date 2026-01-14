@@ -136,7 +136,7 @@ void Instance::buildSuccTable() {
 
             // Collect all positions where s[pos] == a
             std::vector<int> positions;
-            for (int pos = 0; pos < n; ++pos) {
+            for (int pos = 0; pos < n; ++pos) { // n is the size of s_i
                 if (s[pos] == a)
                     positions.push_back(pos);
             }
