@@ -180,7 +180,7 @@ double probability_based_heuristic(
         if (p_i < 0 || p_i >= static_cast<int>(P[i].size())) {
             score *= 0.0;
         } else {
-            score *= P[i][ sequences[i].size() -  p_i ];
+            score *= P[i][ sequences[i].size() -  p_i + 1 ]; // CHECK +1
         }
     }    
 
@@ -189,7 +189,7 @@ double probability_based_heuristic(
 
 // ====================== First valid indices helper ======================
 inline std::unordered_map<char, int> first_valid_indices(
-    
+      
     const std::string& seq,
     int start_idx,
     const std::vector<int>& gap_arr,
@@ -208,4 +208,4 @@ inline std::unordered_map<char, int> first_valid_indices(
     return mapping;
 }
 
- 
+     

@@ -59,11 +59,12 @@ void Instance::buildCharToInt() {
 }
 
 void Instance::buildSuffixCounts() {
+
     C_suffix.clear();
     C_suffix.reserve(sequences.size());
 
     for (const std::string& s : sequences) {
-        int n = s.size();
+        int n = s.size(); // |s_i|
 
         std::unordered_map<char, std::vector<int>> Ci;
 
@@ -78,7 +79,7 @@ void Instance::buildSuffixCounts() {
             for (char a : Sigma)
                 Ci[a][j] = Ci[a][j + 1];
 
-            Ci[ch][j] += 1;
+            Ci[ch][j] += 1; // when C_suffix[i][a][p^v_i] = number of occurences of letter a in s_i[p^v_i :]
         }
 
         C_suffix.push_back(std::move(Ci));

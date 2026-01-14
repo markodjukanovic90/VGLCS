@@ -49,8 +49,7 @@ public:
 
         for (int i = 0; i < m; ++i) {
             std::unordered_map<char, int> map;
-            for(int j = 0; j < inst->Sigma.size(); ++j) {
-                char ch = inst->Sigma[j];
+            for(char ch: inst->Sigma) {
                 map[ch] = inst->Succ[i][ch][node->pos[i] + 1];
             }   
             perSeqMaps[i] = map;            
@@ -69,11 +68,10 @@ public:
         std::set<char> commonChars;
         bool first = true;
         
-        for(int j = 0; j < inst->Sigma.size(); ++j) {
-                char ch = inst->Sigma[j];
+        for(char ch: inst->Sigma) {
                 // pitaj da li se ch nalazi u svim mapama (index i odozgo) i da je različit od -1
                 bool found_in_all = true;
-                for (int i = 0; i < m; ++i) {
+                for (int i = 0; i < m; ++i) {  
                     if (perSeqMaps[i].find(ch) == perSeqMaps[i].end() ||
                         perSeqMaps[i][ch] == -1) {
                         found_in_all = false;
@@ -130,7 +128,7 @@ public:
 
             Node* child = new Node(
                 idxVector,
-                node->seq + ch,
+                node->seq + ch,// to optimize
                 node
             );
 
@@ -156,6 +154,7 @@ static std::vector<Node*> generateBackwardSuccessors(
     std::vector<Node*> successors;
 
     for (char a : Sigma) {
+    
         std::vector<int> prev_positions;
         bool feasible = true;
 
@@ -224,7 +223,7 @@ static std::vector<Node*> generateBackwardSuccessors(
             break;
 
         case HeuristicType::H2:
-            score = remaining_lb(this->pos, inst->sequences); // TODO  
+            score = remaining_lb(this->pos, inst->sequences); 
             break;
 
         case HeuristicType::H5:
@@ -234,20 +233,20 @@ static std::vector<Node*> generateBackwardSuccessors(
                                    inst->sequences);     
             else
                 score = h5_backward(this, inst->C_suffix,
-                                   inst->Sigma); // TODO 
+                                   inst->Sigma);  
             break; 
               
 
 
         case HeuristicType::H8:  
-            score =  probability_based_heuristic(this->pos, inst->P, inst->sequences, k); // TODO
+            score =  probability_based_heuristic(this->pos, inst->P, inst->sequences, k);  
             break;
     }
 }
 
 private:
     // ============================================================
-    // Helper: _first_valid_indices
+    // Helper: _first_valid_indices (maybe can be removed)
     // ============================================================
     static std::unordered_map<char, int> firstValidIndices(
         const std::string& seq,
