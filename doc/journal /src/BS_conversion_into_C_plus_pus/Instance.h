@@ -35,6 +35,8 @@ public:
 
     // Gap nizovi (isti indeks kao sequences)
     std::vector<std::vector<int>> gaps;
+    // P structure 
+    std::vector<std::vector<double>> P;
 
     // Konstruktor
     Instance() = default;

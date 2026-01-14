@@ -9,6 +9,52 @@
 #include <climits>
 #include <iostream>
 #include "Node.h"
+#include <stdexcept>
+
+// ====================== Parameters and Heuristic Types ======================
+
+enum class HeuristicType {
+    H1,
+    H2,
+    H5,
+    H8
+};
+
+struct Parameters {
+    
+    int beam_width = 100;
+    HeuristicType heuristic = HeuristicType::H1;
+    int max_iters = 10000;
+    int time_limit_sec = 60;
+    HeuristicType heuristic_prime = HeuristicType::H1;
+    int beam_width_prime = 10;
+
+};
+
+// Global params variable
+extern Parameters params;
+
+HeuristicType parseHeuristic(const std::string& h) {
+
+    if (h == "h1") return HeuristicType::H1;
+    if (h == "h2") return HeuristicType::H2;
+    if (h == "h5") return HeuristicType::H5;
+    if (h == "h8") return HeuristicType::H8;
+    throw std::invalid_argument("Unknown heuristic: " + h);
+}
+
+std::string heuristicToString(HeuristicType h) {
+    switch (h) {
+        
+        case HeuristicType::H1: return "h1";
+        case HeuristicType::H2: return "h2";
+        case HeuristicType::H5: return "h5";
+        case HeuristicType::H8: return "h8";
+    }
+    return "unknown";
+}
+
+
 
 // ====================== Check feasibility ======================
 inline bool check_feasibility_n(
@@ -38,28 +84,34 @@ inline bool check_feasibility_n(
     }
     return true;
 }
-
+  
 // ====================== Remaining lower bound ======================
-inline int remaining_lb(const Node& node, const std::vector<std::string>& sequences) {
+
+inline int remaining_lb(const std::vector<int>& pos,
+    const std::vector<std::string>& sequences) {
+
     int min_rem = INT_MAX;
     for (size_t i = 0; i < sequences.size(); ++i) {
-        int rem = static_cast<int>(sequences[i].size()) - node.pos[i] - 1;
-        if (rem < min_rem) min_rem = rem;
+        int rem = static_cast<int>(sequences[i].size()) - pos[i] - 1;
+        if (rem < min_rem) 
+            min_rem = rem;
     }
     return min_rem;
 }
-
-// ====================== H5 upper bound ======================
+  
+// ======================   H5 upper bound (UB2)  ======================
 inline int h5_upper_bound(
-    Node* node,
+    const std::vector<int>& pos,
     const std::vector<std::unordered_map<char, std::vector<int>>>& C_h5,
     const std::vector<char>& Sigma_h5,
-    const std::vector<int>& seq_lens
+    const std::vector<std::string>& sequences
 ) {
     int m = static_cast<int>(C_h5.size());
+
     std::vector<int> j_starts(m);
+    
     for (int i = 0; i < m; ++i) {
-        j_starts[i] = std::min(node->pos[i] + 1, seq_lens[i]);
+        j_starts[i] = std::min(pos[i] + 1, static_cast<int>(sequences[i].size())); 
     }
 
     int ub = 0;
@@ -67,6 +119,7 @@ inline int h5_upper_bound(
         int mn = INT_MAX;
         for (int i = 0; i < m; ++i) {
             int cnt = C_h5[i].at(a)[j_starts[i]];
+
             if (cnt < mn) mn = cnt;
         }
         ub += mn;
@@ -75,12 +128,12 @@ inline int h5_upper_bound(
 }
 // ================================== backward BS ==========================================
 
-int h5_backward(
-    const Node* node,
+int h5_backward(  
+
+    const std::vector<int>& pos,
     const std::vector<std::unordered_map<char, std::vector<int>>>& C_h5,
-    const std::vector<char>& Sigma_h5,
-    const std::vector<int>& seq_lens   // not strictly needed, kept for parity
-) {
+    const std::vector<char>& Sigma_h5 
+ ) {
     int m = node.pos.size();
     int h = 0;
 
@@ -88,7 +141,7 @@ int h5_backward(
         int min_count = std::numeric_limits<int>::max();
 
         for (int i = 0; i < m; ++i) {
-            int p_i = node->pos[i];
+            int p_i =  pos[i];
 
             if (p_i < 0) {
                 min_count = 0;
@@ -110,6 +163,28 @@ int h5_backward(
     }
 
     return h;
+}
+
+double probability_based_heuristic(
+    const std::vector<int>& pos,
+    const std::vector<std::vector<double>>& P,
+    const std::vector<std::string> sequences, 
+    int k
+) {
+    double score = 1.0;
+    int m = static_cast<int>(pos.size());
+
+    for (int i = 0; i < m; ++i) {
+        int p_i = pos[i];
+
+        if (p_i < 0 || p_i >= static_cast<int>(P[i].size())) {
+            score *= 0.0;
+        } else {
+            score *= P[i][ sequences[i].size() -  p_i ];
+        }
+    }    
+
+    return score;
 }
 
 // ====================== First valid indices helper ======================

@@ -27,8 +27,17 @@ Instance Instance::loadFromFile(const std::string& filepath) {
         inst.gaps.push_back(g);
     }
 
-    inst.buildAlphabet();
+    inst.buildAlphabet(); 
+    inst.buildCharToInt();
     inst.buildSuffixCounts();
+    inst.buildPrevTable();
+    inst.buildSuccTable();
+    //P-table if necessary for some algorithms 
+    int max_n = 0;
+    for (const auto& s : inst.sequences)
+        if (s.size() > max_n)
+            max_n = s.size();
+    inst.buildPTable(max_n);
 
     return inst;
 }
@@ -163,7 +172,7 @@ void Instance::buildPTable(int max_n) {
     // allocate P[max_n+1][max_n+1]
     P.assign(max_n + 1, std::vector<double>(max_n + 1, 0.0));
 
-    // P[i][0] = 1
+    // P[i][0] = 1  
     for (int i = 0; i <= max_n; ++i)
         P[i][0] = 1.0;
 
