@@ -78,8 +78,12 @@ int main(int argc, char* argv[]) {
 
     // ---------------- Load instance ----------------
     Instance inst = Instance::loadFromFile(input_path);
+    
+    std::cout << "=== Loaded instance ===\n";
+    inst.print(std::cout);
 
     // ---------------- Run Beam Search ----------------
+    std::cout << "Now run the BS (forward search) " << std::endl;
     BeamSearch::Result res = BeamSearch::run_forward_BS(
         &inst,
         true,

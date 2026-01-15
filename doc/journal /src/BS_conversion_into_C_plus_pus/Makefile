@@ -8,6 +8,7 @@ TARGET := beamsearch
 # -------- Sources --------
 SRCS := \
 	main.cpp \
+	utils.cpp \
 	Instance.cpp
 
 # (If you later add BeamSearch.cpp, Utils.cpp, etc., just list them here)

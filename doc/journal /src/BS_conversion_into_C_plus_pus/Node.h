@@ -6,6 +6,9 @@
 #include <unordered_map>
 #include <set>
 #include <algorithm>
+#include <iostream>
+#include <ostream>
+
 #include "Instance.h"
 #include "utils.h"
 
@@ -145,14 +148,15 @@ static std::vector<Node*> generateBackwardSuccessors(
     Node* node, Instance* inst) {
     const std::vector<std::string>& sequences = inst->sequences;
     const std::vector<std::vector<int>>& gaps = inst->gaps;
-    const std::vector<std::unordered_map<char, std::vector<int>>>& Prev   =   inst->Prev;
-    const std::set<char>& Sigma = inst->Sigma;
+    const std::vector<std::vector<std::vector<int>>> Prev = inst->Prev; //std::vector<std::unordered_map<char, std::vector<int>>>& Prev = inst->Prev;
+ 
 
     const int m = sequences.size();
     std::vector<Node*> successors;
 
-    for (char a : Sigma) {
-    
+    for (int ch = 0; ch < (int)inst->Sigma.size(); ++ch) {
+        
+        char a = inst->Sigma[ ch ];
         std::vector<int> prev_positions;
         bool feasible = true;
 
@@ -165,29 +169,24 @@ static std::vector<Node*> generateBackwardSuccessors(
             }
 
             // Prev[i][a][pi]
-            auto it = Prev[i].find(a);
-            // if not found or index is -1, not feasible   
-            if (it == Prev[i].end() || *it->second == -1) { 
-                feasible = false;
-                break;
+            const std::vector<int>& prev_vec =  Prev[i][ ch ];
+            // If some index is -1, not feasible
+            for(int val: prev_vec) 
+            {
+                if (val == -1) { 
+                    feasible = false;
+                    break;
+                }
             }
-            //otherwise retrive the prev index
-            const std::vector<int>& prev_vec = it->second;
-
+            
             if (pi >= static_cast<int>(prev_vec.size())) {
                 feasible = false;
                 break;
             }
-
+            // if everything all right, check the gap constraint fulfillment (4, 5) --> (3, 2)
             int pa = prev_vec[pi];
-
-            if (pa == -1) {
-                feasible = false;
-                break;
-            }
-
-            // gap constraint fulfillment 
             if (pi - pa - 1 > gaps[i][pi]) {
+                
                 feasible = false;
                 break;
             }
@@ -230,8 +229,7 @@ static std::vector<Node*> generateBackwardSuccessors(
                                    inst->Sigma,
                                    inst->sequences);     
             else
-                score = h5_backward(this, inst->C_suffix,
-                                   inst->Sigma);  
+                score = h5_backward(this->pos, inst->C_suffix, inst->Sigma);  
             break; 
               
 
@@ -241,6 +239,18 @@ static std::vector<Node*> generateBackwardSuccessors(
             break;
     }
 }
+
+void print(std::ostream& os = std::cout) const {
+    os << "Node {\n";
+    os << "  seq   = \"" << seq << "\"\n";
+    os << "  len   = " << seq.size() << "\n";
+    os << "  pos   = [ ";
+    for (int p : pos)
+        os << p << " ";
+    os << "]\n";
+    os << "  score = " << score << "\n";
+    os << "}";
+}  
 
 private:
     // ============================================================

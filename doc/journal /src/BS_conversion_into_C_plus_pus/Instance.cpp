@@ -2,60 +2,20 @@
 #include <fstream>
 #include <stdexcept>
 #include <unordered_set>
+#include <sstream>
+#include <set>
+#include <limits>
+#include <ostream>
 
-Instance Instance::loadFromFile(const std::string& filepath) {
-    std::ifstream in(filepath);
-    if (!in)
-        throw std::runtime_error("Cannot open input file");
 
-    Instance inst;
-
-    int N;
-    in >> N;
-    if (N < 2)
-        throw std::runtime_error("N must be >= 2");
-
-    for (int i = 0; i < N; ++i) {
-        std::string seq;
-        in >> seq;
-        inst.sequences.push_back(seq);
-
-        std::vector<int> g(seq.size());
-        for (int j = 0; j < seq.size(); ++j)
-            in >> g[j];
-
-        inst.gaps.push_back(g);
-    }
-
-    inst.buildAlphabet(); 
-    inst.buildCharToInt();
-    inst.buildSuffixCounts();
-    inst.buildPrevTable();
-    inst.buildSuccTable();
-    //P-table if necessary for some algorithms 
-    int max_n = 0;
-    for (const auto& s : inst.sequences)
-        if (s.size() > max_n)
-            max_n = s.size();
-    inst.buildPTable(max_n);
-
-    return inst;
-}
-
-void Instance::buildAlphabet() {
-    std::unordered_set<char> seen;
-    for (const auto& s : sequences)
-        for (char c : s)
-            seen.insert(c);
-
-    Sigma.assign(seen.begin(), seen.end());
-}
 
 void Instance::buildCharToInt() {
+
     charToInt.clear();
     for (int i = 0; i < Sigma.size(); ++i) {
         charToInt[Sigma[i]] = i;
     }
+    
 }
 
 void Instance::buildSuffixCounts() {
@@ -186,4 +146,93 @@ void Instance::buildPTable(int max_n) {
         }
     }
 }
+
+
+Instance Instance::loadFromFile(const std::string& filename) {
+    std::ifstream in(filename);
+    if (!in) {
+        throw std::runtime_error("Cannot open instance file: " + filename);
+    }
+
+    Instance inst;
+
+    // ---- read number of sequences ----
+    int m;
+    in >> m;
+    in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    inst.sequences.resize(m);
+    inst.gaps.resize(m);
+
+    std::set<char> sigma_set;
+
+    for (int i = 0; i < m; ++i) {
+        // ---- read sequence ----
+        std::getline(in, inst.sequences[i]);
+        if (inst.sequences[i].empty()) {
+            throw std::runtime_error("Empty sequence at index " + std::to_string(i));
+        }
+
+        for (char c : inst.sequences[i])
+            sigma_set.insert(c);
+
+        const int n = inst.sequences[i].size();
+        inst.gaps[i].resize(n);
+
+        // ---- read gaps ----
+        for (int j = 0; j < n; ++j) {
+            if (!(in >> inst.gaps[i][j])) {
+                throw std::runtime_error(
+                    "Not enough gap values for sequence " + std::to_string(i)
+                );
+            }
+        }
+
+        in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    
+    inst.buildAlphabet(); 
+    inst.buildCharToInt();
+    inst.buildSuffixCounts();
+    inst.buildPrevTable();
+    inst.buildSuccTable();
+    //P-table if necessary for some algorithms 
+    int max_n = 0;
+    for (const auto& s : inst.sequences)
+        if (s.size() > max_n)
+            max_n = s.size();
+    inst.buildPTable(max_n);
+
+    return inst;
+}
+
+void Instance::buildAlphabet() {
+    std::unordered_set<char> seen;
+    for (const auto& s : sequences)
+        for (char c : s)
+            seen.insert(c);
+
+    Sigma.assign(seen.begin(), seen.end());
+}
+
+void Instance::print(std::ostream& os) {
+
+    const int m = sequences.size();
+    os << m << "\n";
+
+    for (int i = 0; i < m; ++i) {
+        // ---- sequence ----
+        os << sequences[i] << "\n";
+
+        // ---- gaps ----
+        for (size_t j = 0; j < gaps[i].size(); ++j) {
+            os << gaps[i][j];
+            if (j + 1 < gaps[i].size())
+                os << " ";
+        }
+        os << "\n";
+    }
+}
+
 

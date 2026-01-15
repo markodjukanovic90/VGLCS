@@ -37,6 +37,7 @@ public:
         int max_iters = 100000; // should be parametrized 
 
         Node* start_node = new Node(init_pos, "", nullptr);
+        start_node->print();
         beam.push_back(start_node);
 
         std::string best_seq;
@@ -45,7 +46,9 @@ public:
         auto time_start = std::chrono::steady_clock::now();
 
         for (int iter = 0; iter < max_iters && !beam.empty(); ++iter) {
-
+        
+            std::cout <<"#iter: " << iter << std::endl;
+            
             if (std::chrono::duration<double>(
                     std::chrono::steady_clock::now() - time_start
                 ).count() > time_limit_sec)
@@ -54,11 +57,14 @@ public:
             std::vector<Node*> candidates;
 
             for (Node* node : beam) 
-          {
+            {
+                //node->print();
+                
                 auto succs = forward_or_backward
-                    ? Node::generateSuccessors(node, inst)
+                    ? Node::generateSuccessors(node, inst)  //TODO: @generateSuccessors issue 
                     : Node::generateBackwardSuccessors(node, inst);
-
+                
+                std::cout << (succs.size());
                 for (Node* s : succs) {
                     candidates.push_back(s);
                     if (s->seq.size() > best_seq.size()) {

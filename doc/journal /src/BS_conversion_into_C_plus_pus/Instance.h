@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 class Instance {
 
@@ -16,25 +17,20 @@ public:
     std::vector<std::vector<int>> gaps;
     
     // Prev
-    std::vector<std::vector<<std::vector, int>>> Prev;
+    std::vector<std::vector<std::vector<int>>> Prev;
     
     // Succ: 
-    std::vector<std::vector<<std::vector, int>>> Succ;
+    std::vector<std::vector<std::vector<int>>> Succ;
     
     // Abeceda Σ (jedinstveni simboli)
     std::vector<char> Sigma;
     
     // Mapiranje znak → indeks (0..|Σ|-1)
-    std::unordered_map<char, int> charToInt;
-
+    std::unordered_map<char, int> charToInt;  // ch -> num
+  
     // C[i][a][j] = frekvencija 'a' u sequences[i][j:]
     std::vector<std::unordered_map<char, std::vector<int>>> C_suffix;
 
-    // Ulazne sekvence
-    std::vector<std::string> sequences;
-
-    // Gap nizovi (isti indeks kao sequences)
-    std::vector<std::vector<int>> gaps;
     // P structure 
     std::vector<std::vector<double>> P;
 
@@ -64,7 +60,8 @@ public:
     void buildSuccTable();
     //probability-based heuristic    
     void buildPTable(int max_n);
-    int numSequences() const { return sequences.size(); }
+    
+    void print(std::ostream& os);   
 };
 
 #endif // INSTANCE_H
