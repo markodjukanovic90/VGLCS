@@ -25,8 +25,7 @@ public:
         Instance* inst,
         bool forward_or_backward,
         int beam_width = 10,
-        HeuristicType heuristic = HeuristicType::H1,
-        int max_iters = 10000,
+        HeuristicType heuristic = HeuristicType::H1,  //  
         int time_limit_sec = 1800
     ) {
         const auto& sequences = inst->sequences;
@@ -35,6 +34,7 @@ public:
 
         std::vector<Node*> beam;
         std::vector<int> init_pos(m, -1);
+        int max_iters = 100000; // should be parametrized 
 
         Node* start_node = new Node(init_pos, "", nullptr);
         beam.push_back(start_node);
@@ -53,9 +53,10 @@ public:
 
             std::vector<Node*> candidates;
 
-            for (Node* node : beam) {
+            for (Node* node : beam) 
+          {
                 auto succs = forward_or_backward
-                    ? Node::generateSuccessors(node, sequences, gaps)
+                    ? Node::generateSuccessors(node, inst)
                     : Node::generateBackwardSuccessors(node, inst);
 
                 for (Node* s : succs) {
@@ -65,12 +66,12 @@ public:
                         return_node = s;
                     }
                 }
-            }
+            }  
 
             if (candidates.empty()) break;
 
             for (Node* n : candidates)
-                n->evaluate(nullptr, (int)heuristic, 0, forward_or_backward);
+                n->evaluate(inst, heuristic, 0, forward_or_backward);
 
             std::sort(candidates.begin(), candidates.end(),
                 [](Node* a, Node* b) { return a->score > b->score; });
@@ -83,6 +84,8 @@ public:
 
             beam = candidates;
         }
+        //constructing solution steps
+
 
         std::vector<std::vector<int>> steps;
         if (return_node) {
@@ -94,10 +97,6 @@ public:
         double runtime = std::chrono::duration<double>(
             std::chrono::steady_clock::now() - time_start
         ).count();
-
-        for (Node* n : beam)
-            if (n != return_node)
-                delete n;
 
         return { best_seq, steps, runtime };
     }

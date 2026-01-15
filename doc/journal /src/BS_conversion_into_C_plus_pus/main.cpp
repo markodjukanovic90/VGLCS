@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     std::string input_path;
     std::string output_path; // empty → stdout
 
-    Params params;
+    Parameters params;
     params.beam_width = 20;
     params.heuristic  = HeuristicType::H1;
     params.max_iters  = 5000;
@@ -82,9 +82,9 @@ int main(int argc, char* argv[]) {
     // ---------------- Run Beam Search ----------------
     BeamSearch::Result res = BeamSearch::run_forward_BS(
         &inst,
+        true,
         params.beam_width,
         params.heuristic,
-        params.max_iters,
         time_limit_sec
     );
 

@@ -38,8 +38,7 @@ public:
     // ============================================================
     static std::vector<Node*> generateSuccessors(
         Node* node,
-        Instance* inst
-    ) {
+        Instance* inst) {
         const std::vector<std::string>& sequences = inst->sequences;
         const std::vector<std::vector<int>>& gaps = inst->gaps;
         const int m = sequences.size();
@@ -143,8 +142,7 @@ public:
 // ============================================================
 
 static std::vector<Node*> generateBackwardSuccessors(
-    Node* node, Instance* inst,
-) {
+    Node* node, Instance* inst) {
     const std::vector<std::string>& sequences = inst->sequences;
     const std::vector<std::vector<int>>& gaps = inst->gaps;
     const std::vector<std::unordered_map<char, std::vector<int>>>& Prev   =   inst->Prev;
@@ -214,7 +212,7 @@ static std::vector<Node*> generateBackwardSuccessors(
 }
     // ============================================================
 
-    void evaluate(Instance* inst, int heuristic, int k = 0, bool forward_or_backward = true) { // required to pass for forward and backward BS
+    void evaluate(Instance* inst, HeuristicType heuristic, int k = 0, bool forward_or_backward = true) { // required to pass for forward and backward BS
 
     switch (heuristic) {
 
