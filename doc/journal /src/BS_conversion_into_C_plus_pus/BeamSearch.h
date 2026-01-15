@@ -31,6 +31,7 @@ public:
         const auto& sequences = inst->sequences;
         const auto& gaps = inst->gaps;
         const int m = sequences.size();
+        std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
 
         std::vector<Node*> beam;
         std::vector<int> init_pos(m, -1);
@@ -59,21 +60,26 @@ public:
             for (Node* node : beam) 
             {
                 //node->print();
-                
+                //std::cout <<"expand ... " << std::endl;
                 auto succs = forward_or_backward
                     ? Node::generateSuccessors(node, inst)  //TODO: @generateSuccessors issue 
                     : Node::generateBackwardSuccessors(node, inst);
                 
-                std::cout << (succs.size());
+                std::cout <<"generated ... " << succs.size() <<   std::endl;
+                
+                if (succs.size()==0) break;
+
                 for (Node* s : succs) {
                     candidates.push_back(s);
+                    all_nodes.push_back(s);
                     if (s->seq.size() > best_seq.size()) {
                         best_seq = s->seq;
                         return_node = s;
                     }
                 }
             }  
-
+            
+            std::cout << "\ncandidates: " << (candidates.size());
             if (candidates.empty()) break;
 
             for (Node* n : candidates)
@@ -84,25 +90,29 @@ public:
 
             if ((int)candidates.size() > beam_width)
                 candidates.resize(beam_width);
-
-            for (Node* n : beam)
-                delete n;
-
+                
             beam = candidates;
         }
         //constructing solution steps
+	std::vector<std::vector<int>> steps;
 
+	if (return_node) {
+    		return_node->print();
 
-        std::vector<std::vector<int>> steps;
-        if (return_node) {
-            for (Node* n = return_node; n->parent; n = n->parent)
-                steps.push_back(n->pos);
-            std::reverse(steps.begin(), steps.end());
-        }
+    	for (Node* n = return_node; n->parent; n = n->parent)
+        	steps.push_back(n->pos);
+
+    	std::reverse(steps.begin(), steps.end());
+}
+
 
         double runtime = std::chrono::duration<double>(
             std::chrono::steady_clock::now() - time_start
         ).count();
+        
+        // delete all generated nodes (release the occupied memory)
+        for (Node* n : all_nodes)
+            delete n;
 
         return { best_seq, steps, runtime };
     }

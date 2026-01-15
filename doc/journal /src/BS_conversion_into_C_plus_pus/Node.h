@@ -49,10 +49,18 @@ public:
         // per_seq_maps[i] : map<char, index>
         std::vector<std::unordered_map<char, int>> perSeqMaps(m);
 
+        bool exceeded_seq = false;
         for (int i = 0; i < m; ++i) {
             std::unordered_map<char, int> map;
+            
             for(char ch: inst->Sigma) {
-                map[ch] = inst->Succ[i][ch][node->pos[i] + 1];
+                if(node->pos[i] + 1 >= sequences[i].size())
+                {
+                    exceeded_seq = true;
+                    return {};
+                }
+                
+                map[ch] = inst->Succ[i][inst->charToInt[ch]][node->pos[i] + 1];
             }   
             perSeqMaps[i] = map;            
 
@@ -84,7 +92,9 @@ public:
                     commonChars.insert(ch);
                 }
         }
-        
+        //std::cout <<  "\n Common: ";
+        //for(char c: commonChars)
+        //    std::cout << " " << c << " ";
 
         if (commonChars.empty()) // this is the complete node 
             return {};
@@ -133,7 +143,7 @@ public:
                 node->seq + ch,// to optimize
                 node
             );
-
+            child->print();
             successors.push_back(child);
         }
 
