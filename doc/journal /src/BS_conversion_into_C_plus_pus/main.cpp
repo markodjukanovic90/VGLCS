@@ -1,21 +1,106 @@
 #include "Instance.h"
-#include "Utils.h"
+#include "BeamSearch.h"
+#include "utils.h"
+
 #include <iostream>
+#include <fstream>
+#include <string>
 
 int main(int argc, char* argv[]) {
 
-    // Hand-on setup (or parse with argv)
+    // ---------------- Defaults ----------------
+    std::string input_path;
+    std::string output_path; // empty → stdout
+
+    Params params;
     params.beam_width = 20;
-    params.heuristic = parseHeuristic("h5");
-    params.max_iters = 5000;
+    params.heuristic  = HeuristicType::H1;
+    params.max_iters  = 5000;
+    int time_limit_sec = 1800;
 
-    std::cout << "BS parametri:\n";
-    std::cout << " beam_width = " << params.beam_width << "\n";
-    std::cout << " heuristic  = " << heuristicToString(params.heuristic) << "\n";
-    std::cout << " max_iters  = " << params.max_iters << "\n";
+    // ---------------- Parse CLI ----------------
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
 
-    Instance inst;
-    //inst.runBeamSearch();
+        // input / output
+        if ((arg == "--i" || arg == "-i") && i + 1 < argc) {
+            input_path = argv[++i];
+        }
+        else if ((arg == "--o" || arg == "-o") && i + 1 < argc) {
+            output_path = argv[++i];
+        }
+
+        // beam search parameters
+        else if ((arg == "--beam_width" || arg == "-b") && i + 1 < argc) {
+            params.beam_width = std::stoi(argv[++i]);
+        }
+        else if ((arg == "--heuristic" || arg == "-h") && i + 1 < argc) {
+            params.heuristic = parseHeuristic(argv[++i]);
+        }
+        else if ((arg == "--max_iters" || arg == "-m") && i + 1 < argc) {
+            params.max_iters = std::stoi(argv[++i]);
+        }
+        else if ((arg == "--time_limit" || arg == "-t") && i + 1 < argc) {
+            time_limit_sec = std::stoi(argv[++i]);
+        }
+        else {
+            std::cerr << "Unknown or incomplete argument: " << arg << "\n";
+            return 1;
+        }
+    }
+
+    // ---------------- Validate ----------------
+    if (input_path.empty()) {
+        std::cerr << "Error: input file not specified (--i <file>)\n";
+        return 1;
+    }
+
+    // ---------------- Select output stream ----------------
+    std::ostream* out = &std::cout;
+    std::ofstream fout;
+
+    if (!output_path.empty()) {
+        fout.open(output_path);
+        if (!fout) {
+            std::cerr << "Cannot open output file: " << output_path << "\n";
+            return 1;
+        }
+        out = &fout;
+    }
+
+    // ---------------- Echo parameters ----------------
+    *out << "BS parameters:\n";
+    *out << " input       = " << input_path << "\n";
+    *out << " beam_width  = " << params.beam_width << "\n";
+    *out << " heuristic   = " << heuristicToString(params.heuristic) << "\n";
+    *out << " max_iters   = " << params.max_iters << "\n";
+    *out << " time_limit  = " << time_limit_sec << " s\n\n";
+
+    // ---------------- Load instance ----------------
+    Instance inst = Instance::loadFromFile(input_path);
+
+    // ---------------- Run Beam Search ----------------
+    BeamSearch::Result res = BeamSearch::run_forward_BS(
+        &inst,
+        params.beam_width,
+        params.heuristic,
+        params.max_iters,
+        time_limit_sec
+    );
+
+    // ---------------- Output result ----------------
+    *out << "=== Beam Search Result ===\n";
+    *out << "Best sequence: " << res.best_seq << "\n";
+    *out << "Length       : " << res.best_seq.size() << "\n";
+    *out << "Runtime (s)  : " << res.runtime << "\n";
+
+    *out << "Steps:\n";
+    for (const auto& step : res.steps) {
+        for (int p : step)
+            *out << p << " ";
+        *out << "\n";
+    }
 
     return 0;
 }
+
