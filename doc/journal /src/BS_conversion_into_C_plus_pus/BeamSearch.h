@@ -21,12 +21,15 @@ public:
         double runtime;
     };
 
+
+
     static Result run_forward_BS(
         Instance* inst,
         bool forward_or_backward,
         int beam_width = 10,
         HeuristicType heuristic = HeuristicType::H1,  //  
-        int time_limit_sec = 1800
+        int time_limit_sec = 1800,
+        Node* start_node = nullptr
     ) {
         const auto& sequences = inst->sequences;
         const auto& gaps = inst->gaps;
@@ -36,8 +39,11 @@ public:
         std::vector<Node*> beam;
         std::vector<int> init_pos(m, -1);
         int max_iters = 100000; // should be parametrized 
+        
+        if(start_node == nullptr)
+            start_node = new Node(init_pos, "", nullptr); // start from the beginning
 
-        Node* start_node = new Node(init_pos, "", nullptr);
+        
         start_node->print();
         beam.push_back(start_node);
 
@@ -64,9 +70,7 @@ public:
                 auto succs = forward_or_backward
                     ? Node::generateSuccessors(node, inst)  //TODO: @generateSuccessors issue 
                     : Node::generateBackwardSuccessors(node, inst);
-                
-                 //std::cout << "generated ... " << succs.size() <<   std::endl;
-                
+                                
                 if (succs.size()==0) break;
 
                 for (Node* s : succs) {
@@ -94,23 +98,27 @@ public:
             beam = candidates;
         }
         //constructing solution steps
-	std::vector<std::vector<int>> steps;
+	    std::vector<std::vector<int>> steps;
 
-	if (return_node) {
+	    if (return_node) {
     		return_node->print();
 
-    	for (Node* n = return_node; n->parent; n = n->parent)
-        	steps.push_back(n->pos);
+    	    while (return_node != nullptr) 
+            {
+                 if (return_node->pos[0] != -1)
+        	         steps.push_back(return_node->pos);
+                 return_node = return_node->parent;
+            }   
 
-    	std::reverse(steps.begin(), steps.end());
-}
+    	    std::reverse(steps.begin(), steps.end());
+        }
 
 
         double runtime = std::chrono::duration<double>(
             std::chrono::steady_clock::now() - time_start
         ).count();
         
-        // delete all generated nodes (release the occupied memory)
+        // clean up the memory(release the occupied memory)
         for (Node* n : all_nodes)
             delete n;
 
