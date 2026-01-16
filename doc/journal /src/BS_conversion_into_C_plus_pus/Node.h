@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iostream>
 #include <ostream>
+#include <assert.h>
 
 #include "Instance.h"
 #include "utils.h"
@@ -50,17 +51,17 @@ public:
         std::vector<std::unordered_map<char, int>> perSeqMaps(m);
 
         bool exceeded_seq = false;
-        for (int i = 0; i < m; ++i) {
+        for (int i = 0; i < m; ++i)
+        {
+            if(node->pos[i] + 1 >= sequences[i].size())
+            {
+                exceeded_seq = true;
+                return {};
+            }
             std::unordered_map<char, int> map;
             
-            for(char ch: inst->Sigma) {
-                if(node->pos[i] + 1 >= sequences[i].size())
-                {
-                    exceeded_seq = true;
-                    return {};
-                }
-                
-                map[ch] = inst->Succ[i][inst->charToInt[ch]][node->pos[i] + 1];
+            for(char ch: inst->Sigma) {        
+                map[ch] = inst->Succ[i][inst->charToInt[ch]][node->pos[i] + 1]; // start with pos[i] + 1 for seeking matched chars
             }   
             perSeqMaps[i] = map;            
 
@@ -92,9 +93,7 @@ public:
                     commonChars.insert(ch);
                 }
         }
-        //std::cout <<  "\n Common: ";
-        //for(char c: commonChars)
-        //    std::cout << " " << c << " ";
+        //std::cout <<  "\n Common: " << commonChars.size() << " characters. ";
 
         if (commonChars.empty()) // this is the complete node 
             return {};
@@ -107,14 +106,14 @@ public:
 
         for (char c : commonChars) {
             for (char o : commonChars) { //run through the pairs of different characters (c, o)
-                if (c == o) continue;
+                if (c == o) continue; // symmetry breaking
 
                 bool dominates = true;
                 for (int i = 0; i < m; ++i) {
                     int dc = perSeqMaps[i].at(c);
                     int do_ = perSeqMaps[i].at(o);
                     if (!(dc <= do_ &&
-                          gaps[i][do_] + dc + 1 >= do_)) {  // breaking symmetric condition
+                          do_ - dc  <= gaps[i][do_])) {  // breaking symmetric condition
                         dominates = false;
                         break;
                     }
@@ -126,18 +125,25 @@ public:
 
         for (char d : dominated) // remove dominated chars from commonChars
             commonChars.erase(d);
-
+        
+        //std::cout <<  commonChars.size() << " after domination check. ";
         // --------------------------------------------------------
         // Kreate new (child) nodes 
         // --------------------------------------------------------
         std::vector<Node*> successors;
-
+        
         for (char ch : commonChars) {
             std::vector<int> idxVector(m);
 
-            for (int i = 0; i < m; ++i)
+            for (int i = 0; i < m; ++i){
+                
                 idxVector[i] = perSeqMaps[i].at(ch); // new vector of positions 
-
+                //std::cout << "\n check gap constraint: seq#" << i << " : " << idxVector[i] << "  " << node->pos[i] 
+                //        << " <= " << gaps[i][ idxVector[i] ] + 1  << std::endl;
+                
+                assert(idxVector[i] - node->pos[i] <= gaps[i][ idxVector[i] ] + 1 ); // gap constraint check
+            }   
+  
             Node* child = new Node(
                 idxVector,
                 node->seq + ch,// to optimize

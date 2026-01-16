@@ -11,6 +11,19 @@
 #include <iostream>
 #include <stdexcept>
 
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
+    os << "[";
+    for (size_t i = 0; i < v.size(); ++i) {
+        os << v[i];
+        if (i + 1 < v.size())
+            os << ", ";
+    }
+    os << "]";
+    return os;
+}
+
 // ====================== Parameters and Heuristic Types ======================
 
 enum class HeuristicType {
@@ -40,7 +53,7 @@ std::string heuristicToString(HeuristicType h);
 
 // ====================== Feasibility ======================
 
-bool check_feasibility_n(
+bool check_feasibility(
     const std::vector<std::vector<int>>& trace,
     const std::vector<std::vector<int>>& gaps,
     bool verbose = false

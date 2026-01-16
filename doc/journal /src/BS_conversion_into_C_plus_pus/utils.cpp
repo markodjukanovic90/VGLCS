@@ -25,7 +25,7 @@ std::string heuristicToString(HeuristicType h) {
 
 // ====================== Feasibility ======================
 
-bool check_feasibility_n(
+ bool check_feasibility(
     const std::vector<std::vector<int>>& trace,
     const std::vector<std::vector<int>>& gaps,
     bool verbose
@@ -33,6 +33,7 @@ bool check_feasibility_n(
     if (trace.size() <= 1) return true;
 
     int N = static_cast<int>(gaps.size());
+
     for (size_t step = 1; step < trace.size(); ++step) {
         const auto& prev = trace[step - 1];
         const auto& cur  = trace[step];
@@ -40,6 +41,7 @@ bool check_feasibility_n(
         for (int k = 0; k < N; ++k) {
             int diff  = cur[k] - prev[k];
             int limit = gaps[k][cur[k]] + 1;
+            //std::cout <<  cur[k] << " " << prev[k] << "\n";
             if (diff > limit) {
                 if (verbose) {
                     std::cerr << "Jump too large in seq#" << (k + 1)

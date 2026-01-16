@@ -65,7 +65,7 @@ public:
                     ? Node::generateSuccessors(node, inst)  //TODO: @generateSuccessors issue 
                     : Node::generateBackwardSuccessors(node, inst);
                 
-                std::cout <<"generated ... " << succs.size() <<   std::endl;
+                 //std::cout << "generated ... " << succs.size() <<   std::endl;
                 
                 if (succs.size()==0) break;
 
@@ -79,7 +79,7 @@ public:
                 }
             }  
             
-            std::cout << "\ncandidates: " << (candidates.size());
+            //std::cout << "\ncandidates: " << (candidates.size());
             if (candidates.empty()) break;
 
             for (Node* n : candidates)

@@ -98,13 +98,18 @@ int main(int argc, char* argv[]) {
     *out << "Length       : " << res.best_seq.size() << "\n";
     *out << "Runtime (s)  : " << res.runtime << "\n";
 
+    // check feasibility
+    bool feasible = check_feasibility(res.steps, inst.gaps, true);
+    *out << "Runtime (s)  : " << res.runtime << "\n";
+    *out << "Feasible     : " << (feasible ? "YES" : "NO") << "\n";
+    
     *out << "Steps:\n";
     for (const auto& step : res.steps) {
+        *out <<  "( ";
         for (int p : step)
-            *out << p << " ";
-        *out << "\n";
+            *out  << p  <<    " ";
+        *out << ") ";
     }
-
+    //std::cout << inst.Succ[1][0][12] << "\n";
     return 0;
 }
-

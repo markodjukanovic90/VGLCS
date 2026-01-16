@@ -84,10 +84,10 @@ void Instance::buildSuccTable() {
     Succ.resize(S);
 
     for (int i = 0; i < S; ++i) {
-        const std::string& s = sequences[i];
-        const std::vector<int>& g = gaps[i];
-        int n = s.size();
+        //const std::string& s = sequences[i];
 
+        int n = sequences[i].size();
+        
         // Succ[i][c][j]
         Succ[i].assign(K, std::vector<int>(n + 1, -1));
 
@@ -98,7 +98,7 @@ void Instance::buildSuccTable() {
             // Collect all positions where s[pos] == a
             std::vector<int> positions;
             for (int pos = 0; pos < n; ++pos) { // n is the size of s_i
-                if (s[pos] == a)
+                if (sequences[i][pos] == a)
                     positions.push_back(pos);
             }
 
@@ -107,11 +107,11 @@ void Instance::buildSuccTable() {
                 int best = -1;
 
                 for (int x : positions) {
-                    if (x < j)
+                    if (x < j) // we want indices   j or after as we move forward by at least one position 
                         continue;
 
                     // gap feasibility check
-                    if (x - j <= g[x] + 1) {
+                    if (x - j <= gaps[i][x]  ) { // +1
                         best = x;
                         break;
                     }
