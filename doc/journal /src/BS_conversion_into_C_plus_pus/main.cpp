@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+  
 int main(int argc, char* argv[]) {
 
     // ---------------- Defaults ----------------
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 
     // ---------------- Run Beam Search ----------------
     std::cout << "Now run the BS (forward search) " << std::endl;
-    BeamSearch::Result res = BeamSearch::run_forward_BS(
+    BeamSearch::Result res = BeamSearch::run_forward_backward_BS(
         &inst,
         true,
         params.beam_width,
@@ -110,6 +110,28 @@ int main(int argc, char* argv[]) {
             *out  << p  <<    " ";
         *out << ") ";
     }
+    //std::cout << inst.Succ[0][0][8] << "\n";
+    //std::cout << inst.Succ[0][0][11] << "\n";
+    std::cout << "=============================================================================" << std::endl;
+    
+    std::cout << "... and now the backwards BS: " << res.steps[res.steps.size()-1] <<  std::endl;
+    Node* start_backward = new Node( res.steps[res.steps.size()-1], "", nullptr);
+    
+
+    BeamSearch::Result res1 = BeamSearch::run_forward_backward_BS(
+        &inst,
+        false, // backward BS
+        params.beam_width,
+        params.heuristic,
+        time_limit_sec, 
+        start_backward
+    );
+    
+    bool feas = check_feasibility(res1.steps, inst.gaps, true);
+    std::cout << "Feasible     : " << (feas ? "YES" : "NO") << "\n";
+    
     //std::cout << inst.Succ[1][0][12] << "\n";
     return 0;
 }
+
+

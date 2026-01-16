@@ -68,7 +68,7 @@ void Instance::buildPrevTable() {
             for (int c = 0; c < K; ++c)
                 Prev[i][c][j] = last[c];
 
-            if (j < n) {
+            if (j < n) {  
                 int cidx = charToInt[s[j]];
                 last[cidx] = j;
             }

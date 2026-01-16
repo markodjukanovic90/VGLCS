@@ -27,7 +27,7 @@ public:
     
     // Mapiranje znak → indeks (0..|Σ|-1)
     std::unordered_map<char, int> charToInt;  // ch -> num
-  
+    
     // C[i][a][j] = frekvencija 'a' u sequences[i][j:]
     std::vector<std::unordered_map<char, std::vector<int>>> C_suffix;
 

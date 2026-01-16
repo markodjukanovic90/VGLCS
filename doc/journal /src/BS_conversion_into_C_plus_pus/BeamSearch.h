@@ -23,7 +23,7 @@ public:
 
 
 
-    static Result run_forward_BS(
+    static Result run_forward_backward_BS(
         Instance* inst,
         bool forward_or_backward,
         int beam_width = 10,
@@ -42,9 +42,8 @@ public:
         
         if(start_node == nullptr)
             start_node = new Node(init_pos, "", nullptr); // start from the beginning
-
         
-        start_node->print();
+        start_node->print(); std::cout << "beam_width: " << beam_width << std::endl;
         beam.push_back(start_node);
 
         std::string best_seq;
@@ -60,57 +59,63 @@ public:
                     std::chrono::steady_clock::now() - time_start
                 ).count() > time_limit_sec)
                 break;
-
+            
             std::vector<Node*> candidates;
 
-            for (Node* node : beam) 
+            for (Node* nx : beam) 
             {
-                //node->print();
-                //std::cout <<"expand ... " << std::endl;
+
                 auto succs = forward_or_backward
-                    ? Node::generateSuccessors(node, inst)  //TODO: @generateSuccessors issue 
-                    : Node::generateBackwardSuccessors(node, inst);
-                                
-                if (succs.size()==0) break;
+                    ? Node::generateSuccessors(nx, inst)    
+                    : Node::generateBackwardSuccessors(nx, inst);
+                
+                if (succs.size()==0) continue;
 
                 for (Node* s : succs) {
+                    
                     candidates.push_back(s);
                     all_nodes.push_back(s);
+                    
                     if (s->seq.size() > best_seq.size()) {
                         best_seq = s->seq;
                         return_node = s;
                     }
                 }
             }  
-            
-            //std::cout << "\ncandidates: " << (candidates.size());
+
             if (candidates.empty()) break;
 
-            for (Node* n : candidates)
-                n->evaluate(inst, heuristic, 0, forward_or_backward);
-
+            for (Node* n : candidates){
+                double res_score = n->evaluate(inst, heuristic, 0, forward_or_backward);     
+            }
+            
             std::sort(candidates.begin(), candidates.end(),
                 [](Node* a, Node* b) { return a->score > b->score; });
 
             if ((int)candidates.size() > beam_width)
                 candidates.resize(beam_width);
-                
+            
             beam = candidates;
+            //std::cout << "New beam ... " << beam.size() << std::endl;
+            //for(Node* x: beam)
+            //    std::cout << x->pos << std::endl;
         }
         //constructing solution steps
-	    std::vector<std::vector<int>> steps;
+	std::vector<std::vector<int>> steps;
 
-	    if (return_node) {
+	if (return_node != nullptr) {
     		return_node->print();
 
     	    while (return_node != nullptr) 
             {
                  if (return_node->pos[0] != -1)
-        	         steps.push_back(return_node->pos);
+        	      steps.push_back(return_node->pos);
                  return_node = return_node->parent;
-            }   
-
-    	    std::reverse(steps.begin(), steps.end());
+            } 
+            if (forward_or_backward) // if backward, no need to reverse back
+    	        std::reverse(steps.begin(), steps.end());
+    	    else
+    	        std::reverse(best_seq.begin(), best_seq.end());
         }
 
 

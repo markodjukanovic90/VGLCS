@@ -20,17 +20,15 @@ public:
 
     // Trenutno izgrađeni LCS (ako se ne rekonstruiše preko parent-a)
     std::string seq;
-
     // Pokazivač na roditeljski čvor
-    Node* parent;
-
+    Node* parent;  
     double score;        // vrijednost heuristike 
 
     // Konstruktor
     Node(const std::vector<int>& pos_,
          const std::string& seq_,
-         Node* parent_ = nullptr)
-        : pos(pos_), seq(seq_), parent(parent_) {}
+         Node* parent_ = nullptr, double score_ = 0.0)
+        : pos(pos_), seq(seq_), parent(parent_), score(score_) {}
 
     // Ekvivalent @property length
     int length() const {
@@ -64,13 +62,6 @@ public:
                 map[ch] = inst->Succ[i][inst->charToInt[ch]][node->pos[i] + 1]; // start with pos[i] + 1 for seeking matched chars
             }   
             perSeqMaps[i] = map;            
-
-            //firstValidIndices(
-            //    sequences[i],
-            //    node->pos[i] + 1,
-            //    gaps[i],
-            //    node->pos[i]
-            //
         }
         
         // --------------------------------------------------------
@@ -85,7 +76,7 @@ public:
                 for (int i = 0; i < m; ++i) {  
                     if (perSeqMaps[i].find(ch) == perSeqMaps[i].end() ||
                         perSeqMaps[i][ch] == -1) {
-                        found_in_all = false;
+                        found_in_all = false;  
                         break;
                     }
                 }
@@ -122,11 +113,11 @@ public:
                     dominated.insert(o);
             }
         }
-
+  
         for (char d : dominated) // remove dominated chars from commonChars
             commonChars.erase(d);
-        
-        //std::cout <<  commonChars.size() << " after domination check. ";
+        if(node->pos[0] == 7 and node->pos[1] == 10)
+            std::cout <<  commonChars.size() << " =========================================================  after domination check. ";
         // --------------------------------------------------------
         // Kreate new (child) nodes 
         // --------------------------------------------------------
@@ -138,8 +129,6 @@ public:
             for (int i = 0; i < m; ++i){
                 
                 idxVector[i] = perSeqMaps[i].at(ch); // new vector of positions 
-                //std::cout << "\n check gap constraint: seq#" << i << " : " << idxVector[i] << "  " << node->pos[i] 
-                //        << " <= " << gaps[i][ idxVector[i] ] + 1  << std::endl;
                 
                 assert(idxVector[i] - node->pos[i] <= gaps[i][ idxVector[i] ] + 1 ); // gap constraint check
             }   
@@ -149,7 +138,9 @@ public:
                 node->seq + ch,// to optimize
                 node
             );
-            child->print();
+            
+            //child->print();
+
             successors.push_back(child);
         }
 
@@ -162,10 +153,9 @@ public:
 
 static std::vector<Node*> generateBackwardSuccessors(
     Node* node, Instance* inst) {
+    
     const std::vector<std::string>& sequences = inst->sequences;
     const std::vector<std::vector<int>>& gaps = inst->gaps;
-    const std::vector<std::vector<std::vector<int>>> Prev = inst->Prev; //std::vector<std::unordered_map<char, std::vector<int>>>& Prev = inst->Prev;
- 
 
     const int m = sequences.size();
     std::vector<Node*> successors;
@@ -179,29 +169,25 @@ static std::vector<Node*> generateBackwardSuccessors(
         for (int i = 0; i < m; ++i) {
             int pi = node->pos[i];
 
-            if (pi < 0) {
+            if (pi < 0) { // complete path when ging backwards 
                 feasible = false;
                 break;
-            }
-
-            // Prev[i][a][pi]
-            const std::vector<int>& prev_vec =  Prev[i][ ch ];
-            // If some index is -1, not feasible
-            for(int val: prev_vec) 
-            {
-                if (val == -1) { 
-                    feasible = false;
-                    break;
-                }
             }
             
-            if (pi >= static_cast<int>(prev_vec.size())) {
+            const std::vector<int>& prev_vec =  inst->Prev[i][ ch ];
+            if (pi >= (int)(prev_vec.size())) {
                 feasible = false;
                 break;
+            }
+            
+            // If some index is -1, not feasible
+            if (prev_vec[pi] == -1){  // no feasible extension
+                feasible = false;
+                break;  
             }
             // if everything all right, check the gap constraint fulfillment (4, 5) --> (3, 2)
             int pa = prev_vec[pi];
-            if (pi - pa - 1 > gaps[i][pi]) {
+            if (pi - pa > gaps[i][pi] + 1) {
                 
                 feasible = false;
                 break;
@@ -218,7 +204,7 @@ static std::vector<Node*> generateBackwardSuccessors(
             prev_positions,
             node->seq + a,   // backward → append
             node
-        );
+        );  
 
         successors.push_back(child);
     }
@@ -227,36 +213,42 @@ static std::vector<Node*> generateBackwardSuccessors(
 }
     // ============================================================
 
-    void evaluate(Instance* inst, HeuristicType heuristic, int k = 0, bool forward_or_backward = true) { // required to pass for forward and backward BS
+    double evaluate(Instance* inst, HeuristicType heuristic, int k = 0, bool forward_or_backward = true) { // required to pass for forward and backward BS
+    
+    
+    	if (not forward_or_backward) // backward BS (guided by H5) 
+    	{
+    	    this->score = h5_backward(this->pos, inst->C_suffix, inst->Sigma); 
 
-    switch (heuristic) {
+    	}else{
 
-        case HeuristicType::H1:
-            score = this->length(); //lv  
-            break;
+              switch (heuristic) {  
 
-        case HeuristicType::H2:
-            score = remaining_lb(this->pos, inst->sequences); 
-            break;
+                      case HeuristicType::H1:
+                           this->score = this->length(); //lv  
+                           break;
 
-        case HeuristicType::H5:
-            if (forward_or_backward) // forward BS
-                score = h5_upper_bound(this->pos, inst->C_suffix,
+                      case HeuristicType::H2:
+                           this->score = remaining_lb(this->pos, inst->sequences); 
+                      break;
+
+                      case HeuristicType::H5:
+                           this->score = h5_upper_bound(this->pos, inst->C_suffix,
                                    inst->Sigma,
                                    inst->sequences);     
-            else
-                score = h5_backward(this->pos, inst->C_suffix, inst->Sigma);  
-            break; 
+                                   
+                          break; 
               
-
-
-        case HeuristicType::H8:  
-            score =  probability_based_heuristic(this->pos, inst->P, inst->sequences, k);  
-            break;
+                     case HeuristicType::H8:  
+                          this->score =  probability_based_heuristic(this->pos, inst->P, inst->sequences, k);  
+                     break;
+        }
     }
+    return this->score;
 }
+  
 
-void print(std::ostream& os = std::cout) const {
+void print(std::ostream& os = std::cout) {
     os << "Node {\n";
     os << "  seq   = \"" << seq << "\"\n";
     os << "  len   = " << seq.size() << "\n";
@@ -268,11 +260,8 @@ void print(std::ostream& os = std::cout) const {
     os << "}";
 }  
 
-private:
-    // ============================================================
-    // Helper: _first_valid_indices (maybe can be removed)
-    // ============================================================
-    static std::unordered_map<char, int> firstValidIndices(
+
+static std::unordered_map<char, int> firstValidIndices(
         const std::string& seq,
         int startIdx,
         const std::vector<int>& gapArr,

@@ -23,6 +23,21 @@ std::string heuristicToString(HeuristicType h) {
     return "unknown";
 }
 
+
+
+inline std::ostream& operator<<(std::ostream& os,
+                                const std::vector<int>& v)
+{
+    os << "[";
+    for (size_t i = 0; i < v.size(); ++i) {
+        os << v[i];
+        if (i + 1 < v.size()) os << ", ";
+    }
+    os << "]";
+    return os;
+}
+
+
 // ====================== Feasibility ======================
 
  bool check_feasibility(
@@ -71,6 +86,8 @@ int remaining_lb(
 // ====================== H5 upper bound ======================
 
 int h5_upper_bound(
+
+
     const std::vector<int>& pos,
     const std::vector<std::unordered_map<char, std::vector<int>>>& C_h5,
     const std::vector<char>& Sigma_h5,
@@ -80,8 +97,7 @@ int h5_upper_bound(
     std::vector<int> j_starts(m);
 
     for (int i = 0; i < m; ++i)
-        j_starts[i] = std::min(pos[i] + 1,
-                               static_cast<int>(sequences[i].size()));
+        j_starts[i] = std::min(pos[i] + 1, static_cast<int>(sequences[i].size()));
 
     int ub = 0;
     for (char a : Sigma_h5) {
@@ -92,6 +108,8 @@ int h5_upper_bound(
         }
         ub += mn;
     }
+    //std::cout << pos << std::endl;
+    //std::cout << " UB: " << ub << std::endl;
     return ub;
 }
 
@@ -119,11 +137,12 @@ int h5_backward(
             const std::vector<int>& suffix_vec = C_h5[i].at(a);
 
             int total_count  = suffix_vec[0];
-            int suffix_count = suffix_vec[p_i + 1];
+            int suffix_count = suffix_vec[p_i];
 
             int prefix_count = total_count - suffix_count;
             min_count = std::min(min_count, prefix_count);
         }
+        //contribution of letter a (max possible in the optimal sol.)
         h += min_count;
     }
     return h;
