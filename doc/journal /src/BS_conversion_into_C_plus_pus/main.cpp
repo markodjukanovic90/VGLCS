@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
     std::cout << "... and now the backwards BS: " << res.steps[res.steps.size()-1] <<  std::endl;
     Node* start_backward = new Node( res.steps[res.steps.size()-1], "", nullptr);
     
-
+    /*
     BeamSearch::Result res1 = BeamSearch::run_forward_backward_BS(
         &inst,
         false, // backward BS
@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
     
     bool feas = check_feasibility(res1.steps, inst.gaps, true);
     std::cout << "Feasible     : " << (feas ? "YES" : "NO") << "\n";
-    
+    */
     //std::cout << inst.Succ[1][0][12] << "\n";
     return 0;
 }

@@ -43,7 +43,7 @@ public:
         if(start_node == nullptr)
             start_node = new Node(init_pos, "", nullptr); // start from the beginning
         
-        start_node->print(); std::cout << "beam_width: " << beam_width << std::endl;
+        start_node->print(); //std::cout << "beam_width: " << beam_width << std::endl;
         beam.push_back(start_node);
 
         std::string best_seq;
@@ -82,7 +82,7 @@ public:
                     }
                 }
             }  
-
+            //std::cout << "candidates ... " << candidates.size() << std::endl;
             if (candidates.empty()) break;
 
             for (Node* n : candidates){
@@ -128,6 +128,39 @@ public:
             delete n;
 
         return { best_seq, steps, runtime };
+    }
+    
+    // IMSBS algorithm
+    static Result imsbs(
+        Instance* inst,
+        int beam_width_forward = 10,
+        int beam_width_backward = 10,
+        HeuristicType heuristic_forward = HeuristicType::H1,  
+        HeuristicType heuristic_backward = HeuristicType::H5,
+        int number_root_nodes = 10,
+        int imsbs_iterations = 10000,
+        int time_limit_sec = 1800) {
+        const auto& sequences = inst->sequences;
+        const auto& gaps = inst->gaps;
+        const int m = sequences.size();
+        std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
+
+        std::vector<Node*> R; // can be also pririty queue: TODO 
+        R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
+        
+        for(int i=0; i < imsbs_iterations; ++i)
+        {
+             std::vector<Node*> L;
+             while (L.size() < std::min(static_cast<size_t>(number_root_nodes), R.size())) 
+             {
+                  L.push_back(R[0]);
+                  R.erase(R.begin());
+             }             
+             //TODO: shall be proceeded
+        
+        }
+        
+        return {};
     }
 };
 

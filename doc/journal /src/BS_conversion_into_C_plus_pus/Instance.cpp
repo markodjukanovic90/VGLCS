@@ -111,7 +111,7 @@ void Instance::buildSuccTable() {
                         continue;
 
                     // gap feasibility check
-                    if (x - j <= gaps[i][x]  ) { // +1
+                    if (x - j <= gaps[i][x]) { // +1
                         best = x;
                         break;
                     }
@@ -120,7 +120,7 @@ void Instance::buildSuccTable() {
                 Succ[i][c][j] = best;
             }
         }
-    }
+    }      
 }
 
 

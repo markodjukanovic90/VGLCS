@@ -34,6 +34,15 @@ public:
     int length() const {
         return static_cast<int>(seq.size());
     }
+    
+    static bool basic_root_node(Node *node)
+    {
+        for(int x: node->pos)
+            if( x != -1)
+                return false;
+                
+        return true;
+    }
 
     // ============================================================
     // Generate child nodes (ekvivalent generate_successors)
@@ -47,22 +56,59 @@ public:
 
         // per_seq_maps[i] : map<char, index>
         std::vector<std::unordered_map<char, int>> perSeqMaps(m);
-
-        bool exceeded_seq = false;
-        for (int i = 0; i < m; ++i)
+        
+        bool root_node = false;
+        if(basic_root_node(node))
         {
-            if(node->pos[i] + 1 >= sequences[i].size())
-            {
-                exceeded_seq = true;
-                return {};
-            }
-            std::unordered_map<char, int> map;
-            
-            for(char ch: inst->Sigma) {        
-                map[ch] = inst->Succ[i][inst->charToInt[ch]][node->pos[i] + 1]; // start with pos[i] + 1 for seeking matched chars
-            }   
-            perSeqMaps[i] = map;            
+                root_node = true;
+                int S = sequences.size();
+                std::unordered_map<char, std::vector<int>> first_positions; 
+                
+                
+                for (int c = 0; c < inst->Sigma.size(); ++c) { // for each letter
+                    char a = inst->Sigma[c];
+                    
+                    std::vector<int> pos(S, -1);
+                    for (int i = 0; i < S; ++i) { // the positions of its first occurances in seach s_i are detected and stored 
+                         for(int j = 0; j < sequences[i].size(); ++j)
+                             if(sequences[i][j] == a){
+                                 pos[i] = j;
+                                 break;
+                             }
+                   }
+               
+                   first_positions[a] = pos;
+                }
+                
+                for (int i = 0; i < m; ++i)
+        	{
+                     std::unordered_map<char, int> map;
+                     for(char ch: inst->Sigma) 
+                          map[ch] =  first_positions[ch][i]; 
+                     
+                     perSeqMaps[i] = map;         
+                }      
         }
+        else{
+          
+        	for (int i = 0; i < m; ++i)
+        	{
+            		if(node->pos[i] + 1 >= sequences[i].size())
+            	    		return {};
+            
+            		std::unordered_map<char, int> map;
+            
+            		for(char ch: inst->Sigma) {        
+                		map[ch] = inst->Succ[i][inst->charToInt[ch]][node->pos[i] + 1]; // start with pos[i] + 1 for seeking matched chars
+            	        }  
+            	        perSeqMaps[i] = map;
+               }            
+        }
+        
+        //for(int i=0; i<perSeqMaps.size(); ++i)
+        //    for(auto & x: perSeqMaps[i])
+        //        std::cout << x.first << " " << x.second << std::endl;
+
         
         // --------------------------------------------------------
         // Presjek karaktera koje sve sekvence mogu mečovati
@@ -103,8 +149,8 @@ public:
                 for (int i = 0; i < m; ++i) {
                     int dc = perSeqMaps[i].at(c);
                     int do_ = perSeqMaps[i].at(o);
-                    if (!(dc <= do_ &&
-                          do_ - dc  <= gaps[i][do_])) {  // breaking symmetric condition
+                    if (!(dc <= do_ && 
+                          (do_ - dc  <= gaps[i][do_] or root_node))) {  // breaking symmetric condition
                         dominates = false;
                         break;
                     }
@@ -129,8 +175,8 @@ public:
             for (int i = 0; i < m; ++i){
                 
                 idxVector[i] = perSeqMaps[i].at(ch); // new vector of positions 
-                
-                assert(idxVector[i] - node->pos[i] <= gaps[i][ idxVector[i] ] + 1 ); // gap constraint check
+                //std::cout << idxVector[i] << " " << node->pos[i] << " " << gaps[i][ idxVector[i] ] + 1 << std::endl;
+                assert(idxVector[i] - node->pos[i] <= gaps[i][ idxVector[i] ] + 1 or node->pos[i] == -1 ); // gap constraint check
             }   
   
             Node* child = new Node(
