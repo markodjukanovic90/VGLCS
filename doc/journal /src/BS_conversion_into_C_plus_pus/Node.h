@@ -130,7 +130,6 @@ public:
                     commonChars.insert(ch);
                 }
         }
-        //std::cout <<  "\n Common: " << commonChars.size() << " characters. ";
 
         if (commonChars.empty()) // this is the complete node 
             return {};
@@ -276,12 +275,14 @@ static std::vector<Node*> generateBackwardSuccessors(
 
                       case HeuristicType::H2:
                            this->score = remaining_lb(this->pos, inst->sequences); 
+                           this->score += this->length(); //add the lenght of partial solution assiciated to the node 
                       break;
 
                       case HeuristicType::H5:
                            this->score = h5_upper_bound(this->pos, inst->C_suffix,
                                    inst->Sigma,
-                                   inst->sequences);     
+                                   inst->sequences); 
+                           this->score += this->length(); //add the lenght of partial solution assiciated to the node 
                                    
                           break; 
               

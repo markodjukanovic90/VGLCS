@@ -29,7 +29,7 @@ public:
         int beam_width = 10,
         HeuristicType heuristic = HeuristicType::H1,  //  
         int time_limit_sec = 1800,
-        Node* start_node = nullptr
+        const std::vector<Node*>& start_node_vector = {}
     ) {
         const auto& sequences = inst->sequences;
         const auto& gaps = inst->gaps;
@@ -40,11 +40,19 @@ public:
         std::vector<int> init_pos(m, -1);
         int max_iters = 100000; // should be parametrized 
         
-        if(start_node == nullptr)
-            start_node = new Node(init_pos, "", nullptr); // start from the beginning
         
-        start_node->print(); //std::cout << "beam_width: " << beam_width << std::endl;
-        beam.push_back(start_node);
+        Node* start_node = nullptr;
+        //if(start_node == nullptr)
+        if(start_node_vector.size() == 0 ){
+            start_node = new Node(init_pos, "", nullptr); // start from the beginning
+            beam.push_back(start_node);
+        }
+        else{
+             for(Node* n: start_node_vector)
+                 beam.push_back(n);
+        }
+        //start_node->print(); //std::cout << "beam_width: " << beam_width << std::endl;
+        //beam.push_back(start_node);
 
         std::string best_seq;
         Node* return_node = nullptr;
@@ -96,9 +104,6 @@ public:
                 candidates.resize(beam_width);
             
             beam = candidates;
-            //std::cout << "New beam ... " << beam.size() << std::endl;
-            //for(Node* x: beam)
-            //    std::cout << x->pos << std::endl;
         }
         //constructing solution steps
 	std::vector<std::vector<int>> steps;
@@ -107,15 +112,16 @@ public:
     		return_node->print();
 
     	    while (return_node != nullptr) 
-            {
+            {  
                  if (return_node->pos[0] != -1)
         	      steps.push_back(return_node->pos);
                  return_node = return_node->parent;
-            } 
-            if (forward_or_backward) // if backward, no need to reverse back
+            }
+            
+            if (forward_or_backward) // if not backward, no need to reverse back the @str value, only the collected steps
     	        std::reverse(steps.begin(), steps.end());
     	    else
-    	        std::reverse(best_seq.begin(), best_seq.end());
+    	        std::reverse(best_seq.begin(), best_seq.end()); // other
         }
 
 
@@ -144,20 +150,59 @@ public:
         const auto& gaps = inst->gaps;
         const int m = sequences.size();
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
-
+        
+        
+        //best solution 
+        int best_sol_found=0; string best_seq="";
         std::vector<Node*> R; // can be also pririty queue: TODO 
         R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
         
-        for(int i=0; i < imsbs_iterations; ++i)
-        {
+        for(int iter=0; iter < imsbs_iterations; ++iter)
+        {    
+             std::cout << "#iter=" << iter << std::endl;
+             int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
+             
              std::vector<Node*> L;
-             while (L.size() < std::min(static_cast<size_t>(number_root_nodes), R.size())) 
+             while (L.size() < r_size) 
              {
                   L.push_back(R[0]);
                   R.erase(R.begin());
              }             
-             //TODO: shall be proceeded
-        
+             //L initialized; refine the nodes by running backward BS per each node 
+             for(Node *n : L)
+             {
+                 
+   	           Result res_n = run_forward_backward_BS(
+        		inst,
+        		false, // backward BS
+        		beam_width_backward,
+        		heuristic_backward,
+        		time_limit_sec, 
+        		{n} // run the backward BS on @n
+    		  );
+    		  //update the node n  (refine it)
+    		  n->seq = res_n.best_seq;
+    		  //n->pos = res_n.steps; // this about how to reconstruct (pass) the final steps (pairs of matchings by obtainined the solution)
+    		  n->parent = nullptr;  
+             } 
+             //execute the FORWARD BS on the set of refined nodes from L:
+              Result res_n = run_forward_backward_BS(
+        			inst,
+        			true, // backward BS
+        			beam_width_forward,
+        			heuristic_forward,
+        			time_limit_sec, 
+        			L // run the forward BS on L
+             );
+             //   
+             if(best_sol_found < res_n.bes_seq.size())
+             {
+                 best_sol_found=res_n.bes_seq.size();
+                 best_seq =  res_n.bes_seq;
+                 //reconstruct steps: TODO 
+             }
+             // Update R: should pass all complete solutions during the forwars BS: TODO 
+             
         }
         
         return {};

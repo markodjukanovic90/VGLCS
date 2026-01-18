@@ -100,7 +100,6 @@ int main(int argc, char* argv[]) {
 
     // check feasibility
     bool feasible = check_feasibility(res.steps, inst.gaps, true);
-    *out << "Runtime (s)  : " << res.runtime << "\n";
     *out << "Feasible     : " << (feasible ? "YES" : "NO") << "\n";
     
     *out << "Steps:\n";
@@ -110,14 +109,12 @@ int main(int argc, char* argv[]) {
             *out  << p  <<    " ";
         *out << ") ";
     }
-    //std::cout << inst.Succ[0][0][8] << "\n";
-    //std::cout << inst.Succ[0][0][11] << "\n";
+    
     std::cout << "=============================================================================" << std::endl;
     
     std::cout << "... and now the backwards BS: " << res.steps[res.steps.size()-1] <<  std::endl;
-    Node* start_backward = new Node( res.steps[res.steps.size()-1], "", nullptr);
-    
     /*
+    Node* start_backward = new Node( res.steps[res.steps.size()-1], "", nullptr);
     BeamSearch::Result res1 = BeamSearch::run_forward_backward_BS(
         &inst,
         false, // backward BS
@@ -127,10 +124,19 @@ int main(int argc, char* argv[]) {
         start_backward
     );
     
+    *out << "\n Steps backward :\n";
+    for (const auto& step : res1.steps) {
+        *out <<  "( ";
+        for (int p : step)
+            *out  << p  <<    " ";
+        *out << ") ";
+    }
+    *out << "\nBS backward sequence: " << res1.best_seq << "\n";
+    
     bool feas = check_feasibility(res1.steps, inst.gaps, true);
     std::cout << "Feasible     : " << (feas ? "YES" : "NO") << "\n";
     */
-    //std::cout << inst.Succ[1][0][12] << "\n";
+    
     return 0;
 }
 
