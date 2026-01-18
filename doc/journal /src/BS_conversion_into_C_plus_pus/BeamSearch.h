@@ -53,7 +53,6 @@ public:
         std::vector<int> init_pos(m, -1);
         int max_iters = 100000; // should be parametrized 
         
-        
         Node* start_node = nullptr;
         //if(start_node == nullptr)
         if(start_node_vector.size() == 0 ){
@@ -134,6 +133,13 @@ public:
                  return_node = return_node->parent;
             }
             
+            if(not forward_or_backward) //if done backward
+            {
+                 if(start_node_vector.size() != 0) // when we do not start with the basic root node (-1, ... , -1), add letter at the beginning position also to the solution 
+                     if(start_node_vector.size() == 1 and start_node_vector[0]->pos[0] >= 0)
+                         best_seq =  inst->sequences[0][ steps[steps.size()-1][0] ] + best_seq; //add the starting (matched) letter
+            }
+            
             if (forward_or_backward) // if not backward, no need to reverse back the @str value, only the collected steps
     	        std::reverse(steps.begin(), steps.end());
     	    else
@@ -173,8 +179,10 @@ public:
         std::vector<Node*> R; // can be also pririty queue: TODO 
         R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
         std::unordered_map<std::vector<int>, Node*, VectorHash> visited;
+        std::vector<std::vector<int>> best_steps; double runtime=0.0;
         
-        for(int iter=0; iter < imsbs_iterations; ++iter)
+        auto time_start = std::chrono::steady_clock::now();
+        for(int iter=0; iter < imsbs_iterations && (R.size() != 0); ++iter)
         {    
              std::cout << "#iter=" << iter << std::endl;
              int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
@@ -185,7 +193,9 @@ public:
                   L.push_back(R[0]);
                   R.erase(R.begin());
              }             
-             //L initialized; refine the nodes by running backward BS per each node 
+             //L initialized; refine the nodes by running backward BS per each node
+             std::unordered_map<std::vector<int>, std::vector<std::vector<int>>, VectorHash> root_node_steps; 
+             
              for(Node *n : L)
              {
                  
@@ -199,11 +209,12 @@ public:
     		  );
     		  //update the node n  (refine it)
     		  n->seq = res_n.best_seq;
-    		  //n->pos = res_n.steps; // this about how to reconstruct (pass) the final steps (pairs of matchings by obtainined the solution)
+    		  const std::vector<int> root_pos = n->pos;
+    		  root_node_steps.emplace(root_pos, res_n.steps);
     		  n->parent = nullptr;  
              } 
              //execute the FORWARD BS on the set of refined nodes from L:
-              Result res_n = run_forward_backward_BS(
+             Result res_n = run_forward_backward_BS(
         			inst,
         			true, // backward BS
         			beam_width_forward,
@@ -211,12 +222,18 @@ public:
         			time_limit_sec, 
         			L // run the forward BS on L
              );
+             
              //   check for a new incumbent solution 
              if(best_sol_found < res_n.best_seq.size())
              {
-                 best_sol_found=res_n.best_seq.size();
+                 best_sol_found = res_n.best_seq.size();
                  best_seq =  res_n.best_seq;
                  //reconstruct steps from the backward BS: TODO 
+                 best_steps = res_n.steps;
+                 // push_front steps to @best_steps obtained from the backward BS pass (root_node_steps)
+                 std::vector<std::vector<int>> best_step_front = best_steps.size() > 0 ? root_node_steps[best_steps[0]]  : std::vector<std::vector<int>>(); 
+                 for(int i=0; i<best_step_front.size()-1 && best_step_front.size()>0; ++i) // exclude the last one as it appears in the @best_steps already 
+                     best_steps.insert(best_steps.begin() + i, best_step_front[i]);   
              }
              // Update R: should pass all complete solutions during the forward BS
              for(auto& pos: res_n.list_pos_complete)
@@ -230,12 +247,22 @@ public:
                      {
                          R.push_back(child);
                          visited.emplace(child->pos, child);
-                      }
+                     }else
+                        delete child;
                  }
              }
+             runtime = std::chrono::duration<double>(
+             std::chrono::steady_clock::now() - time_start
+             ).count();
+             
+             if(runtime >= time_limit_sec) //time has exceeded 
+                 break;
+             //sort out R vector:
+             std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){return a->score > b->score; });
         }
+        //cleanup nodes from memory: TODO 
         
-        return {};
+        return {best_seq, best_steps, runtime , {}};
     }
 };
 

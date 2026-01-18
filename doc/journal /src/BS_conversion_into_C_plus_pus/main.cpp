@@ -90,6 +90,7 @@ int main(int argc, char* argv[]) {
         params.beam_width,
         params.heuristic,
         time_limit_sec
+        //{new Node({1, 7, 2}, "", nullptr)}
     );
 
     // ---------------- Output result ----------------
@@ -114,7 +115,7 @@ int main(int argc, char* argv[]) {
     
     std::cout << "... and now the backwards BS: " << res.steps[res.steps.size()-1] <<  std::endl;
     
-    Node* start_backward = new Node( res.steps[res.steps.size()-1], "", nullptr);
+    Node* start_backward = new Node( {1, 7, 2}, "", nullptr);
     BeamSearch::Result res1 = BeamSearch::run_forward_backward_BS(
         &inst,
         false, // backward BS
@@ -135,6 +136,29 @@ int main(int argc, char* argv[]) {
     
     bool feas = check_feasibility(res1.steps, inst.gaps, true);
     std::cout << "Feasible     : " << (feas ? "YES" : "NO") << "\n";
+    
+    
+    // IMSBS algorithm
+    BeamSearch::Result res2 = BeamSearch::imsbs(&inst, 10, 10, HeuristicType::H5, HeuristicType::H5, 10, 100, 60);
+    
+    // ---------------- Output result ----------------
+    /*out << "=== IMSBS ===\n";
+    *out << "Best sequence: " << res2.best_seq << "\n";
+    *out << "Length       : " << res2.best_seq.size() << "\n";
+    *out << "Runtime (s)  : " << res2.runtime << "\n";
+
+    // check feasibility
+    bool feasible2 = check_feasibility(res2.steps, inst.gaps, true);
+    *out << "Feasible     : " << (feasible2 ? "YES" : "NO") << "\n";
+    
+    *out << "Steps:\n";
+    for (const auto& step : res2.steps) {
+        *out <<  "( ";
+        for (int p : step)
+            *out  << p  <<    " ";
+        *out << ") ";
+    }
+    */
     
     
     return 0;
