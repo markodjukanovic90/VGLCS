@@ -191,10 +191,11 @@ public:
 
         return successors;
     }
-    
+
 // Generate successors in BACKWARD manner
 // (equivalent to generate_backward_successors in Python)
 // ============================================================
+
 
 static std::vector<Node*> generateBackwardSuccessors(
     Node* node, Instance* inst) {
@@ -256,7 +257,64 @@ static std::vector<Node*> generateBackwardSuccessors(
 
     return successors;
 }
-    // ============================================================
+    // ====================GENERATE SUCCESORS in an LCS manner ========================================
+    
+    static std::vector<Node*> generateSuccessorsLCS(Node* node, Instance* inst, HeuristicType heuristic) {
+    
+         int index = 0; std::vector<Node*> child_nodes;
+         // check if the node not (trivially) complete
+         for(int px: node->pos)
+         {
+             if (px >= inst->sequences[index].size()) 
+                 return {};
+             index++;
+         }
+         // determine the positions of next occurances of each letter starting from the positions of node @node 
+         std::set<char> NotCommonChars;
+         std::unordered_map<char, std::vector<int>> next_char_positions;
+         for(char ch: inst->Sigma)
+         {
+              std::vector<int> char_positions = std::vector<int>(inst->sequences.size(), -1); // all -1s initialized
+              for(int i=0; i < inst->sequences.size(); ++i)
+              {
+                  int next_pos = -1;
+                  for(int j = node->pos[i] + 1; j < inst->sequences[i].size(); ++j)
+                  {
+                      if(inst->sequences[i][j] == ch)
+                      {
+                          next_pos = j;    
+                          break;    
+                      }
+                  }
+                  if(next_pos == -1)
+                      NotCommonChars.insert(ch);
+                  
+                  char_positions[i] = next_pos;
+              }    
+              next_char_positions[ch] = char_positions; 
+         }
+         // next_char_positions  
+         std::set<char> CommonChars;
+         for(char ch: inst->Sigma)
+             CommonChars.insert(ch);
+         
+         //remove letters from 
+         for(char c: NotCommonChars)
+         {
+             auto it = CommonChars.find(c);
+             if(it != CommonChars.end())
+                 CommonChars.erase(it);
+         }
+         // Now create nodes 
+         for(char ch: CommonChars)
+         {
+             Node* child = new Node(next_char_positions[ch], "", nullptr);
+             child->evaluate(inst, heuristic);
+             child_nodes.push_back(child);
+         }
+         
+         return child_nodes;
+    }
 
     double evaluate(Instance* inst, HeuristicType heuristic, int k = 0, bool forward_or_backward = true) { // required to pass for forward and backward BS
     

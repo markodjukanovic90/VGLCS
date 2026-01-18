@@ -19,7 +19,19 @@ public:
         std::string best_seq;
         std::vector<std::vector<int>> steps;
         double runtime;
+        std::vector<std::vector<int>> list_pos_complete;
     };
+    
+    struct VectorHash {
+      std::size_t operator()(const std::vector<int>& v) const noexcept {
+        std::size_t h = 0;
+        for (int x : v) {
+            h ^= std::hash<int>{}(x) + 0x9e3779b9 + (h << 6) + (h >> 2);
+        }
+        return h;
+      }
+   };
+
 
 
 
@@ -35,7 +47,8 @@ public:
         const auto& gaps = inst->gaps;
         const int m = sequences.size();
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
-
+        
+        std::vector<std::vector<int>> list_pos_complete;
         std::vector<Node*> beam;
         std::vector<int> init_pos(m, -1);
         int max_iters = 100000; // should be parametrized 
@@ -77,7 +90,10 @@ public:
                     ? Node::generateSuccessors(nx, inst)    
                     : Node::generateBackwardSuccessors(nx, inst);
                 
-                if (succs.size()==0) continue;
+                if (succs.size()==0){ 
+                    list_pos_complete.push_back(nx->pos);
+                    continue; 
+                }
 
                 for (Node* s : succs) {
                     
@@ -133,7 +149,7 @@ public:
         for (Node* n : all_nodes)
             delete n;
 
-        return { best_seq, steps, runtime };
+        return { best_seq, steps, runtime, list_pos_complete };
     }
     
     // IMSBS algorithm
@@ -153,9 +169,10 @@ public:
         
         
         //best solution 
-        int best_sol_found=0; string best_seq="";
+        int best_sol_found=0; std::string best_seq="";
         std::vector<Node*> R; // can be also pririty queue: TODO 
         R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
+        std::unordered_map<std::vector<int>, Node*, VectorHash> visited;
         
         for(int iter=0; iter < imsbs_iterations; ++iter)
         {    
@@ -194,15 +211,28 @@ public:
         			time_limit_sec, 
         			L // run the forward BS on L
              );
-             //   
-             if(best_sol_found < res_n.bes_seq.size())
+             //   check for a new incumbent solution 
+             if(best_sol_found < res_n.best_seq.size())
              {
-                 best_sol_found=res_n.bes_seq.size();
-                 best_seq =  res_n.bes_seq;
-                 //reconstruct steps: TODO 
+                 best_sol_found=res_n.best_seq.size();
+                 best_seq =  res_n.best_seq;
+                 //reconstruct steps from the backward BS: TODO 
              }
-             // Update R: should pass all complete solutions during the forwars BS: TODO 
-             
+             // Update R: should pass all complete solutions during the forward BS
+             for(auto& pos: res_n.list_pos_complete)
+             {
+                 Node* p_new = new Node(pos, "", nullptr); // create a new node as a candidate root node
+                 // expand p_new 
+                 auto succs = Node::generateSuccessorsLCS(p_new, inst, heuristic_backward); // generate in the LCS manner 
+                 // add succs into R if not already been part of R (in the previous iterations)
+                 for(Node* child: succs){
+                     if(visited.find(child->pos) == visited.end()) // @child not in @visited
+                     {
+                         R.push_back(child);
+                         visited.emplace(child->pos, child);
+                      }
+                 }
+             }
         }
         
         return {};
