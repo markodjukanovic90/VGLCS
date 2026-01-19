@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 
     Parameters params;
     params.beam_width = 20;
-    params.heuristic  = HeuristicType::H1;
+    params.heuristic  = HeuristicType::H5;
     params.max_iters  = 5000;
     int time_limit_sec = 1800;
 
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
             params.beam_width = std::stoi(argv[++i]);
         }
         else if ((arg == "--heuristic" || arg == "-h") && i + 1 < argc) {
-            params.heuristic = parseHeuristic(argv[++i]);
+            params.heuristic = parseHeuristic(argv[++i]);  
         }
         else if ((arg == "--max_iters" || arg == "-m") && i + 1 < argc) {
             params.max_iters = std::stoi(argv[++i]);

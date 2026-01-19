@@ -156,6 +156,9 @@ double probability_based_heuristic(
     const std::vector<std::string>& sequences,
     int k
 ) {
+    if(pos[0] == -1)
+        return 1.0;
+        
     double score = 1.0;
     int m = static_cast<int>(pos.size());
 
@@ -163,8 +166,8 @@ double probability_based_heuristic(
         int p_i = pos[i];
         if (p_i < 0 || p_i >= static_cast<int>(P[i].size()))
             return 0.0;
-
-        score *= P[i][sequences[i].size() - p_i + 1];
+        //std::cout << sequences[i].size() - p_i + 1 << " " << k << std::endl;
+        score *= P[sequences[i].size() - p_i ][k];
     }
     return score;
 }

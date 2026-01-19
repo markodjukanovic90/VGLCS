@@ -37,12 +37,12 @@ public:
         Instance* inst,
         bool forward_or_backward,
         int beam_width = 10,
-        HeuristicType heuristic = HeuristicType::H1,  //  
+        HeuristicType heuristic = HeuristicType::H5,  //  
         int time_limit_sec = 1800,
         const std::vector<Node*>& start_node_vector = {}
     ) {
         const auto& sequences = inst->sequences;
-        const auto& gaps = inst->gaps;
+        //const auto& gaps = inst->gaps;
         const int m = sequences.size();
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
         
@@ -105,11 +105,25 @@ public:
             }  
             //std::cout << "candidates ... " << candidates.size() << std::endl;
             if (candidates.empty()) break;
-   
-            for (Node* n : candidates){
-                double res_score = n->evaluate(inst, heuristic, 0, forward_or_backward);     
+            
+            int k_val = 0;
+            if(heuristic == HeuristicType::H8 and forward_or_backward) // only applied to the forward BS manner 
+            {
+                 int min_len = 1000000;
+                 for (Node* n : candidates){
+                     for(int i=0; i < (int)inst->sequences.size(); ++i)
+                         if((int)inst->sequences[i].size() - n->pos[i]+1 < min_len)
+                             min_len = inst->sequences[i].size() - n->pos[i]+1;                
+                 }
+                 k_val =  (double) min_len / (int)inst->Sigma.size() > 1 ?  (int)((double) min_len / (int)inst->Sigma.size() )  : 1;
+                             //std::cout << "k " << k_val << " " << (heuristic == HeuristicType::H8) << " " << min_len << " " << (int)inst->Sigma.size() << std::endl;
             }
             
+
+            for (Node* n : candidates){      
+                 n->evaluate(inst, heuristic, k_val, forward_or_backward); 
+                 //std::cout << "n->score " << n->score << std::endl;
+            } 
             std::sort(candidates.begin(), candidates.end(),
                 [](Node* a, Node* b) { return a->score > b->score; });
 
@@ -166,15 +180,14 @@ public:
         int number_root_nodes = 10,
         int imsbs_iterations = 10000,
         int time_limit_sec = 1800) {
-        const auto& sequences = inst->sequences;
-        const auto& gaps = inst->gaps;
-        const int m = sequences.size();
+        //const auto& sequences = inst->sequences;
+        //const auto& gaps = inst->gaps;
+        //const int m = sequences.size();
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
         
-        
-        //best solution 
-        int best_sol_found=0; std::string best_seq="";
-        std::vector<Node*> R; // can be also pririty queue: TODO 
+
+        int best_sol_found=0; std::string best_seq="";  //best solution attributes 
+        std::vector<Node*> R; // can be also priority queue: TODO  
         R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
         std::unordered_map<std::vector<int>, Node*, VectorHash> visited;
         std::vector<std::vector<int>> best_steps; double runtime=0.0;
@@ -186,7 +199,7 @@ public:
              int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
              
              std::vector<Node*> L;
-             while (L.size() < r_size) 
+             while ((int)L.size() < r_size) 
              {
                   L.push_back(R[0]);
                   R.erase(R.begin());
@@ -222,15 +235,15 @@ public:
              );
              
              //   check for a new incumbent solution 
-             if(best_sol_found < res_n.best_seq.size())
+             if(best_sol_found < (int)res_n.best_seq.size())
              {
                  best_sol_found = res_n.best_seq.size();
                  best_seq =  res_n.best_seq;
-                 //reconstruct steps from the backward BS: TODO 
+                 //reconstruct steps from the backward BS 
                  best_steps = res_n.steps;
                  // push_front steps to @best_steps obtained from the backward BS pass (root_node_steps)
                  std::vector<std::vector<int>> best_step_front = best_steps.size() > 0 ? root_node_steps[best_steps[0]]  : std::vector<std::vector<int>>(); 
-                 for(int i=0; i<best_step_front.size()-1 && best_step_front.size()>0; ++i) // exclude the last one as it appears in the @best_steps already 
+                 for(int i=0; i<(int)best_step_front.size()-1 && best_step_front.size()>0; ++i) // exclude the last one as it appears in the @best_steps already 
                      best_steps.insert(best_steps.begin() + i, best_step_front[i]);   
              }
              // Update R: should pass all complete solutions during the forward BS
@@ -240,11 +253,13 @@ public:
                  // expand p_new 
                  auto succs = Node::generateSuccessorsLCS(p_new, inst, heuristic_backward); // generate in the LCS manner 
                  // add succs into R if not already been part of R (in the previous iterations)
-                 for(Node* child: succs){
+                 for(Node* child: succs)
+                 {
                      if(visited.find(child->pos) == visited.end()) // @child not in @visited
                      {
                          R.push_back(child);
                          visited.emplace(child->pos, child);
+                         all_nodes.push_back(child);
                      }else
                         delete child;
                  }
@@ -259,6 +274,9 @@ public:
              std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){return a->score > b->score; });
         }
         //cleanup nodes: TODO 
+        for(Node* node: all_nodes)
+            delete node;  
+        
         
         return {best_seq, best_steps, runtime , {}};
     }

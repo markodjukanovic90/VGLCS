@@ -65,12 +65,12 @@ public:
                 std::unordered_map<char, std::vector<int>> first_positions; 
                 
                 
-                for (int c = 0; c < inst->Sigma.size(); ++c) { // for each letter
+                for (int c = 0; c < (int)inst->Sigma.size(); ++c) { // for each letter
                     char a = inst->Sigma[c];
                     
                     std::vector<int> pos(S, -1);
-                    for (int i = 0; i < S; ++i) { // the positions of its first occurances in seach s_i are detected and stored 
-                         for(int j = 0; j < sequences[i].size(); ++j)
+                    for (int i = 0; i < S; ++i) { // the positions of its first occurances in search s_i are detected and stored 
+                         for(int j = 0; j < (int)sequences[i].size(); ++j)
                              if(sequences[i][j] == a){
                                  pos[i] = j;
                                  break;
@@ -93,7 +93,7 @@ public:
           
         	for (int i = 0; i < m; ++i)
         	{
-            		if(node->pos[i] + 1 >= sequences[i].size())
+            		if(node->pos[i] + 1 >= (int)sequences[i].size())
             	    		return {};
             
             		std::unordered_map<char, int> map;
@@ -114,8 +114,6 @@ public:
         // Presjek karaktera koje sve sekvence mogu mečovati
         // --------------------------------------------------------
         std::set<char> commonChars;
-        bool first = true;
-        
         for(char ch: inst->Sigma) {
                 // pitaj da li se ch nalazi u svim mapama (index i odozgo) i da je različit od -1
                 bool found_in_all = true;
@@ -260,20 +258,20 @@ static std::vector<Node*> generateBackwardSuccessors(
          // check if the node not (trivially) complete
          for(int px: node->pos)
          {
-             if (px >= inst->sequences[index].size()) 
+             if (px >= (int)inst->sequences[index].size()) 
                  return {};
              index++;
          }
-         // determine the positions of next occurances of each letter starting from the positions of node @node 
+         // determine the positions of next occurrences of each letter starting from the positions of node @node 
          std::set<char> NotCommonChars;
          std::unordered_map<char, std::vector<int>> next_char_positions;
          for(char ch: inst->Sigma)
          {
               std::vector<int> char_positions = std::vector<int>(inst->sequences.size(), -1); // all -1s initialized
-              for(int i=0; i < inst->sequences.size(); ++i)
+              for(int i=0; i < (int)inst->sequences.size(); ++i)
               {
                   int next_pos = -1;
-                  for(int j = node->pos[i] + 1; j < inst->sequences[i].size(); ++j)
+                  for(int j = node->pos[i] + 1; j < (int)inst->sequences[i].size(); ++j)
                   {
                       if(inst->sequences[i][j] == ch)
                       {
@@ -319,31 +317,34 @@ static std::vector<Node*> generateBackwardSuccessors(
     	    this->score = h5_backward(this->pos, inst->C_suffix, inst->Sigma); 
 
     	}else{
-
-              switch (heuristic) {  
-
-                      case HeuristicType::H1:
+              
+              std::string heur = heuristicToString(heuristic);
+              if( heuristicToString(HeuristicType::H1) == heur )
+              {
                            this->score = this->length(); //lv  
-                           break;
 
-                      case HeuristicType::H2:
+              }
+               if( heuristicToString(HeuristicType::H2) == heur )
+               {
                            this->score = remaining_lb(this->pos, inst->sequences); 
-                           this->score += this->length(); //add the lenght of partial solution assiciated to the node 
-                      break;
+                           this->score += this->length(); //add the length of partial solution associated to the node 
+               }
 
-                      case HeuristicType::H5:
+              if( heuristicToString(HeuristicType::H5) == heur )
+              {
                            this->score = h5_upper_bound(this->pos, inst->C_suffix,
                                    inst->Sigma,
                                    inst->sequences); 
-                           this->score += this->length(); //add the lenght of partial solution assiciated to the node 
-                                   
-                          break; 
+                           this->score += this->length(); //add the length of partial solution associated to the node              
+              }
+              if( heuristicToString(HeuristicType::H8) == heur)
+              {           
               
-                     case HeuristicType::H8:  
+ 
                           this->score =  probability_based_heuristic(this->pos, inst->P, inst->sequences, k);  
-                     break;
-        }
-    }
+                          //std::cout << " " << this->score << std::endl;
+              }
+      }
     return this->score;
 }
   

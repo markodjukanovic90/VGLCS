@@ -6,16 +6,15 @@
 #include <set>
 #include <limits>
 #include <ostream>
-
+#include <iostream>
 
 
 void Instance::buildCharToInt() {
 
     charToInt.clear();
-    for (int i = 0; i < Sigma.size(); ++i) {
+    for (int i = 0; i < (int)Sigma.size(); ++i) {
         charToInt[Sigma[i]] = i;
     }
-    
 }
 
 void Instance::buildSuffixCounts() {
@@ -122,11 +121,10 @@ void Instance::buildSuccTable() {
         }
     }      
 }
-
-
 void Instance::buildPTable(int max_n) {
     int sigma = Sigma.size();
-
+    
+    std::cout << "building P " << std::endl;
     if (sigma <= 0)
         throw std::runtime_error("Alphabet must be built before P-table");
 
@@ -140,11 +138,12 @@ void Instance::buildPTable(int max_n) {
     // P[0][j>0] remains 0
 
     for (int n = 1; n <= max_n; ++n) {
-        for (int k = 1; k <= max_n; ++k) {
+        for (int k = 1; k <= n; ++k) {
             P[n][k] =
                 (P[n - 1][k - 1] + (sigma - 1) * P[n - 1][k]) / sigma;
         }
     }
+   std::cout <<  P[10][4]  << std::endl;
 }
 
 
@@ -200,10 +199,11 @@ Instance Instance::loadFromFile(const std::string& filename) {
     //P-table if necessary for some algorithms 
     int max_n = 0;
     for (const auto& s : inst.sequences)
-        if (s.size() > max_n)
+        if ((int)s.size() > max_n)
             max_n = s.size();
+    std::cout <<"max_n: " << max_n << std::endl;
     inst.buildPTable(max_n);
-
+    
     return inst;
 }
 
