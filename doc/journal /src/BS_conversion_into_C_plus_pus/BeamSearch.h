@@ -33,8 +33,6 @@ public:
    };
 
 
-
-
     static Result run_forward_backward_BS(
         Instance* inst,
         bool forward_or_backward,
@@ -73,7 +71,7 @@ public:
 
         for (int iter = 0; iter < max_iters && !beam.empty(); ++iter) {
         
-            std::cout <<"#iter: " << iter << std::endl;
+            //std::cout <<"#iter: " << iter << std::endl;
             
             if (std::chrono::duration<double>(
                     std::chrono::steady_clock::now() - time_start
@@ -107,7 +105,7 @@ public:
             }  
             //std::cout << "candidates ... " << candidates.size() << std::endl;
             if (candidates.empty()) break;
-
+   
             for (Node* n : candidates){
                 double res_score = n->evaluate(inst, heuristic, 0, forward_or_backward);     
             }
@@ -124,7 +122,7 @@ public:
 	std::vector<std::vector<int>> steps;
 
 	if (return_node != nullptr) {
-    		return_node->print();
+    	    //return_node->print();
 
     	    while (return_node != nullptr) 
             {  
@@ -184,7 +182,7 @@ public:
         auto time_start = std::chrono::steady_clock::now();
         for(int iter=0; iter < imsbs_iterations && (R.size() != 0); ++iter)
         {    
-             std::cout << "#iter=" << iter << std::endl;
+             //std::cout << "#iter=" << iter << std::endl;
              int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
              
              std::vector<Node*> L;
@@ -260,7 +258,7 @@ public:
              //sort out R vector:
              std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){return a->score > b->score; });
         }
-        //cleanup nodes from memory: TODO 
+        //cleanup nodes: TODO 
         
         return {best_seq, best_steps, runtime , {}};
     }

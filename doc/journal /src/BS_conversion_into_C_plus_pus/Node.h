@@ -161,13 +161,8 @@ public:
   
         for (char d : dominated) // remove dominated chars from commonChars
             commonChars.erase(d);
-        if(node->pos[0] == 7 and node->pos[1] == 10)
-            std::cout <<  commonChars.size() << " =========================================================  after domination check. ";
-        // --------------------------------------------------------
-        // Kreate new (child) nodes 
-        // --------------------------------------------------------
+    
         std::vector<Node*> successors;
-        
         for (char ch : commonChars) {
             std::vector<int> idxVector(m);
 
