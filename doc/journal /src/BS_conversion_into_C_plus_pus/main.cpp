@@ -17,6 +17,7 @@ int main(int argc, char* argv[]) {
     params.heuristic  = HeuristicType::H5;
     params.max_iters  = 5000;
     int time_limit_sec = 1800;
+    int number_of_roots=10;
 
     // ---------------- Parse CLI ----------------
     for (int i = 1; i < argc; ++i) {
@@ -42,6 +43,9 @@ int main(int argc, char* argv[]) {
         }
         else if ((arg == "--time_limit" || arg == "-t") && i + 1 < argc) {
             time_limit_sec = std::stoi(argv[++i]);
+        }
+        else if ((arg == "--number_of_roots" || arg == "-t") && i + 1 < argc) {
+            number_of_roots = std::stoi(argv[++i]);
         }
         else {
             std::cerr << "Unknown or incomplete argument: " << arg << "\n";
@@ -94,7 +98,7 @@ int main(int argc, char* argv[]) {
     );
 
     // ---------------- Output result ----------------
-    *out << "=== Beam Search Result ===\n";
+    /*out << "=== Beam Search Result ===\n";
     *out << "Best sequence: " << res.best_seq << "\n";
     *out << "Length       : " << res.best_seq.size() << "\n";
     *out << "Runtime (s)  : " << res.runtime << "\n";
@@ -109,7 +113,7 @@ int main(int argc, char* argv[]) {
         for (int p : step)
             *out  << p  <<    " ";
         *out << ") ";
-    }
+    }*/
     
     //std::cout << "=============================================================================" << std::endl;
     //std::cout << "... and now the backwards BS: " << res.steps[res.steps.size()-1] <<  std::endl;
@@ -137,29 +141,30 @@ int main(int argc, char* argv[]) {
     
     */
     // IMSBS algorithm
-    BeamSearch::Result res2 = BeamSearch::imsbs(&inst, params.beam_width, 10, HeuristicType::H5, HeuristicType::H5, 10, params.max_iters, time_limit_sec);
-    
-    // ---------------- Output result ----------------
-    *out << "=== IMSBS ===\n";
-    *out << "Best sequence: " << res2.best_seq << "\n";
-    *out << "Length       : " << res2.best_seq.size() << "\n";
-    *out << "Runtime (s)  : " << res2.runtime << "\n";
+    BeamSearch::Result res_imsbs = BeamSearch::imsbs(&inst, params.beam_width, 10, 
+                                   params.heuristic, HeuristicType::H5, number_of_roots, 
+                                   params.max_iters, time_limit_sec);
+        
+    // ---------------- Output result ---------------------
+    *out << "=== IMSBS ===\n";  
+    *out << "Best sequence: " << res_imsbs.best_seq << "\n";
+    *out << "Length       : " << res_imsbs.best_seq.size() << "\n";
+    *out << "Runtime (s)  : " << res_imsbs.runtime << "\n";
 
     // check feasibility
-    bool feasible2 = check_feasibility(res2.steps, inst.gaps, true);
+    bool feasible2 = check_feasibility(res_imsbs.steps, inst.gaps, true);
     *out << "Feasible     : " << (feasible2 ? "YES" : "NO") << "\n";
     
     *out << "Steps:\n";
-    for (const auto& step : res2.steps) {
+    for (const auto& step : res_imsbs.steps) {
         *out <<  "( ";
         for (int p : step)
             *out  << p  <<    " ";
         *out << ") ";
     }
     
-    
-    
     return 0;
 }
+
 
 
