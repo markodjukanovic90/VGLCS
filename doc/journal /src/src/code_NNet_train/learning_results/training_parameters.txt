@@ -1,0 +1,1 @@
+-hidden_layers 3 -units 10 10 10 -weight_limit 1 -training_beam_width 100 -activation_function 3 -training_time_limit 345600 -feature_configuration 4 -ga_configuration 2 -rho 0.5
