@@ -119,7 +119,7 @@ std::pair<std::map<int, rlcs_position>, std::map<int, rlcs_position>> Node::sigm
          if(feasible)
              sigma.push_back(l);
     }
-    //std::cout <<"\sigma\=" << sigma.size() << std::endl;
+
     // filter acc- to remaining (suffices) of P-strings  l ==> pos
     std::map<int, rlcs_position> letters_next_positions;
     std::map<int, rlcs_position> letters_next_positions_skip;
@@ -195,38 +195,9 @@ std::pair<std::map<int, rlcs_position>, std::map<int, rlcs_position>> Node::sigm
          }
     }
 
-    //REMOVE DOMINATION NODES FROM letter_next_postitions_skip
-    /*for(std::map<int, rlcs_position>::iterator  it = letters_next_positions_skip.begin(); it != letters_next_positions_skip.end(); ++it)
-    {    
-         // std::find function call
-         auto it_v = std::find(letters_to_remove.begin(),  letters_to_remove.end(), it->first);        
-
-         if (it_v == letters_to_remove.end()) 
-         {
-            std::vector<int> pleft = std::get<1>(it->second);     
-            bool feasible = true; 
-            for (int j = 0; j < (int)pleft.size() && feasible; ++j)
-            {  
-                std::vector<int> pl_left = std::get<0>(it->second); //std::cout << "pleft ---" << pleft[0] << std::endl;
-                for(int i = 0; i < this->inst->m && feasible; ++i)
-                {
-                    //std::cout << pleft[j] << " " << this->inst->remaining_patern_suffix_pos[ i ][ j ][ pleft[j] ] << " " <<  pl_left[i]<< std::endl;
-                    if(pl_left[j] < (int)this->inst->P[j].size() && this->inst->remaining_patern_suffix_pos[ i ][ j ][ pleft[j] ] <  pl_left[i])   // i, j, pleft[j]
-                       feasible = false;
-                } 
-            }
-            if(!feasible)
-                letters_to_remove_skip.push_back(it->first);
-         }
-    }*/
-
     // remove non-feasible letters from letters_next_positions:
-    //std::cout << "letter_to_remove size " << letters_to_remove.size() << std::endl;
     for(auto letter_to_remove :  letters_to_remove)
          letters_next_positions.erase(letter_to_remove);
-
-    //for(auto letter_to_remove :  letters_to_remove)
-    //     letters_next_positions.erase(letter_to_remove);
     
     //  Filter DOMINATED nodes
     for(std::map<int, rlcs_position>::iterator  itA = letters_next_positions.begin(); 
@@ -247,42 +218,11 @@ std::pair<std::map<int, rlcs_position>, std::map<int, rlcs_position>> Node::sigm
         }
     }
 
-    //  Filter DOMINATED nodes in letters_next_positions_skip (split as here the value of patial solution is l_v and above is l_v + 1 )
-    /*for(std::map<int, rlcs_position>::iterator  itA = letters_next_positions_skip.begin(); 
-                                                itA != letters_next_positions_skip.end(); ++itA)
-    {
-        for(std::map<int, rlcs_position>::iterator  itB = letters_next_positions_skip.begin(); 
-                                                itB != letters_next_positions_skip.end(); ++itB)
-        {
-            if(itA != itB) // check domination of two different leters if a dominates b, remove letter b
-             {
-
-                bool a_dominatedBy_b = this->domination_two_letters(itA->second, itB->second);
-                if(a_dominatedBy_b)
-                {   //std::cout << itA->first << " dominated by " <<  itB->first  << std::endl; 
-                    letters_to_remove_skip.push_back(itA->first); }
-             }
-        }
-    }*/
     // filter letters_to_remove
     for(int leter_remove: letters_to_remove)
          letters_next_positions.erase(leter_remove);
 
-    // remove from letters_next_positions_skip
-    //for(int leter_remove: letters_to_remove_skip)
-    //     letters_next_positions_skip.erase(leter_remove);
-    
-    //std::cout << "letters_next_positions " << letters_next_positions.size() << std::endl;
-    // create (feasible) nodes 
-    /*
-    std::vector<Node*> node_extensions;
-    for(std::map<int, rlcs_position>::iterator  it = letters_next_positions.begin(); it != letters_next_positions.begin(); ++it)
-    {  
-        int h_val = 0.0;
-        Node* v_ext_a = new Node(this->inst, std::get<0>(it->second), std::get<1>(it->second), std::get<2>(it->second), h_val); //heap memory
-        node_extensions.push_back(v_ext_a);
-    }*/
-    //std::cout <<"size of letters_next_positions " << letters_next_positions.size() << std::endl;
+
     return std::make_pair(letters_next_positions, letters_next_positions_skip);       
 }
 

@@ -1,7 +1,72 @@
-1. Adapt the Node class: add the atribute vector<int> features
-2. Write a function to derive features from each node 
+1. Adapt the Node class: add the atribute vector<int> features - task 1
+
+2. Write a function to derive features compute_features(std::vector<Node*>& V_ext) in Beam_search.cpp - task 2
+Add this into the BS code:
+
+double compute_max(const vector<double>& values){
+    auto max_element = std::max_element(values.begin(), values.end());
+    return *max_element;
+}
+
+double compute_min(const vector<double>& values){
+    auto min_element = std::min_element(values.begin(), values.end());
+    return *min_element;
+}
+
+double compute_average(const vector<double>& values){
+    double sum = std::accumulate(values.begin(), values.end(), 0.0);
+    return sum / values.size();
+}
+
+double compute_std(const vector<double>& values, double mean){
+    double squaredDifferencesSum = 0.0;
+    for (double value : values) {
+        squaredDifferencesSum += (value - mean) * (value - mean);        
+    }
+    double variance = squaredDifferencesSum / values.size();
+    return std::sqrt(variance);
+}
+
+void standardize(vector<double>& features){
+
+    double features_avg = compute_average(features);
+    double features_std = compute_std(features, features_avg);
+    
+    for(double& feature : features)
+        feature = (feature - features_avg) / features_std;
+        
+void compute_heuristic_values(std::vector<Node*>& V_ext, MLP& neural_network){ //add the option of using the probabilistic guiding function as a secondary measure of quality
+    for(Node* node : V_ext){
+        Eigen::Map<const Eigen::VectorXd> eigen_features(node->features.data(), node->features.size());
+        node->heuristic_value = neural_network.forward(eigen_features)(0);
+        /*if(use_secondary_measure){ 
+            TODO
+            node->secondary_heuristic_value = ...
+        }*/
+    }
+}
+
+Finally, design the following funtion:
+
+double BS(double t_lim, int beta, Instance* inst, MLP& neural_network, bool training)
+
+TODO 
+
+To include the following classes:
+
+#include "beam_search.h"
+#include "Node.h"
+#include "globals.h"
+#include <Eigen/Dense>
+#include "unistd.h"
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
 3. nnet.cpp has to be part of it double BS(double t_lim, int beta, Instance* inst, MLP& neural_network, bool training)  
    as it provides an outcome based on the extracted features 
 4. Think about the set of reliable features that can learn how promising are subproblems in the search 
    scale out-of-distribution 
    5. Work on Beam_search.cpp and Node.cpp and Node.h
+   
+   
