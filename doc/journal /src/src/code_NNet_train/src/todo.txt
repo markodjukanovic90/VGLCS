@@ -1,0 +1,7 @@
+1. Adapt the Node class: add the atribute vector<int> features
+2. Write a function to derive features from each node 
+3. nnet.cpp has to be part of it double BS(double t_lim, int beta, Instance* inst, MLP& neural_network, bool training)  
+   as it provides an outcome based on the extracted features 
+4. Think about the set of reliable features that can learn how promising are subproblems in the search 
+   scale out-of-distribution 
+   5. Work on Beam_search.cpp and Node.cpp and Node.h
