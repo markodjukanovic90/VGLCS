@@ -1,0 +1,6 @@
+Objective: 42
+Time: 1.338
+common SA state 13405
+total SA state 17291
+intersect state87887
+maxlen states 54 states

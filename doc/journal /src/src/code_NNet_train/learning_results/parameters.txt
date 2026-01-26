@@ -1,0 +1,1 @@
+-hidden_layers 3 -units 10 10 10 -activation_function 3 -feature_configuration 4 -b 100 -t 10 -weights
