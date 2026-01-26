@@ -1,0 +1,8 @@
+To train the
+(feed-forward) neural network (NN) of the LBS approach, we employed
+𝛽 = 100 during training for the benchmark set Random. For benchmark
+set Abstract, we employed 𝛽 = 200, which seemed to perform better.
+Remember that this is the value of the beam width used for calculating
+the training and validation values during the execution of the training
+BRKGA. The parameters of this BRKGA were set to the following default
+values: 𝑝size = 20, 𝑝e = 1, 𝑝m = 7 and 𝜌 = 0.5.
