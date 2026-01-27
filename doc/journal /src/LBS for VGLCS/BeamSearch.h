@@ -184,7 +184,7 @@ public:
             if(neural_network == nullptr)
                 for (Node* n : candidates)  
                      n->evaluate(inst, heuristic, k_val, forward_or_backward); 
-             else{  
+             else{ //use the outcome from NN as heuristic guidance  
                  compute_heuristic_values(candidates, inst, neural_network); 
              }
              
@@ -349,10 +349,9 @@ public:
         Instance* inst,
         int beam_width_forward = 10,
         int beam_width_backward = 10,
-        HeuristicType heuristic_forward = HeuristicType::H1,  
         HeuristicType heuristic_backward = HeuristicType::H5,
         int number_root_nodes = 10,
-        int imsbs_iterations = 10000,
+        int imsbs_iterations = 10000,  
         int time_limit_sec = 1800,  MLP* neural_network = nullptr, bool training = false ) {
  
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
@@ -399,9 +398,9 @@ public:
         			inst,
         			true, // backward BS
         			beam_width_forward,
-        			heuristic_forward,
+        			heuristic_backward,
         			time_limit_sec, 
-        			L // run the forward BS on L
+        			L, neural_network // run the forward BS on L,
              );
              
              //Check for a new incumbent solution 

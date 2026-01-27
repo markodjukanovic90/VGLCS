@@ -66,11 +66,14 @@ void MLP::write_weights_to_file(const vector<double>& weights, double time){
     weights_file.close();
 }
 
-double MLP::calculate_validation_value(const vector<double>& weights){ 
+double MLP::calculate_validation_value(const vector<double>& weights)
+{ 
+    
     this->store_weights(weights);
     double validation_value = 0;
     for(Instance instance : validation_instances)
-        validation_value += 0.0; //TODO: BS(training_BS_time_limit, training_BS_beta, &instance, *this, true); // BS is run and the value obtained is accumulated
+        validation_value += BeamSearch::Learning_imsbs(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size(); // BS is run and the value obtained is accumulated
+    
     validation_value = validation_value / validation_instances.size();
     return validation_value;
 }
@@ -79,7 +82,7 @@ void MLP::apply_decoder(training_individual& ind){ //calculates the quality of t
     this->store_weights(ind.weights);
     double ofv = 0;
     for(Instance instance : training_instances) 
-        ofv += 0.0; // TODO: BS(training_BS_time_limit, training_BS_beta, &instance, *this, true);
+        ofv += BeamSearch::Learning_imsbs(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size();
     ofv = ofv / training_instances.size();
     ind.ofv = ofv;
 }
@@ -134,6 +137,7 @@ vector<double> MLP::Train(){
     training_values_file.open("training_values.txt",ios_base::out);
     training_values_file << "Time" << "\t" << "Generations" << "\t" << "Training value" << endl;
     validation_values_file << "Time" << "\t" << "Generations" << "\t" << "Validation value" << endl;
+    std::cout << "Time" << "\t" << "Generations" << "\t" << "Validation value" << std::endl;
     
     //time
     bool stop = false;
@@ -235,9 +239,10 @@ vector<double> MLP::Train(){
                     vector<training_individual> considered_individuals;
                     for(Instance& instance : shuffled_training_instances){
                         double best_value = 0;
-                        for(const training_individual& individual : population){
+                        for(training_individual& individual : population){
                             store_weights(individual.weights);
-                            double value = 0.0; //TODO: BS(training_BS_time_limit, training_BS_beta, &instance, *this, true);
+                            double value = BeamSearch::Learning_imsbs(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size();
+
                             if(value >= best_value){
                                 if(value > best_value){
                                     best_value = value;
