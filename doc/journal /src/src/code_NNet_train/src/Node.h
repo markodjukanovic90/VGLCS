@@ -18,7 +18,7 @@ class Node
         Node* parent; // keep store a parent node of this node
         int l_v;
         bool complete = false;
-        std::vector<double> features; //features for the node
+        std::vector<double> features; //features for the node 
 
    public:
    

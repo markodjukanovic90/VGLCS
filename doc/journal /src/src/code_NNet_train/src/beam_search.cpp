@@ -3,6 +3,7 @@
 #include "globals.h"
 #include <Eigen/Dense>
 #include "unistd.h"
+
 using namespace std;
 
 /*Instance *inst = nullptr;
@@ -92,7 +93,7 @@ void save_in_file(const std::string& outfile, Instance* inst)
      // Check if the file is opened successfully
      if (!outputFile.is_open()) {
           std::cerr << "Error opening the file." << std::endl;
-          return; // Return an error code
+          return; // Return an error code 
      }
      // write in an out-file
      outputFile << clean_file_name << std::endl;

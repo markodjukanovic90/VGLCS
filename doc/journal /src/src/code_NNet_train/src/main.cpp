@@ -123,7 +123,8 @@ void read_parameters(int argc,char** argv){
 int main( int argc, char **argv ) {
 
     read_parameters(argc, argv);
-    if(training){
+    if(training){ 
+    
         std::cout << std::setprecision(10) << std::fixed;
         vector<double> res_weights = neural_network.Train();
         
