@@ -1,23 +1,13 @@
 #include "Instance.h"
 #include "BeamSearch.h"
+#include "globals.h"
 #include "utils.h"
-
 #include <iostream>
 #include <fstream>
 #include <string>
   
 int main(int argc, char* argv[]) {
-
-    // ---------------- Defaults ----------------
-    std::string input_path;
-    std::string output_path; // empty → stdout
-
-    Parameters params;
-    params.beam_width = 20;
-    params.heuristic  = HeuristicType::H5;
-    params.max_iters  = 5000;
-    int time_limit_sec = 1800;
-    int number_of_roots=10;
+   
 
     // ---------------- Parse CLI ----------------
     for (int i = 1; i < argc; ++i) {
@@ -28,23 +18,23 @@ int main(int argc, char* argv[]) {
             input_path = argv[++i];
         }
         else if ((arg == "--o" || arg == "-o") && i + 1 < argc) {
-            output_path = argv[++i];
+            outpathname = argv[++i];
         }
 
         // beam search parameters
         else if ((arg == "--beam_width" || arg == "-b") && i + 1 < argc) {
-            params.beam_width = std::stoi(argv[++i]);
+             beam_width = std::stoi(argv[++i]);
         }
         else if ((arg == "--heuristic" || arg == "-h") && i + 1 < argc) {
-            params.heuristic = parseHeuristic(argv[++i]);  
+             heuristic = parseHeuristic(argv[++i]);  
         }
         else if ((arg == "--max_iters" || arg == "-m") && i + 1 < argc) {
-            params.max_iters = std::stoi(argv[++i]);
+             max_iters = std::stoi(argv[++i]);
         }
         else if ((arg == "--time_limit" || arg == "-t") && i + 1 < argc) {
             time_limit_sec = std::stoi(argv[++i]);
         }
-        else if ((arg == "--number_of_roots" || arg == "-t") && i + 1 < argc) {
+        else if ((arg == "--number_of_roots" || arg == "-n") && i + 1 < argc) {
             number_of_roots = std::stoi(argv[++i]);
         }
         else {
@@ -63,10 +53,10 @@ int main(int argc, char* argv[]) {
     std::ostream* out = &std::cout;
     std::ofstream fout;
 
-    if (!output_path.empty()) {
-        fout.open(output_path);
+    if (!outpathname.empty()) {
+        fout.open(outpathname);
         if (!fout) {
-            std::cerr << "Cannot open output file: " << output_path << "\n";
+            std::cerr << "Cannot open output file: " << outpathname << "\n";
             return 1;
         }
         out = &fout;
@@ -75,9 +65,9 @@ int main(int argc, char* argv[]) {
     // ---------------- Echo parameters ----------------
     *out << "BS parameters:\n";
     *out << " input       = " << input_path << "\n";
-    *out << " beam_width  = " << params.beam_width << "\n";
-    *out << " heuristic   = " << heuristicToString(params.heuristic) << "\n";
-    *out << " max_iters   = " << params.max_iters << "\n";
+    *out << " beam_width  = " << beam_width << "\n";
+    *out << " heuristic   = " << heuristicToString(heuristic) << "\n";
+    *out << " max_iters   = " << max_iters << "\n";
     *out << " time_limit  = " << time_limit_sec << " s\n\n";
 
     // ---------------- Load instance ----------------
@@ -91,10 +81,9 @@ int main(int argc, char* argv[]) {
     BeamSearch::Result res = BeamSearch::run_forward_backward_BS(
         &inst,
         true,
-        params.beam_width,
-        params.heuristic,
+        beam_width,
+        heuristic,
         time_limit_sec
-        //{new Node({1, 7, 2}, "", nullptr)}
     );
 
     // ---------------- Output result ----------------
@@ -121,8 +110,8 @@ int main(int argc, char* argv[]) {
     BeamSearch::Result res1 = BeamSearch::run_forward_backward_BS(
         &inst,
         false, // backward BS
-        params.beam_width,
-        params.heuristic,
+        beam_width,
+        heuristic,
         time_limit_sec, 
         {start_backward}
     );
@@ -141,9 +130,9 @@ int main(int argc, char* argv[]) {
     
     */
     // IMSBS algorithm
-    BeamSearch::Result res_imsbs = BeamSearch::imsbs(&inst, params.beam_width, 10, 
-                                   params.heuristic, HeuristicType::H5, number_of_roots, 
-                                   params.max_iters, time_limit_sec);
+    BeamSearch::Result res_imsbs = BeamSearch::imsbs(&inst, beam_width, 10, 
+                                   heuristic, HeuristicType::H5, number_of_roots, 
+                                   max_iters, time_limit_sec);
         
     // ---------------- Output result ---------------------
     *out << "=== IMSBS ===\n";  

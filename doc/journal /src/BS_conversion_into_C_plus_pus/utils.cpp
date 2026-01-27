@@ -1,7 +1,5 @@
+#include "globals.h"
 #include "utils.h"
-
-// ====================== Global params ======================
-Parameters params;
 
 // ====================== Heuristic parsing ======================
 

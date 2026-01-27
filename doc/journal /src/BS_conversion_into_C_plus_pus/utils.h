@@ -24,28 +24,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
     return os;
 }
 
-// ====================== Parameters and Heuristic Types ======================
-
-enum class HeuristicType {
-    H1,
-    H2,
-    H5,
-    H8
-};
-
-struct Parameters {
-    int beam_width = 100;
-    HeuristicType heuristic = HeuristicType::H1;
-    int max_iters = 10000;
-    int time_limit_sec = 60;
-
-    // optional: two-phase BS
-    HeuristicType heuristic_prime = HeuristicType::H1;
-    int beam_width_prime = 10;
-};
-
-extern Parameters params;
-
 // ====================== Heuristic helpers ======================
 
 HeuristicType parseHeuristic(const std::string& h);

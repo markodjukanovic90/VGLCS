@@ -11,6 +11,7 @@
 #include <assert.h>
 
 #include "Instance.h"
+#include "globals.h"
 #include "utils.h"
 
 class Node {
@@ -23,6 +24,9 @@ public:
     // Pokazivač na roditeljski čvor
     Node* parent;  
     double score;        // vrijednost heuristike 
+    
+    //feature vector is stored here after calculation in LBS
+    std::vector<double> features;
 
     // Konstruktor
     Node(const std::vector<int>& pos_,

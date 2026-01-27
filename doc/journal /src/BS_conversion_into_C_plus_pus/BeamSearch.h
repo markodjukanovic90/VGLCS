@@ -61,9 +61,7 @@ public:
              for(Node* n: start_node_vector)
                  beam.push_back(n);
         }
-        //start_node->print(); //std::cout << "beam_width: " << beam_width << std::endl;
-        //beam.push_back(start_node);
-
+ 
         std::string best_seq;
         Node* return_node = nullptr;
 
@@ -103,7 +101,6 @@ public:
                     }
                 }
             }  
-            //std::cout << "candidates ... " << candidates.size() << std::endl;
             if (candidates.empty()) break;
             
             int k_val = 0;
@@ -116,7 +113,6 @@ public:
                              min_len = inst->sequences[i].size() - n->pos[i]+1;                
                  }
                  k_val =  (double) min_len / (int)inst->Sigma.size() > 1 ?  (int)((double) min_len / (int)inst->Sigma.size() )  : 1;
-                             //std::cout << "k " << k_val << " " << (heuristic == HeuristicType::H8) << " " << min_len << " " << (int)inst->Sigma.size() << std::endl;
             }
             
 
@@ -180,12 +176,9 @@ public:
         int number_root_nodes = 10,
         int imsbs_iterations = 10000,
         int time_limit_sec = 1800) {
-        //const auto& sequences = inst->sequences;
-        //const auto& gaps = inst->gaps;
-        //const int m = sequences.size();
+ 
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
-        
-
+ 
         int best_sol_found=0; std::string best_seq="";  //best solution attributes 
         std::vector<Node*> R; // can be also priority queue: TODO  
         R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
@@ -273,7 +266,7 @@ public:
              //sort out R vector:
              std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){return a->score > b->score; });
         }
-        //cleanup nodes: TODO 
+        //cleanup nodes  
         for(Node* node: all_nodes)
             delete node;  
         
