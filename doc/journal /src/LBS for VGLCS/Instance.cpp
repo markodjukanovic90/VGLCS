@@ -124,7 +124,7 @@ void Instance::buildSuccTable() {
 void Instance::buildPTable(int max_n) {
     int sigma = Sigma.size();
     
-    std::cout << "building P " << std::endl;
+    //std::cout << "building P " << std::endl;
     if (sigma <= 0)
         throw std::runtime_error("Alphabet must be built before P-table");
 
@@ -143,7 +143,6 @@ void Instance::buildPTable(int max_n) {
                 (P[n - 1][k - 1] + (sigma - 1) * P[n - 1][k]) / sigma;
         }
     }
-   std::cout <<  P[10][4]  << std::endl;
 }
 
 
@@ -201,7 +200,7 @@ Instance Instance::loadFromFile(const std::string& filename) {
     for (const auto& s : inst.sequences)
         if ((int)s.size() > max_n)
             max_n = s.size();
-    std::cout <<"max_n: " << max_n << std::endl;
+    //std::cout <<"max_n: " << max_n << std::endl;
     inst.buildPTable(max_n);
     
     return inst;

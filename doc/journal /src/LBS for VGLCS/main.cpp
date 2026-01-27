@@ -1,160 +1,172 @@
-#include "Instance.h"
-#include "BeamSearch.h"
-#include "globals.h"
-#include "utils.h"
 #include <iostream>
 #include <fstream>
-#include <string>
-  
-int main(int argc, char* argv[]) {
-   
-    MLP* neural_network = new MLP();
+#include <sstream>
+#include "BeamSearch.h"
+#include "globals.h"
 
-    // ---------------- Parse CLI ----------------
-    for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
 
-        // input / output
-        if ((arg == "--i" || arg == "-i") && i + 1 < argc) {
-            input_path = argv[++i];
-        }
-        else if ((arg == "--o" || arg == "-o") && i + 1 < argc) {
-            outpathname = argv[++i];
-        }
+using namespace std;
+MLP* neural_network = new MLP();
+bool training = false;
 
-        // beam search parameters
-        else if ((arg == "--beam_width" || arg == "-b") && i + 1 < argc) {
-             beam_width = std::stoi(argv[++i]);
-        }
-        else if ((arg == "--heuristic" || arg == "-h") && i + 1 < argc) {
-             heuristic = parseHeuristic(argv[++i]);  
-        }
-        else if ((arg == "--max_iters" || arg == "-m") && i + 1 < argc) {
-             max_iters = std::stoi(argv[++i]);
-        }
-        else if ((arg == "--time_limit" || arg == "-t") && i + 1 < argc) {
-            time_limit_sec = std::stoi(argv[++i]);
-        }
-        else if ((arg == "--number_of_roots" || arg == "-n") && i + 1 < argc) {
-            number_of_roots = std::stoi(argv[++i]);
-        }
-        else {
-            std::cerr << "Unknown or incomplete argument: " << arg << "\n";
-            return 1;
-        }
-    }
-
-    // ---------------- Validate ----------------
-    if (input_path.empty()) {
-        std::cerr << "Error: input file not specified (--i <file>)\n";
-        return 1;
-    }
-
-    // ---------------- Select output stream ----------------
-    std::ostream* out = &std::cout;
-    std::ofstream fout;
-
-    if (!outpathname.empty()) {
-        fout.open(outpathname);
-        if (!fout) {
-            std::cerr << "Cannot open output file: " << outpathname << "\n";
-            return 1;
-        }
-        out = &fout;
-    }
-
-    // ---------------- Echo parameters ----------------
-    *out << "BS parameters:\n";
-    *out << " input       = " << input_path << "\n";
-    *out << " beam_width  = " << beam_width << "\n";
-    *out << " heuristic   = " << heuristicToString(heuristic) << "\n";
-    *out << " max_iters   = " << max_iters << "\n";
-    *out << " time_limit  = " << time_limit_sec << " s\n\n";
-
-    // ---------------- Load instance ----------------
-    Instance inst = Instance::loadFromFile(input_path);
+void read_parameters(int argc,char** argv){
     
-    std::cout << "=== Loaded instance ===\n";
-    inst.print(std::cout);
-
-    // ---------------- Run Beam Search ----------------
-    std::cout << "Now run the BS (forward search) " << std::endl;
-    BeamSearch::Result res = BeamSearch::run_forward_backward_BS(
-        &inst,
-        true,
-        beam_width,
-        heuristic,
-        time_limit_sec
-    );
-
-    // ---------------- Output result ----------------
-    /*out << "=== Beam Search Result ===\n";
-    *out << "Best sequence: " << res.best_seq << "\n";
-    *out << "Length       : " << res.best_seq.size() << "\n";
-    *out << "Runtime (s)  : " << res.runtime << "\n";
-
-    // check feasibility
-    bool feasible = check_feasibility(res.steps, inst.gaps, true);
-    *out << "Feasible     : " << (feasible ? "YES" : "NO") << "\n";
+    int iarg = 1;
+    int hidden_layers = 0;
+    vector<int> units;
+    while (iarg < argc) {
     
-    *out << "Steps:\n";
-    for (const auto& step : res.steps) {
-        *out <<  "( ";
-        for (int p : step)
-            *out  << p  <<    " ";
-        *out << ") ";
-    }*/
-    
-    //std::cout << "=============================================================================" << std::endl;
-    //std::cout << "... and now the backwards BS: " << res.steps[res.steps.size()-1] <<  std::endl;
-    /*Node* start_backward = new Node( res.steps[res.steps.size()-1], "", nullptr);
-    BeamSearch::Result res1 = BeamSearch::run_forward_backward_BS(
-        &inst,
-        false, // backward BS
-        beam_width,
-        heuristic,
-        time_limit_sec, 
-        {start_backward}
-    );
-    
-    *out << "\n Steps backward :\n";
-    for (const auto& step : res1.steps) {
-        *out <<  "( ";
-        for (int p : step)
-            *out  << p  <<    " ";
-        *out << ") ";
-    }
-    *out << "\nBS backward sequence: " << res1.best_seq << "\n";
-    
-    bool feas = check_feasibility(res1.steps, inst.gaps, true);
-    std::cout << "Feasible     : " << (feas ? "YES" : "NO") << "\n";
-    
-    */
-    // IMSBS algorithm
-    BeamSearch::Result res_imsbs = BeamSearch::imsbs(&inst, beam_width, 10, 
-                                   heuristic, HeuristicType::H5, number_of_roots, 
-                                   max_iters, time_limit_sec);
+        if (strcmp(argv[iarg], "-train") == 0) {
+            
+            // include instances for training 
+            if(not training) training = true;
+            std::string input_path = argv[++iarg];
+            neural_network->training_instances.push_back( Instance::loadFromFile(input_path) );
+        }
+        // include instances for the validation phase
+        else if (strcmp(argv[iarg], "-validation") == 0){
         
-    // ---------------- Output result ---------------------
-    *out << "=== IMSBS ===\n";  
-    *out << "Best sequence: " << res_imsbs.best_seq << "\n";
-    *out << "Length       : " << res_imsbs.best_seq.size() << "\n";
-    *out << "Runtime (s)  : " << res_imsbs.runtime << "\n";
-
-    // check feasibility
-    bool feasible2 = check_feasibility(res_imsbs.steps, inst.gaps, true);
-    *out << "Feasible     : " << (feasible2 ? "YES" : "NO") << "\n";
-    
-    *out << "Steps:\n";
-    for (const auto& step : res_imsbs.steps) {
-        *out <<  "( ";
-        for (int p : step)
-            *out  << p  <<    " ";
-        *out << ") ";
+            std::string input_path = argv[++iarg];
+            neural_network->validation_instances.push_back( Instance::loadFromFile(input_path) );
+        }
+        //weight limit pass: W \in [-a, a]
+        else if (strcmp(argv[iarg], "-weight_limit") == 0) neural_network->weight_limit = atoi(argv[++iarg]);
+        //pass the beam search for training (the one used in each forward pass); for the backward pass it is fixed to 10 
+        else if (strcmp(argv[iarg], "-training_beam_width") == 0) neural_network->training_beam_width = atoi(argv[++iarg]);
+        // time limit allowed for training
+        else if (strcmp(argv[iarg],"-training_time_limit") == 0) neural_network->training_time_limit = atof(argv[++iarg]);
+        //number of hidden layers in the neural network 
+        else if (strcmp(argv[iarg], "-hidden_layers") == 0) hidden_layers = atoi(argv[++iarg]);
+        // number of nodes in each layer: can be passed as -units 5 10 5, meaning 5 nodes in layer0, 10 nodes in layer1, 5 nodes in layer2
+        else if (strcmp(argv[iarg], "-units") == 0){
+            for(int i = 0; i < hidden_layers; ++i)
+                units.push_back(atoi(argv[++iarg]));
+        }
+        // Basic Beam search
+        else if (strcmp(argv[iarg], "-t") == 0){
+            time_limit_sec = atoi(argv[++iarg]);
+        }
+        
+        else if (strcmp(argv[iarg], "-i") == 0){
+            filename = argv[++iarg];
+        } 
+        else if (strcmp(argv[iarg], "-o") == 0){
+            outpathname = argv[++iarg];
+        }
+        else if (strcmp(argv[iarg], "-b") == 0){
+            beam_width = atoi(argv[++iarg]);     
+        } 
+        else if (strcmp(argv[iarg], "-h") == 0 ) {
+             heuristic = parseHeuristic(argv[++iarg]);  
+        }
+        else if ( strcmp(argv[iarg], "-m") == 0 ) {
+             max_iters = std::stoi(argv[++iarg]);
+        }
+        else if ( strcmp(argv[iarg], "-nr") == 0 ) {
+            number_of_roots = std::stoi(argv[++iarg]);
+        }
+        // activation function to pass 
+        else if(strcmp(argv[iarg], "-activation_function") == 0){
+            activation_function = atoi(argv[++iarg]);
+        }
+        // basic feature conf: 6 features, 
+        else if(strcmp(argv[iarg], "-feature_configuration") == 0){
+        
+            feature_config = atoi(argv[++iarg]);  
+            if(feature_config == 1) num_features = 6; // p^{L,v}, l^v and length of partial sol 
+            else if(feature_config == 2) num_features = 7; // plus alphabet size 
+            else if(feature_config == 3) num_features = 8; //plus num of input  strings
+            else if(feature_config == 4) num_features = 9; //plus num of and length of input   strings
+        }
+        // Params. of the optimization algorithm (EA) used for tuning the NN (finding a suitable configuration)
+        else if (strcmp(argv[iarg], "-ga_configuration") == 0){ //1: rkga, 2: brkga, 3: lexicase sel.
+            ga_config = atoi(argv[++iarg]);
+        }
+        else if(strcmp(argv[iarg], "-population_size") == 0){
+            population_size = atoi(argv[++iarg]);
+        }
+        else if(strcmp(argv[iarg], "-n_elites") == 0){
+            n_elites = atoi(argv[++iarg]);
+        }
+        else if(strcmp(argv[iarg], "-n_mutants") == 0){
+            n_mutants = atoi(argv[++iarg]);
+        }
+        else if(strcmp(argv[iarg], "-rho") == 0){
+            elite_inheritance_probability = atof(argv[++iarg]);
+        }
+        else if(strcmp(argv[iarg], "-differentiate_ties") == 0){
+            differentiate_ties = true;
+        }
+        iarg++;
     }
+    //Set up neural network
+    neural_network->units_per_layer.push_back(num_features); //input layer
+    for(int i = 0; i < hidden_layers; ++i){ //inner layers
+        neural_network->units_per_layer.push_back(units[i]); // put nodes into (hidden) layers
+    }
+    neural_network->units_per_layer.push_back(1); //output layer
     
-    return 0;
+    if(not training){
+        
+        // include weights from file @weights.txt
+        ifstream weights_file("weights.txt", std::ios::in);
+        if(!weights_file.is_open()){
+            cout << "Couldn't open the weights file" << endl;
+            exit(-1);
+        }
+        vector<double> temporal_weights;
+        double num = 0.0;  
+        while(weights_file >> num) temporal_weights.push_back(num);
+        neural_network->store_weights(temporal_weights);
+    }
+    // validation of params 
+    if(feature_config != 1 and feature_config != 2 and feature_config != 3 and feature_config != 4){
+        cout << "WARNING: feature configuration not specified. Using default value of one" << endl;
+        feature_config = 1;
+    }
+    if(ga_config != 1 and ga_config != 2 and ga_config != 3 and training){
+        cout << "WARNING: training ga configuration not specified. Using default value of one (rkga)" << endl;
+        ga_config = 1;
+    }
+    if(neural_network->weight_limit == 0 and training){
+        cout << "WARNING: weight limit not specified. Using default value of one" << endl;
+        neural_network->weight_limit = 1;
+    }
+    if(neural_network->units_per_layer.size() == 0){
+        cout << "ERROR: the shape of the neural network needs to be explicited " << endl;
+        exit(-1);
+    }
+    if(activation_function != 1 and activation_function != 2 and activation_function != 3){
+        cout << "WARNING: using no activation function, explicit one with -activation_function {1:tanh , 2:relu, 3:sigmoid}" << endl;
+    }
 }
 
+int main( int argc, char **argv ) {
 
+    read_parameters(argc, argv);
+    if(training)
+    { 
+    
+        std::cout << std::setprecision(10) << std::fixed;
+        vector<double> res_weights = neural_network->Train(); // train NN 
+        
+        // write best weights inside weights file
+        fstream weights_file;
+        weights_file.open("last_weights.txt",ios_base::out);
+        for(double weight : res_weights)
+            weights_file << weight << " ";
+        
+        weights_file.close();
+    }
+    else { // if not trained, prioritize these nodes as outcome of the trained NN 
+        Instance inst = Instance::loadFromFile(input_path);
+        //Instance* inst = new Instance(filename);
+        //BS(time_limit, beam_width, inst, neural_network, false);
+        BeamSearch::Result res_imsbs = BeamSearch::Learning_imsbs(&inst, beam_width, 10, 
+                                       heuristic, HeuristicType::H5, number_of_roots, 
+                                       max_iters, time_limit_sec, neural_network);
+        delete &inst;
+    }
+    return 0;
+}
 

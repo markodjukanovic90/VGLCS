@@ -52,8 +52,8 @@ public:
   }
 
 
-static void compute_features(std::vector<Node*>& V_ext, Instance* inst)
-{
+  static void compute_features(std::vector<Node*>& V_ext, Instance* inst)
+  {
     //calculate features for the nodes in V_ext
     for(Node* node : V_ext){
         //first option: consider p^{L,v} and l^v. first do p^{L,v}_i = p^{L,v}_i / |s_i| and l^v_j = l^v_j / |r_j| for al input and restricted strings. 
@@ -78,15 +78,15 @@ static void compute_features(std::vector<Node*>& V_ext, Instance* inst)
         features.push_back(compute_std(pL_v, mean_pL_v));
         features.push_back(len_partial);
         
-        if(feature_config == 2) //add alphabet size
+        if(feature_config == 2) // add alphabet size, 7 features
             features.push_back( (int)inst->Sigma.size() );
             
-        else if(feature_config == 3){ //add number of input and restricted strings
+        else if(feature_config == 3){ // 8 features
             
             features.push_back( (int)inst->Sigma.size() );
             features.push_back( (int) inst->sequences.size() ); // number of instance 
         }
-        else if(feature_config == 4){ //add length of input and restricted strings
+        else if(feature_config == 4){ // 9 features
         
             features.push_back( (int)inst->Sigma.size() );
             features.push_back(  (int) inst->sequences.size() );
