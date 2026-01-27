@@ -38,7 +38,7 @@ public:
    };
 
    
-   static void compute_heuristic_values(std::vector<Node*>& V_ext, Instance* inst, MLP* neural_network){    
+   static void compute_heuristic_values(std::vector<Node*>& V_ext,  MLP* neural_network){    
       
        for(Node* node : V_ext){
            // forward pass: assign a heuristic value from NN to each node 
@@ -67,32 +67,34 @@ public:
         int len_partial = node->length();
         
         //normalize left position vectors so that they do not depend on the length of the input strings
-        for(int i = 0; i < pL_v.size(); ++i) pL_v[i] /=  inst->sequences[i].size();
+        for(int i = 0; i < (int)pL_v.size(); ++i) pL_v[i] /=  inst->sequences[i].size();
         
         vector<double> features; 
         //features of vectors pL_v and lv
         double mean_pL_v = compute_average(pL_v);
+        
         features.push_back(compute_max(pL_v));
         features.push_back(compute_min(pL_v));
         features.push_back(mean_pL_v);
         features.push_back(compute_std(pL_v, mean_pL_v));
         features.push_back(len_partial);
         
-        if(feature_config == 2) // add alphabet size, 7 features
+        if(feature_config == 2) // add alphabet size, 6 features 
             features.push_back( (int)inst->Sigma.size() );
             
-        else if(feature_config == 3){ // 8 features
+        else if(feature_config == 3){ // 7 features
             
             features.push_back( (int)inst->Sigma.size() );
             features.push_back( (int) inst->sequences.size() ); // number of instance 
         }
-        else if(feature_config == 4){ // 9 features
+        else if(feature_config == 4){ // 8 features
         
-            features.push_back( (int)inst->Sigma.size() );
+            features.push_back( (int)inst->Sigma.size() );  
             features.push_back(  (int) inst->sequences.size() );
             features.push_back((inst->sequences[0]).size()); //note that this config only makes sense if all input strings have the same length
         }
         standardize(features);
+
         node->features = features;
       }
    }
@@ -133,8 +135,6 @@ public:
         auto time_start = std::chrono::steady_clock::now();
 
         for (int iter = 0; iter < max_iters && !beam.empty(); ++iter) {
-        
-            //std::cout <<"#iter: " << iter << std::endl;
             
             if (std::chrono::duration<double>(
                     std::chrono::steady_clock::now() - time_start
@@ -185,7 +185,8 @@ public:
                 for (Node* n : candidates)  
                      n->evaluate(inst, heuristic, k_val, forward_or_backward); 
              else{ //use the outcome from NN as heuristic guidance  
-                 compute_heuristic_values(candidates, inst, neural_network); 
+                 compute_features(candidates, inst);
+                 compute_heuristic_values(candidates, neural_network); 
              }
              
             std::sort(candidates.begin(), candidates.end(),
@@ -256,7 +257,7 @@ public:
         auto time_start = std::chrono::steady_clock::now();
         for(int iter=0; iter < imsbs_iterations && (R.size() != 0); ++iter)
         {    
-             //std::cout << "#iter=" << iter << std::endl;
+             
              int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
              
              std::vector<Node*> L;
@@ -368,6 +369,7 @@ public:
              int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
              
              std::vector<Node*> L;
+             
              while ((int)L.size() < r_size) 
              {
                   L.push_back(R[0]);

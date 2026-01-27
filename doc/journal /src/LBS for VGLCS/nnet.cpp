@@ -45,7 +45,7 @@ MLP::MLP(){}
 Eigen::VectorXd MLP::forward(const Eigen::VectorXd& x) {
     Eigen::MatrixXd x_mat = x;
     Eigen::MatrixXd prev = x_mat;
-    for(int i = 0; i < units_per_layer.size() - 1; ++i){
+    for(int i = 0; i < (int) units_per_layer.size() - 1; ++i){
         Eigen::MatrixXd y = weight_matrices[i] * prev;
         y = y + bias_vectors[i];
         apply_activation_function(y);
@@ -82,7 +82,11 @@ void MLP::apply_decoder(training_individual& ind){ //calculates the quality of t
     this->store_weights(ind.weights);
     double ofv = 0;
     for(Instance instance : training_instances) 
+    {
+        //instance.print(std::cout);
         ofv += BeamSearch::Learning_imsbs(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size();
+    }
+        
     ofv = ofv / training_instances.size();
     ind.ofv = ofv;
 }
@@ -91,7 +95,7 @@ void MLP::store_weights(const vector<double>& weights){ //store weights into neu
     weight_matrices.clear();
     bias_vectors.clear(); 
     int stored_weights = 0;
-    for(int i = 0; i < units_per_layer.size() - 1; ++i){
+    for(int i = 0; i < (int)units_per_layer.size() - 1; ++i){
         //weight matrix from layer i to layer i + 1
         int num_rows = units_per_layer[i + 1];
         int num_cols = units_per_layer[i];
@@ -127,7 +131,7 @@ vector<double> MLP::Train(){
     std::uniform_real_distribution<double> standard_distribution_weights(-weight_limit, weight_limit);
     
     int n_weights = 0; 
-    for(int i = 0; i < units_per_layer.size() - 1; ++i) 
+    for(int i = 0; i <(int) units_per_layer.size() - 1; ++i) 
         n_weights +=  (units_per_layer[i] + 1) * units_per_layer[i + 1];
     
     //results files
@@ -151,11 +155,14 @@ vector<double> MLP::Train(){
     double best_ofv = std::numeric_limits<double>::min();
     vector<double> best_weights;
     for(int pi = 0; pi < population_size and not stop; ++pi){ //initialize every individual's chromosome as random
+        
         population[pi].weights = vector<double>(n_weights);
         for(int i = 0; i < n_weights; i++)
             (population[pi].weights)[i] = standard_distribution_weights(generator);
         
+        
         apply_decoder(population[pi]);
+        
         ctime = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
         if(ctime > training_time_limit) stop = true;
         if(population[pi].ofv > best_ofv){
@@ -198,6 +205,7 @@ vector<double> MLP::Train(){
         }
         
         for(int ic = 0; ic < n_offspring and not stop; ++ic){ //construct offspring population
+        
             if(ga_config == 1){ // rkga offspring construction
                 std::vector<int> indices(population_size); //shuffle all individuals and select first two as parents
                 std::iota(indices.begin(), indices.end(), 0);

@@ -48,7 +48,7 @@ void read_parameters(int argc,char** argv){
         }
         
         else if (strcmp(argv[iarg], "-i") == 0){
-            filename = argv[++iarg];
+            input_path = argv[++iarg];
         } 
         else if (strcmp(argv[iarg], "-o") == 0){
             outpathname = argv[++iarg];
@@ -73,10 +73,10 @@ void read_parameters(int argc,char** argv){
         else if(strcmp(argv[iarg], "-feature_configuration") == 0){
         
             feature_config = atoi(argv[++iarg]);  
-            if(feature_config == 1) num_features = 6; // p^{L,v}, l^v and length of partial sol 
-            else if(feature_config == 2) num_features = 7; // plus alphabet size 
-            else if(feature_config == 3) num_features = 8; //plus num of input  strings
-            else if(feature_config == 4) num_features = 9; //plus num of and length of input   strings
+            if(feature_config == 1) num_features = 5; // p^{L,v}, l^v and length of partial sol 
+            else if(feature_config == 2) num_features = 6; // plus alphabet size 
+            else if(feature_config == 3) num_features = 7; //plus num of input  strings
+            else if(feature_config == 4) num_features = 8; //plus num of and length of input   strings
         }
         // Params. of the optimization algorithm (EA) used for tuning the NN (finding a suitable configuration)
         else if (strcmp(argv[iarg], "-ga_configuration") == 0){ //1: rkga, 2: brkga, 3: lexicase sel.
@@ -158,14 +158,18 @@ int main( int argc, char **argv ) {
         
         weights_file.close();
     }
-    else { // if not trained, prioritize these nodes as outcome of the trained NN 
+    else { // if not trained, prioritize these nodes as outcome of the trained NN
         Instance inst = Instance::loadFromFile(input_path);
-        //Instance* inst = new Instance(filename);
+        std::cout << "Run the basic LBS approach " << std::endl;
+        inst.print(std::cout);
         //BS(time_limit, beam_width, inst, neural_network, false);
         BeamSearch::Result res_imsbs = BeamSearch::Learning_imsbs(&inst, beam_width, 10, 
-                                       heuristic, HeuristicType::H5, number_of_roots, 
+                                       heuristic, number_of_roots, 
                                        max_iters, time_limit_sec, neural_network);
-        delete &inst;
+        std::cout << res_imsbs.best_seq << " size: " << res_imsbs.best_seq.size() << std::endl;
+        std::cout << res_imsbs.runtime << std::endl;
+        // save in file: TODO  and option for basic BS
+        //delete &inst;
     }
     return 0;
 }
