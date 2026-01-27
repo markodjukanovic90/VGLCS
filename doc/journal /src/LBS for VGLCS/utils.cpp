@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "utils.h"
-
+#include <numeric>
+#include <cmath>
 // ====================== Heuristic parsing ======================
 
 HeuristicType parseHeuristic(const std::string& h) {
@@ -9,7 +10,7 @@ HeuristicType parseHeuristic(const std::string& h) {
     if (h == "h5") return HeuristicType::H5;
     if (h == "h8") return HeuristicType::H8;
     throw std::invalid_argument("Unknown heuristic: " + h);
-}
+} 
 
 std::string heuristicToString(HeuristicType h) {
     switch (h) {
@@ -106,8 +107,7 @@ int h5_upper_bound(
         }
         ub += mn;
     }
-    //std::cout << pos << std::endl;
-    //std::cout << " UB: " << ub << std::endl;
+ 
     return ub;
 }
 
@@ -191,3 +191,39 @@ std::unordered_map<char, int> first_valid_indices(
     }
     return mapping;
 }
+
+//================= Stats extracting features from nodes ====================  
+
+double compute_max(const std::vector<double>& values){
+    auto max_element = std::max_element(values.begin(), values.end());
+    return *max_element;
+}
+
+double compute_min(const std::vector<double>& values){
+    auto min_element = std::min_element(values.begin(), values.end());
+    return *min_element;
+}
+
+double compute_average(const std::vector<double>& values){
+    double sum = std::accumulate(values.begin(), values.end(), 0.0);
+    return sum / values.size();
+}
+
+double compute_std(const std::vector<double>& values, double mean){
+    double squaredDifferencesSum = 0.0;
+    for (double value : values) {
+        squaredDifferencesSum += (value - mean) * (value - mean);        
+    }
+    double variance = squaredDifferencesSum / values.size();
+    return std::sqrt(variance);
+}
+
+void standardize(std::vector<double>& features){
+
+    double features_avg = compute_average(features);
+    double features_std = compute_std(features, features_avg);
+    
+    for(double& feature : features)
+        feature = (feature - features_avg) / features_std;
+}
+

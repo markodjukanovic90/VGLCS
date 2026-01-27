@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -23,6 +24,12 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
     os << "]";
     return os;
 }
+
+double compute_average(const std::vector<double>& v);
+double compute_max(const std::vector<double>& v);
+double compute_min(const std::vector<double>& v);
+double compute_std(const std::vector<double>& v, double mean);
+void standardize(std::vector<double>& v);
 
 // ====================== Heuristic helpers ======================
 

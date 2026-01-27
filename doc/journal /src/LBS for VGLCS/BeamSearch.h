@@ -12,8 +12,10 @@
 #include "utils.h"
 #include "Instance.h"
 #include "nnet.h"
+#include <Eigen/Dense>
+#include "unistd.h"
 
-//class MLP;
+class MLP;
 
 class BeamSearch {
 public:
@@ -35,14 +37,74 @@ public:
       }
    };
 
+   
+   static void compute_heuristic_values(std::vector<Node*>& V_ext, Instance* inst, MLP* neural_network){    
+      
+       for(Node* node : V_ext){
+           // forward pass: assign a heuristic value from NN to each node 
+           Eigen::Map<const Eigen::VectorXd> eigen_features(node->features.data(), node->features.size());
+           node->score = neural_network->forward(eigen_features)(0);
+           /*if(use_secondary_measure){ 
+              TODO
+              node->secondary_heuristic_value = ...
+          }*/
+      }
+  }
+
+
+static void compute_features(std::vector<Node*>& V_ext, Instance* inst)
+{
+    //calculate features for the nodes in V_ext
+    for(Node* node : V_ext){
+        //first option: consider p^{L,v} and l^v. first do p^{L,v}_i = p^{L,v}_i / |s_i| and l^v_j = l^v_j / |r_j| for al input and restricted strings. 
+        // then consider the max, min, std, avg of both vectors as features (8 features). Add also length of partial sol represented by node u^v (9 in total) (config1)
+        //Add the alphabet size (config2)
+        //Add length and number of input and restricted strings (config3)
+        std::vector<double> pL_v;
+        pL_v.reserve(node->pos.size());
+        for (int x : node->pos)  
+            pL_v.push_back(static_cast<double>(x));
+        int len_partial = node->length();
+        
+        //normalize left position vectors so that they do not depend on the length of the input strings
+        for(int i = 0; i < pL_v.size(); ++i) pL_v[i] /=  inst->sequences[i].size();
+        
+        vector<double> features; 
+        //features of vectors pL_v and lv
+        double mean_pL_v = compute_average(pL_v);
+        features.push_back(compute_max(pL_v));
+        features.push_back(compute_min(pL_v));
+        features.push_back(mean_pL_v);
+        features.push_back(compute_std(pL_v, mean_pL_v));
+        features.push_back(len_partial);
+        
+        if(feature_config == 2) //add alphabet size
+            features.push_back( (int)inst->Sigma.size() );
+            
+        else if(feature_config == 3){ //add number of input and restricted strings
+            
+            features.push_back( (int)inst->Sigma.size() );
+            features.push_back( (int) inst->sequences.size() ); // number of instance 
+        }
+        else if(feature_config == 4){ //add length of input and restricted strings
+        
+            features.push_back( (int)inst->Sigma.size() );
+            features.push_back(  (int) inst->sequences.size() );
+            features.push_back((inst->sequences[0]).size()); //note that this config only makes sense if all input strings have the same length
+        }
+        standardize(features);
+        node->features = features;
+      }
+   }
 
     static Result run_forward_backward_BS(
         Instance* inst,
         bool forward_or_backward,
         int beam_width = 10,
-        HeuristicType heuristic = HeuristicType::H5,  //  
+        HeuristicType heuristic = HeuristicType::H5,  
         int time_limit_sec = 1800,
-        const std::vector<Node*>& start_node_vector = {}
+        const std::vector<Node*>& start_node_vector = {},
+        MLP* neural_network = nullptr  
     ) {
         const auto& sequences = inst->sequences;
         //const auto& gaps = inst->gaps;
@@ -118,11 +180,14 @@ public:
                  k_val =  (double) min_len / (int)inst->Sigma.size() > 1 ?  (int)((double) min_len / (int)inst->Sigma.size() )  : 1;
             }
             
-
-            for (Node* n : candidates){      
-                 n->evaluate(inst, heuristic, k_val, forward_or_backward); 
-                 //std::cout << "n->score " << n->score << std::endl;
-            } 
+            //  Node evaluation here is assigned                
+            if(neural_network == nullptr)
+                for (Node* n : candidates)  
+                     n->evaluate(inst, heuristic, k_val, forward_or_backward); 
+             else{  
+                 compute_heuristic_values(candidates, inst, neural_network); 
+             }
+             
             std::sort(candidates.begin(), candidates.end(),
                 [](Node* a, Node* b) { return a->score > b->score; });
 
@@ -169,7 +234,7 @@ public:
         return { best_seq, steps, runtime, list_pos_complete };
     }
     
-    // IMSBS algorithm
+    // IMSBS algorithm (pure implementation with no NN -- later to be merged with the Learning BS)
     static Result imsbs(
         Instance* inst,
         int beam_width_forward = 10,
@@ -183,7 +248,7 @@ public:
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
  
         int best_sol_found=0; std::string best_seq="";  //best solution attributes 
-        std::vector<Node*> R; // can be also priority queue: TODO  
+        std::vector<Node*> R; // can be also priority queue: TODO -- left for speeding up  
         R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
         std::unordered_map<std::vector<int>, Node*, VectorHash> visited;
         std::vector<std::vector<int>> best_steps; double runtime=0.0;
@@ -227,7 +292,7 @@ public:
         			beam_width_forward,
         			heuristic_forward,
         			time_limit_sec, 
-        			L // run the forward BS on L
+        			L, nullptr // run the forward BS on L
              );
              
              //   check for a new incumbent solution 
@@ -240,6 +305,115 @@ public:
                  // push_front steps to @best_steps obtained from the backward BS pass (root_node_steps)
                  std::vector<std::vector<int>> best_step_front = best_steps.size() > 0 ? root_node_steps[best_steps[0]]  : std::vector<std::vector<int>>(); 
                  for(int i=0; i<(int)best_step_front.size()-1 && best_step_front.size()>0; ++i) // exclude the last one as it appears in the @best_steps already 
+                     best_steps.insert(best_steps.begin() + i, best_step_front[i]);   
+             }
+             // Update R: should pass all complete solutions during the forward BS
+             for(auto& pos: res_n.list_pos_complete)
+             {
+                 Node* p_new = new Node(pos, "", nullptr); // create a new node as a candidate root node
+                 // expand p_new 
+                 auto succs = Node::generateSuccessorsLCS(p_new, inst, heuristic_backward); // generate in the LCS manner 
+                 // add succs into R if not already been part of R (in the previous iterations)
+                 for(Node* child: succs)
+                 {
+                     if(visited.find(child->pos) == visited.end()) // @child not in @visited
+                     {
+                         R.push_back(child);
+                         visited.emplace(child->pos, child);
+                         all_nodes.push_back(child);
+                     }else
+                        delete child;
+                 }
+             }
+             runtime = std::chrono::duration<double>(
+             std::chrono::steady_clock::now() - time_start
+             ).count();
+             
+             if(runtime >= time_limit_sec) //time has exceeded 
+                 break;
+             //sort out R vector:
+             std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){return a->score > b->score; });
+        }
+        //cleanup nodes  
+        for(Node* node: all_nodes)
+            delete node;  
+        
+        
+        return {best_seq, best_steps, runtime , {}};
+    }
+    
+    // IMSBS algorithm (adapt for NN ): TODO 
+    
+    static Result Learning_imsbs(
+        
+        Instance* inst,
+        int beam_width_forward = 10,
+        int beam_width_backward = 10,
+        HeuristicType heuristic_forward = HeuristicType::H1,  
+        HeuristicType heuristic_backward = HeuristicType::H5,
+        int number_root_nodes = 10,
+        int imsbs_iterations = 10000,
+        int time_limit_sec = 1800,  MLP* neural_network = nullptr, bool training = false ) {
+ 
+        std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
+ 
+        int best_sol_found=0; std::string best_seq="";  //best solution attributes 
+        std::vector<Node*> R; // can be also priority queue: TODO  
+        R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
+        std::unordered_map<std::vector<int>, Node*, VectorHash> visited;
+        std::vector<std::vector<int>> best_steps; double runtime=0.0;
+        
+        auto time_start = std::chrono::steady_clock::now();
+        for(int iter=0; iter < imsbs_iterations && (R.size() != 0); ++iter)
+        {    
+             int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
+             
+             std::vector<Node*> L;
+             while ((int)L.size() < r_size) 
+             {
+                  L.push_back(R[0]);
+                  R.erase(R.begin());
+             }             
+             //L initialized; refine the nodes by running backward BS per each node
+             std::unordered_map<std::vector<int>, std::vector<std::vector<int>>, VectorHash> root_node_steps; 
+             
+             for(Node *n : L)
+             {
+                 
+   	           Result res_n = run_forward_backward_BS(
+        		inst,
+        		false, // backward BS
+        		beam_width_backward,
+        		heuristic_backward,
+        		time_limit_sec, 
+        		{n} // run the backward BS on @n
+    		  );
+    		  //update the node n  (refining it)
+    		  n->seq = res_n.best_seq;
+    		  const std::vector<int> root_pos = n->pos;
+    		  root_node_steps.emplace(root_pos, res_n.steps);
+    		  n->parent = nullptr;  
+             } 
+             //execute the FORWARD BS on the set of refined nodes from L:
+             Result res_n = run_forward_backward_BS(
+        			inst,
+        			true, // backward BS
+        			beam_width_forward,
+        			heuristic_forward,
+        			time_limit_sec, 
+        			L // run the forward BS on L
+             );
+             
+             //Check for a new incumbent solution 
+             if(best_sol_found < (int)res_n.best_seq.size())
+             {
+                 best_sol_found = res_n.best_seq.size();
+                 best_seq =  res_n.best_seq;
+                 //reconstruct steps from the backward BS 
+                 best_steps = res_n.steps;
+                 // push_front steps to @best_steps obtained from the backward BS pass (root_node_steps)
+                 std::vector<std::vector<int>> best_step_front = best_steps.size() > 0 ? root_node_steps[best_steps[0]]  : std::vector<std::vector<int>>(); 
+                 for(int i=0; i<(int)best_step_front.size()-1 && best_step_front.size() > 0; ++i) // exclude the last one as it appears in the @best_steps already 
                      best_steps.insert(best_steps.begin() + i, best_step_front[i]);   
              }
              // Update R: should pass all complete solutions during the forward BS

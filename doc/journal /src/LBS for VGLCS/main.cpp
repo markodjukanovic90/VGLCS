@@ -8,6 +8,7 @@
   
 int main(int argc, char* argv[]) {
    
+    MLP* neural_network = new MLP();
 
     // ---------------- Parse CLI ----------------
     for (int i = 1; i < argc; ++i) {
