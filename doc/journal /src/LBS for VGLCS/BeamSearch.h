@@ -70,6 +70,7 @@ static void write_result(
            // forward pass: assign a heuristic value from NN to each node 
            Eigen::Map<const Eigen::VectorXd> eigen_features(node->features.data(), node->features.size());
            node->score = neural_network->forward(eigen_features)(0);
+           //std::cout << "Node score from NN: " << node->score << std::endl;
            /*if(use_secondary_measure){ 
               TODO
               node->secondary_heuristic_value = ...
@@ -208,8 +209,10 @@ static void write_result(
             
             //  Node evaluation here is assigned                
             if(neural_network == nullptr)
-                for (Node* n : candidates)  
+                for (Node* n : candidates) {
                      n->evaluate(inst, heuristic, k_val, forward_or_backward); 
+                     //std::cout << "Node score: " << n->score << std::endl;
+                }
              else{ //use the outcome from NN as heuristic guidance  
                  compute_features(candidates, inst);
                  compute_heuristic_values(candidates, neural_network); 
@@ -260,115 +263,6 @@ static void write_result(
 
         return { best_seq, steps, runtime, list_pos_complete };
     }
-    
-    // IMSBS algorithm (pure implementation with no NN -- later to be merged with the Learning BS)
-    /*static Result imsbs(
-        Instance* inst,
-        int beam_width_forward = 10,
-        int beam_width_backward = 10,
-        HeuristicType heuristic_forward = HeuristicType::H1,  
-        int number_root_nodes = 10,
-        int imsbs_iterations = 10000,
-        int time_limit_sec = 1800) {
- 
-        std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
-        // the best choice (no doubt)
-        HeuristicType heuristic_backward = HeuristicType::H5,
- 
-        int best_sol_found=0; std::string best_seq="";  //best solution attributes 
-        std::vector<Node*> R; // can be also priority queue: TODO -- left for speeding up  
-        R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
-        std::unordered_map<std::vector<int>, Node*, VectorHash> visited;
-        std::vector<std::vector<int>> best_steps; double runtime=0.0;
-        
-        auto time_start = std::chrono::steady_clock::now();
-        for(int iter = 0; iter < imsbs_iterations && (R.size() != 0); ++iter)
-        {    
-             
-             int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
-             
-             std::vector<Node*> L;
-             while ((int)L.size() < r_size) 
-             {
-                  L.push_back(R[0]);
-                  R.erase(R.begin());
-             }             
-             //L initialized; refine the nodes by running backward BS per each node
-             std::unordered_map<std::vector<int>, std::vector<std::vector<int>>, VectorHash> root_node_steps; 
-             
-             for(Node *n : L)
-             {
-                 
-   	           Result res_n = run_forward_backward_BS(
-        		inst,
-        		false, // backward BS
-        		beam_width_backward,
-        		heuristic_backward,
-        		time_limit_sec, 
-        		{n} // run the backward BS on @n
-    		  );
-    		  //update the node n  (refine it)
-    		  n->seq = res_n.best_seq;
-    		  const std::vector<int> root_pos = n->pos;
-    		  root_node_steps.emplace(root_pos, res_n.steps);
-    		  n->parent = nullptr;  
-             } 
-             //execute the FORWARD BS on the set of refined nodes from L:
-             Result res_n = run_forward_backward_BS(
-        			inst,
-        			true, // backward BS
-        			beam_width_forward,
-        			heuristic_forward,
-        			time_limit_sec, 
-        			L, nullptr // run the forward BS on L
-             );
-             
-             //   check for a new incumbent solution 
-             if(best_sol_found < (int)res_n.best_seq.size())
-             {
-                 best_sol_found = res_n.best_seq.size();
-                 best_seq =  res_n.best_seq;
-                 //reconstruct steps from the backward BS 
-                 best_steps = res_n.steps;
-                 // push_front steps to @best_steps obtained from the backward BS pass (root_node_steps)
-                 std::vector<std::vector<int>> best_step_front = best_steps.size() > 0 ? root_node_steps[best_steps[0]]  : std::vector<std::vector<int>>(); 
-                 for(int i=0; i<(int)best_step_front.size()-1 && best_step_front.size()>0; ++i) // exclude the last one as it appears in the @best_steps already 
-                     best_steps.insert(best_steps.begin() + i, best_step_front[i]);   
-             }
-             // Update R: should pass all complete solutions during the forward BS
-             for(auto& pos: res_n.list_pos_complete)
-             {
-                 Node* p_new = new Node(pos, "", nullptr); // create a new node as a candidate root node
-                 // expand p_new 
-                 auto succs = Node::generateSuccessorsLCS(p_new, inst, heuristic_backward); // generate in the LCS manner 
-                 // add succs into R if not already been part of R (in the previous iterations)
-                 for(Node* child: succs)
-                 {
-                     if(visited.find(child->pos) == visited.end()) // @child not in @visited
-                     {
-                         R.push_back(child);
-                         visited.emplace(child->pos, child);
-                         all_nodes.push_back(child);
-                     }else
-                        delete child;
-                 }
-             }
-             runtime = std::chrono::duration<double>(
-             std::chrono::steady_clock::now() - time_start
-             ).count();
-             // check if tjhe time limit has been exceeded
-             if(runtime >= time_limit_sec) //time has exceeded 
-                 break;
-             //sort out R vector:
-             std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){return a->score > b->score; });
-        }
-        //cleanup nodes  
-        for(Node* node: all_nodes)
-            delete node;  
-        
-        
-        return {best_seq, best_steps, runtime , {}};
-    } */
     
     // IMSBS algorithm (adapt for NN )  
     static Result imsbs_with_learning(

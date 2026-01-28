@@ -202,7 +202,7 @@ int main( int argc, char **argv ) {
                 res_imsbs,
                 inst,
                 "IMSBS"
-             );     
+             );                                              
         }
         
         // save in file: delete instance after use
