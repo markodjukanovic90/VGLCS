@@ -1,0 +1,17 @@
+BS parameters:
+ input       = mglcs_2_50_2_0.txt
+ beam_width  = 20
+ heuristic   = h5
+ max_iters   = 5000
+ time_limit  = 1800 s
+
+=== Beam Search Result ===
+Best sequence: TTAAAAAAAATTTATATTATAAAT
+Length       : 24
+Runtime (s)  : 0.000270258
+Feasible     : YES
+Steps:
+( 0 0 ) ( 1 1 ) ( 2 3 ) ( 3 5 ) ( 4 8 ) ( 6 9 ) ( 7 10 ) ( 8 11 ) ( 9 12 ) ( 11 13 ) ( 12 15 ) ( 13 17 ) ( 14 19 ) ( 16 20 ) ( 17 21 ) ( 18 22 ) ( 21 23 ) ( 22 24 ) ( 23 25 ) ( 25 26 ) ( 26 27 ) ( 27 28 ) ( 28 29 ) ( 30 30 ) 
+ Steps backward :
+( 0 6 ) ( 1 7 2 ) 
+BS backward sequence: TT
