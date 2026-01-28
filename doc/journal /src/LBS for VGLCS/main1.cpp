@@ -26,12 +26,15 @@ int main(int argc, char* argv[]) { //TODO: update
         else if ((arg == "--beam_width" || arg == "-b") && i + 1 < argc) {
              beam_width = std::stoi(argv[++i]);
         }
+        
         else if ((arg == "--heuristic" || arg == "-h") && i + 1 < argc) {
              heuristic = parseHeuristic(argv[++i]);  
         }
+        
         else if ((arg == "--max_iters" || arg == "-m") && i + 1 < argc) {
              max_iters = std::stoi(argv[++i]);
         }
+        
         else if ((arg == "--time_limit" || arg == "-t") && i + 1 < argc) {
             time_limit_sec = std::stoi(argv[++i]);
         }

@@ -8,12 +8,13 @@
 using namespace std;
 MLP* neural_network = new MLP();
 bool training = false;
+int hidden_layers = 0;
+
 
 void read_parameters(int argc,char** argv){
     
     int iarg = 1;
-    int hidden_layers = 0;
-    vector<int> units;
+    std::vector<int> units;
     while (iarg < argc) {
     
         if (strcmp(argv[iarg], "-train") == 0) {
@@ -43,20 +44,19 @@ void read_parameters(int argc,char** argv){
                 units.push_back(atoi(argv[++iarg]));
         }
         // Basic Beam search
-        else if (strcmp(argv[iarg], "-t") == 0){
-            time_limit_sec = atoi(argv[++iarg]);
+        else if (strcmp(argv[iarg], "-timsbs") == 0){
+            time_limit_imsbs = atoi(argv[++iarg]);
         }
-        
         else if (strcmp(argv[iarg], "-i") == 0){
             input_path = argv[++iarg];
         } 
         else if (strcmp(argv[iarg], "-o") == 0){
             outpathname = argv[++iarg];
         }
-        else if (strcmp(argv[iarg], "-b") == 0){
+        else if (strcmp(argv[iarg], "-m") == 0){
             beam_width = atoi(argv[++iarg]);     
         } 
-        else if (strcmp(argv[iarg], "-h") == 0 ) {
+        else if (strcmp(argv[iarg], "-h") == 0 ) { // HEURISTIC FOR FORWARD BS in IMSBS
              heuristic = parseHeuristic(argv[++iarg]);  
         }
         else if ( strcmp(argv[iarg], "-m") == 0 ) {
@@ -147,6 +147,7 @@ int main( int argc, char **argv ) {
     if(training)
     { 
     
+        std::cout << "Set up the training process  "  <<std::endl;
         std::cout << std::setprecision(10) << std::fixed;
         vector<double> res_weights = neural_network->Train(); // train NN 
         
@@ -159,18 +160,55 @@ int main( int argc, char **argv ) {
         weights_file.close();
     }
     else { // if not trained, prioritize these nodes as outcome of the trained NN
+
+           // ---------------- Select output stream ----------------
+        std::ostream* out = &std::cout;
+        std::ofstream fout;
+
+        if (!outpathname.empty()) {
+            fout.open(outpathname);
+            if (!fout) {
+                std::cerr << "Cannot open output file: " << outpathname << "\n";
+                return 1;
+            }
+            out = &fout;
+        }
+
         Instance inst = Instance::loadFromFile(input_path);
-        std::cout << "Run the basic LBS approach " << std::endl;
-        inst.print(std::cout);
-        //BS(time_limit, beam_width, inst, neural_network, false);
-        BeamSearch::Result res_imsbs = BeamSearch::Learning_imsbs(&inst, beam_width, 10, 
+        //inst.print(std::cout);
+        if(hidden_layers >  0) // runnig IMSBS with learning algorithm
+        {   
+            std::cout << "Run the learning IMSBS:  " << std::endl;
+            BeamSearch::Result res_imsbs = BeamSearch::imsbs_with_learning(&inst, beam_width, 10, 
                                        heuristic, number_of_roots, 
-                                       max_iters, time_limit_sec, neural_network);
-        std::cout << res_imsbs.best_seq << " size: " << res_imsbs.best_seq.size() << std::endl;
-        std::cout << res_imsbs.runtime << std::endl;
-        // save in file: TODO  and option for basic BS
+                                       max_iters, time_limit_imsbs, neural_network) ;
+            //Stats
+            //Stats 
+            BeamSearch::write_result(
+                *out,
+                res_imsbs,
+                inst,
+                "IMSBS-learning"
+             ); 
+
+        }else{ // running just basic IMSBS with no learning
+            std::cout << "Run the basic IMSBS:  " << std::endl;
+            BeamSearch::Result res_imsbs = BeamSearch::imsbs_with_learning(&inst, beam_width, 10, 
+                                           heuristic, number_of_roots, 
+                                           max_iters, time_limit_imsbs, nullptr);   
+            //Stats 
+            BeamSearch::write_result(
+                *out,
+                res_imsbs,
+                inst,
+                "IMSBS"
+             );     
+        }
+        
+        // save in file: delete instance after use
         //delete &inst;
     }
     return 0;
 }
 
+ 

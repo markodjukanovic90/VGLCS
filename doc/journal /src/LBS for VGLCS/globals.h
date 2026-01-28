@@ -19,7 +19,7 @@ extern int num_features;
 extern HeuristicType heuristic; 
 extern double beam_width;
 extern int max_iters;
-extern int time_limit_sec;
+extern int time_limit_imsbs;
 extern int number_of_roots;
 
 // other params defaults:

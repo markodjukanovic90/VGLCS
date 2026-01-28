@@ -72,7 +72,7 @@ double MLP::calculate_validation_value(const vector<double>& weights)
     this->store_weights(weights);
     double validation_value = 0;
     for(Instance instance : validation_instances)
-        validation_value += BeamSearch::Learning_imsbs(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size(); // BS is run and the value obtained is accumulated
+        validation_value += BeamSearch::imsbs_with_learning(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size(); // BS is run and the value obtained is accumulated
     
     validation_value = validation_value / validation_instances.size();
     return validation_value;
@@ -84,7 +84,7 @@ void MLP::apply_decoder(training_individual& ind){ //calculates the quality of t
     for(Instance instance : training_instances) 
     {
         //instance.print(std::cout);
-        ofv += BeamSearch::Learning_imsbs(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size();
+        ofv += BeamSearch::imsbs_with_learning(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size();
     }
         
     ofv = ofv / training_instances.size();
@@ -249,7 +249,7 @@ vector<double> MLP::Train(){
                         double best_value = 0;
                         for(training_individual& individual : population){
                             store_weights(individual.weights);
-                            double value = BeamSearch::Learning_imsbs(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size();
+                            double value = BeamSearch::imsbs_with_learning(&instance, 10, 10, HeuristicType::H5, number_of_roots, 10, 10,  this, true ).best_seq.size();
 
                             if(value >= best_value){
                                 if(value > best_value){

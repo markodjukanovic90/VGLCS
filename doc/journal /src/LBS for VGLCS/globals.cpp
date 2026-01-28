@@ -7,7 +7,7 @@
 HeuristicType heuristic = HeuristicType::H5; 
 double beam_width = 10;
 int max_iters = 10;
-int time_limit_sec = 1800;
+int time_limit_imsbs = 1800;
 int number_of_roots = 10;
 
 //INPUT and OUTPUT files 
