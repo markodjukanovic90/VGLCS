@@ -73,10 +73,10 @@ void read_parameters(int argc,char** argv){
         else if(strcmp(argv[iarg], "-feature_configuration") == 0){
         
             feature_config = atoi(argv[++iarg]);  
-            if(feature_config == 1) num_features = 5; // p^{L,v}, l^v and length of partial sol 
-            else if(feature_config == 2) num_features = 6; // plus alphabet size 
-            else if(feature_config == 3) num_features = 7; //plus num of input  strings
-            else if(feature_config == 4) num_features = 8; //plus num of and length of input   strings
+            if(feature_config == 1) num_features = 9; // p^{L,v}, l^v and length of partial sol 
+            else if(feature_config == 2) num_features = 10; // plus alphabet size 
+            else if(feature_config == 3) num_features = 11; //plus num of input  strings
+            else if(feature_config == 4) num_features = 12; //plus num of and length of input   strings
         }
         // Params. of the optimization algorithm (EA) used for tuning the NN (finding a suitable configuration)
         else if (strcmp(argv[iarg], "-ga_configuration") == 0){ //1: rkga, 2: brkga, 3: lexicase sel.
@@ -102,6 +102,7 @@ void read_parameters(int argc,char** argv){
     //Set up neural network
     neural_network->units_per_layer.push_back(num_features); //input layer
     for(int i = 0; i < hidden_layers; ++i){ //inner layers
+        std::cout << "Layer " << i << " with " << units[i] << " units " << std::endl;
         neural_network->units_per_layer.push_back(units[i]); // put nodes into (hidden) layers
     }
     neural_network->units_per_layer.push_back(1); //output layer

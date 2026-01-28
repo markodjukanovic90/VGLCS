@@ -105,16 +105,31 @@ static void write_result(
         features.push_back(mean_pL_v);
         features.push_back(compute_std(pL_v, mean_pL_v));
         features.push_back(len_partial);
-        
-        if(feature_config == 2) // add alphabet size, 6 features 
+
+        //gaps features
+        std::vector<double> gaps_all_features;
+        for(int i = 0; i < (int)inst->sequences.size(); ++i){
+
+                for(int j = node->pos[i]+1; j < (int)inst->sequences[i].size(); ++j)
+                    gaps_all_features.push_back(static_cast<double>(inst->gaps[i][j]));
+                
+        }
+        double mean_gaps = compute_average(gaps_all_features);
+        features.push_back(compute_max(gaps_all_features));
+        features.push_back(compute_min(gaps_all_features));
+        features.push_back(mean_gaps);
+        features.push_back(compute_std(gaps_all_features, mean_gaps));          
+        //additional features based on configuration (for now 9 of them in total)         
+
+        if(feature_config == 2) // add alphabet size, 10 features 
             features.push_back( (int)inst->Sigma.size() );
             
-        else if(feature_config == 3){ // 7 features
+        else if(feature_config == 3){ // 11 features
             
             features.push_back( (int)inst->Sigma.size() );
             features.push_back( (int) inst->sequences.size() ); // number of instance 
         }
-        else if(feature_config == 4){ // 8 features
+        else if(feature_config == 4){ // 12 features
         
             features.push_back( (int)inst->Sigma.size() );  
             features.push_back( (int) inst->sequences.size() );
