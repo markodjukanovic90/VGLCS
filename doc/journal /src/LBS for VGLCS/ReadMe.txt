@@ -41,4 +41,4 @@ Example of a solving call (requires having the weights in a file "weights.txt", 
 
 Example of a training call:
 
-./beamsearch -train train/mglcs_3_500_2_0.txt train/mglcs_3_100_4_0.txt -validation validate/mglcs_10_200_2_1.txt validate/mglcs_5_500_4_1.txt  -hidden_layers 3 -units 5 5 5 -weight_limit 1 -training_beam_width 10 -training_time_limit 200 -activation_function 3 -feature_configuration 1 -ga_configuration 1
+./beamsearch -train train/mglcs_3_500_2_0.txt -train train/mglcs_3_100_4_0.txt -validation validate/mglcs_10_200_2_1.txt -validation validate/mglcs_5_500_4_1.txt  -hidden_layers 3 -units 5 5 5 -weight_limit 1 -training_beam_width 10 -training_time_limit 200 -activation_function 3 -feature_configuration 1 -ga_configuration 1

@@ -107,7 +107,7 @@ static void write_result(
         features.push_back(len_partial);
 
         //gaps features
-        std::vector<double> gaps_all_features;
+        std::vector<double> gaps_all_features; gaps_all_features.push_back(100000);
         for(int i = 0; i < (int)inst->sequences.size(); ++i){
 
                 for(int j = node->pos[i]+1; j < (int)inst->sequences[i].size(); ++j)
@@ -301,7 +301,7 @@ static void write_result(
         auto time_start = std::chrono::steady_clock::now();
         for(int iter = 0; iter < imsbs_iterations && (R.size() != 0); ++iter)
         {    
-             int r_size =   std::min(static_cast<size_t>(number_root_nodes), R.size());
+             int r_size = std::min(static_cast<size_t>(number_root_nodes), R.size());
              
              std::vector<Node*> L;
              while ((int)L.size() < r_size) 
@@ -327,8 +327,9 @@ static void write_result(
     		      const std::vector<int> root_pos = n->pos;
     		      root_node_steps.emplace(root_pos, res_n.steps);
     		      n->parent = nullptr;  
+                      //std::cout << "child->score : " << n->score << " " << n->seq << std::endl;
              } 
-              //execute the FORWARD BS on the set of refined nodes from L:
+             //execute the FORWARD BS on the set of refined nodes from L:
              Result res_n = run_forward_backward_BS(
         			inst,
         			true, // forward BS
@@ -361,6 +362,7 @@ static void write_result(
                  {
                      if(visited.find(child->pos) == visited.end()) // @child not in @visited
                      {
+                         //std::cout << "child->score : " << child->score << " " << child->seq << std::endl;
                          R.push_back(child);
                          visited.emplace(child->pos, child);
                          all_nodes.push_back(child);
@@ -375,7 +377,7 @@ static void write_result(
              if(runtime >= time_limit_sec) //time has exceeded 
                  break;
              //sort out R vector:
-             std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){return a->score > b->score; });
+             std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){ return a->score > b->score; });
         }
         //cleanup nodes  
         for(Node* node: all_nodes)
