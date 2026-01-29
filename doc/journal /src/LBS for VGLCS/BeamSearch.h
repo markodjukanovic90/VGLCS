@@ -294,10 +294,10 @@ static void write_result(
         int time_limit_sec = 1800,  MLP* neural_network = nullptr ) {
         
             //print values of all parameters passed to the function
-        std::cout << "IMSBS parameters: beam_width_forward=" << beam_width_forward << ", beam_width_backward=" << beam_width_backward
+        /*std::cout << "IMSBS parameters: beam_width_forward=" << beam_width_forward << ", beam_width_backward=" << beam_width_backward
                   << ", heuristic_forward=" << static_cast<int>(heuristic_forward) << ", number_root_nodes=" << number_root_nodes
-                  << ", imsbs_iterations=" << imsbs_iterations << ", time_limit_sec=" << time_limit_sec << std::endl; 
-
+                  << ", imsbs_iterations=" << imsbs_iterations << ", time_limit_sec=" << time_limit_sec << std::endl; -
+*/
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
         
         int best_sol_found=0; std::string best_seq="";  //best solution attributes 
