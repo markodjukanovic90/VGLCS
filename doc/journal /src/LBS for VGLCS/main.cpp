@@ -53,7 +53,7 @@ void read_parameters(int argc,char** argv){
         else if (strcmp(argv[iarg], "-o") == 0){
             outpathname = argv[++iarg];
         }
-        else if (strcmp(argv[iarg], "-m") == 0){
+        else if (strcmp(argv[iarg], "-b") == 0){
             beam_width = atoi(argv[++iarg]);     
         } 
         else if (strcmp(argv[iarg], "-h") == 0 ) { // HEURISTIC FOR FORWARD BS in IMSBS

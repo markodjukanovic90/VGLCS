@@ -161,14 +161,17 @@ static void write_result(
         int max_iters = 100000; // should be parametrized 
         
         Node* start_node = nullptr;
-        //if(start_node == nullptr)
+
         if(start_node_vector.size() == 0 ){
             start_node = new Node(init_pos, "", nullptr); // start from the beginning
             beam.push_back(start_node);
         }
         else{
-             for(Node* n: start_node_vector)
-                 beam.push_back(n);
+             for(Node* n: start_node_vector){
+                 beam.push_back(n); 
+                 //if(forward_or_backward) // if just forward BS, add the start nodes to all_nodes to be deleted at the end
+                 //    all_nodes.push_back(n);
+             }  
         }
  
         std::string best_seq;
@@ -176,7 +179,8 @@ static void write_result(
 
         auto time_start = std::chrono::steady_clock::now();
 
-        for (int iter = 0; iter < max_iters && !beam.empty(); ++iter) {
+        for (int iter = 0; iter < max_iters && !beam.empty(); ++iter) 
+        {
             
             if (std::chrono::duration<double>(
                     std::chrono::steady_clock::now() - time_start
@@ -184,10 +188,9 @@ static void write_result(
                 break;
             
             std::vector<Node*> candidates;
-
             for (Node* nx : beam) 
             {
-
+                
                 auto succs = forward_or_backward
                     ? Node::generateSuccessors(nx, inst)    
                     : Node::generateBackwardSuccessors(nx, inst);
@@ -196,37 +199,36 @@ static void write_result(
                     list_pos_complete.push_back(nx->pos);
                     continue; 
                 }
-
                 for (Node* s : succs) {
                     
-                    candidates.push_back(s);
-                    all_nodes.push_back(s);
+                    candidates.push_back(s); all_nodes.push_back(s);
                     
                     if (s->seq.size() > best_seq.size()) {
                         best_seq = s->seq;
                         return_node = s;
                     }
                 }
-            }  
+            }                  //std::cout << "candidates.empty(): " << candidates.empty() << std::endl;
+
             if (candidates.empty()) break;
             
+            // if heuristic H8 is used, determine k value here
             int k_val = 0;
-            if(heuristic == HeuristicType::H8 and forward_or_backward and neural_network == nullptr) // only applied to the forward BS manner 
+            if(heuristic == HeuristicType::H8 and forward_or_backward and neural_network == nullptr) // prob-guidance only applied to the forward BS manner 
             {
                  int min_len = 1000000;
                  for (Node* n : candidates){
                      for(int i=0; i < (int)inst->sequences.size(); ++i)
                          if((int)inst->sequences[i].size() - n->pos[i]+1 < min_len)
-                             min_len = inst->sequences[i].size() - n->pos[i]+1;                
+                             min_len = inst->sequences[i].size() - n->pos[i] + 1;                
                  }
                  k_val =  (double) min_len / (int)inst->Sigma.size() > 1 ?  (int)((double) min_len / (int)inst->Sigma.size() )  : 1;
             }
             
-            //  Node evaluation here is assigned                
+            //  Node evaluation here is assigned 
             if(neural_network == nullptr)
                 for (Node* n : candidates) {
                      n->evaluate(inst, heuristic, k_val, forward_or_backward); 
-                     //std::cout << "Node score: " << n->score << std::endl;
                 }
              else{ //use the outcome from NN as heuristic guidance  
                  compute_features(candidates, inst);
@@ -238,27 +240,28 @@ static void write_result(
 
             if ((int)candidates.size() > beam_width)
                 candidates.resize(beam_width);
-            
+
             beam = candidates;
         }
-        //constructing solution steps
+
+    //constructing solution steps
 	std::vector<std::vector<int>> steps;
 
 	if (return_node != nullptr) {
-    	    //return_node->print();
-
+            //extract the state sequence from the return_node
     	    while (return_node != nullptr) 
-            {  
+            {   
                  if (return_node->pos[0] != -1)
-        	      steps.push_back(return_node->pos);
+        	          steps.push_back(return_node->pos);
+                 else 
+                        break; // reached the root node
                  return_node = return_node->parent;
             }
-            
-            if(not forward_or_backward) //if done backward
-            {
-                 if(start_node_vector.size() != 0) // when we do not start with the basic root node (-1, ... , -1), add letter at the beginning position also to the solution 
-                     if(start_node_vector.size() == 1 and start_node_vector[0]->pos[0] >= 0)
-                         best_seq =  inst->sequences[0][ steps[steps.size()-1][0] ] + best_seq; //add the starting (matched) letter
+            if(not forward_or_backward) //if done backwardly
+            {    
+                 //if(start_node_vector.size() != 0) // when we do not start with the basic root node (-1, ... , -1), add letter at the beginning position also to the solution 
+                 if(start_node_vector[0]->pos[0] >= 0)
+                    best_seq =  inst->sequences[0][ steps[steps.size()-1][0] ] + best_seq; //add the starting (matched) letter
             }
             
             if (forward_or_backward) // if not backward, no need to reverse back the @str value, only the collected steps
@@ -267,13 +270,13 @@ static void write_result(
     	        std::reverse(best_seq.begin(), best_seq.end()); // other
         }
 
-
         double runtime = std::chrono::duration<double>(
             std::chrono::steady_clock::now() - time_start
         ).count();
         
         // clean up the memory(release the occupied memory)
         for (Node* n : all_nodes)
+        if (n != nullptr)
             delete n;
 
         return { best_seq, steps, runtime, list_pos_complete };
@@ -288,19 +291,28 @@ static void write_result(
         HeuristicType heuristic_forward = HeuristicType::H5,
         int number_root_nodes = 10,
         int imsbs_iterations = 10000,  
-        int time_limit_sec = 1800,  MLP* neural_network = nullptr, bool training = false ) {
- 
+        int time_limit_sec = 1800,  MLP* neural_network = nullptr ) {
+        
+            //print values of all parameters passed to the function
+        std::cout << "IMSBS parameters: beam_width_forward=" << beam_width_forward << ", beam_width_backward=" << beam_width_backward
+                  << ", heuristic_forward=" << static_cast<int>(heuristic_forward) << ", number_root_nodes=" << number_root_nodes
+                  << ", imsbs_iterations=" << imsbs_iterations << ", time_limit_sec=" << time_limit_sec << std::endl; 
+
         std::vector<Node*> all_nodes; // trace all nodes, at the end delete them all
         
         int best_sol_found=0; std::string best_seq="";  //best solution attributes 
-        std::vector<Node*> R; // can be also priority queue: TODO  
-        R.push_back(new Node(std::vector<int>( inst->sequences.size(), -1), "", nullptr) );
+        std::vector<Node*> R; // can be also priority queue: TODO 
+        Node *root_node = new Node(std::vector<int>(inst->sequences.size(), -1), "", nullptr); // initial root node
+        R.push_back(root_node);  all_nodes.push_back(root_node);
+
+        // EFFICIENT VISITED CHECK
         std::unordered_map<std::vector<int>, Node*, VectorHash> visited;
         std::vector<std::vector<int>> best_steps; double runtime=0.0;
         
         auto time_start = std::chrono::steady_clock::now();
         for(int iter = 0; iter < imsbs_iterations && (R.size() != 0); ++iter)
         {    
+            //std::cout << "IMSBS iteration " << iter + 1 << std::endl;
              int r_size = std::min(static_cast<size_t>(number_root_nodes), R.size());
              
              std::vector<Node*> L;
@@ -327,9 +339,8 @@ static void write_result(
     		      const std::vector<int> root_pos = n->pos;
     		      root_node_steps.emplace(root_pos, res_n.steps);
     		      n->parent = nullptr;  
-                      //std::cout << "child->score : " << n->score << " " << n->seq << std::endl;
              } 
-             //execute the FORWARD BS on the set of refined nodes from L:
+             //execute the FORWARD BS on the set of refined nodes from L (nodes from L will be discarded after this step)
              Result res_n = run_forward_backward_BS(
         			inst,
         			true, // forward BS
@@ -362,14 +373,15 @@ static void write_result(
                  {
                      if(visited.find(child->pos) == visited.end()) // @child not in @visited
                      {
-                         //std::cout << "child->score : " << child->score << " " << child->seq << std::endl;
                          R.push_back(child);
                          visited.emplace(child->pos, child);
                          all_nodes.push_back(child);
                      }else
                         delete child;
                  }
+                 all_nodes.push_back(p_new); // add p_new to the all_nodes to be deleted at the end
              }
+
              runtime = std::chrono::duration<double>(
              std::chrono::steady_clock::now() - time_start
              ).count();
@@ -381,9 +393,11 @@ static void write_result(
         }
         //cleanup nodes  
         for(Node* node: all_nodes)
-            delete node;  
+            if (node != nullptr)
+                delete node;
+        //delete the structure @visited, all pointers  in @visited are already deleted in the all_nodes deletion step
+        visited.clear();  
         
-        //std::cout << "Best solution found of size " << best_seq.size() << " with runtime " << runtime << std::endl;
         return {best_seq, best_steps, runtime , {}};
     }
 };
