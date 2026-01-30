@@ -37,8 +37,9 @@ Parameters for training:
 
 Example of a solving call (requires having the weights in a file "weights.txt", in the same format as the outputted by the training process): 
 
-./beamsearch -i sigma-4/mglcs_5_500_4_1.txt -o out-111.txt  -hidden_layers 3 -units 5 5 5 -weights -activation_function 1 -feature_configuration 1
+./beamsearch -i sigma-4/mglcs_5_500_4_1.txt -o out-111.txt  -hidden_layers 3 -units 5 5 5 -weights -activation_function 3 -feature_configuration 3 -b 500 -nr 10 -m 1000
 
 Example of a training call:
 
-./beamsearch -train train/mglcs_3_500_2_0.txt -train train/mglcs_3_100_4_0.txt -validation validate/mglcs_10_200_2_1.txt -validation validate/mglcs_5_500_4_1.txt  -hidden_layers 3 -units 5 5 5 -weight_limit 1 -training_beam_width 10 -training_time_limit 200 -activation_function 3 -feature_configuration 1 -ga_configuration 1
+./beamsearch -train train/mglcs_10_100_2_0.txt -train train/mglcs_10_100_4_0.txt -train train/mglcs_10_200_2_0.txt -train train/mglcs_10_200_4_0.txt -train train/mglcs_10_500_2_0.txt -train train/mglcs_10_500_4_0.txt -train train/mglcs_10_50_2_0.txt -train train/mglcs_10_50_4_0.txt -train train/mglcs_3_100_2_0.txt -train train/mglcs_3_100_4_0.txt -train train/mglcs_3_200_2_0.txt -train train/mglcs_3_200_4_0.txt -train train/mglcs_3_500_2_0.txt -train train/mglcs_3_500_4_0.txt -train train/mglcs_3_50_2_0.txt -train train/mglcs_3_50_4_0.txt -validation validate/mglcs_10_200_2_1.txt -validation validate/mglcs_10_200_4_1.txt -validation validate/mglcs_10_500_2_1.txt -validation validate/mglcs_10_500_4_1.txt -validation validate/mglcs_3_200_2_1.txt -validation validate/mglcs_3_200_4_1.txt -validation validate/mglcs_3_500_2_1.txt -validation validate/mglcs_3_500_4_1.txt -hidden_layers 2 -units 5 5 -weight_limit 1 -training_beam_width 10 -training_time_limit 60 -activation_function 1 -feature_configuration 3 -ga_configuration 1
+
