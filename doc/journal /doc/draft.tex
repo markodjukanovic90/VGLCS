@@ -8,6 +8,10 @@
 \usepackage{geometry}
 \geometry{margin=2.5cm}
 
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
+
 \title{Learning a Data-Driven Beam Search Heuristic Using a Feed-Forward Neural Network and Genetic Algorithms}
 \author{}
 \date{}
@@ -116,6 +120,52 @@ The learning process alternates between evolutionary optimization of network wei
 \STATE \textbf{return} best weights $\theta^\ast$
 \end{algorithmic}
 \end{algorithm}
+
+
+\begin{figure}[t]
+	\centering
+	\begin{tikzpicture}[
+		box/.style={draw, rounded corners=2mm, align=center, minimum width=3.2cm, minimum height=1cm},
+		smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.6cm, minimum height=0.9cm},
+		arrow/.style={->, thick},
+		node distance=2.2cm
+		]
+		
+		% GA block
+		\node[box] (ga) {Genetic Algorithm\\(Population of NN Weights)};
+		
+		% NN
+		\node[smallbox, below=of ga] (nn) {Feed-Forward\\Neural Network};
+		
+		% Beam Search
+		\node[box, below=of nn] (bs) {Iterative Multi-Source\\Beam Search (IMSBS)};
+		
+		% Training instances
+		\node[smallbox, left=of bs] (train) {Training\\Instances};
+		
+		% Solutions / fitness
+		\node[smallbox, right=of bs] (fitness) {Solution Quality\\(Fitness)};
+		
+		% Arrows
+		\draw[arrow] (ga) -- node[right]{weights} (nn);
+		\draw[arrow] (nn) -- node[right]{heuristic} (bs);
+		\draw[arrow] (train) -- (bs);
+		\draw[arrow] (bs) -- (fitness);
+		\draw[arrow] (fitness.north) |- node[pos=0.25,right]{selection / update} (ga.east);
+		
+		% Validation (optional)
+		\node[smallbox, below=of bs] (val) {Validation\\Instances};
+		\draw[arrow,dashed] (val) -- (bs);
+		
+	\end{tikzpicture}
+	
+	\caption{Learning framework integrating a Genetic Algorithm with Iterative Multi-Source Beam Search (IMSBS).
+		The GA evolves neural network weights. For each individual, the FFNN provides a heuristic used by IMSBS on training
+		instances. The resulting solution quality defines fitness, which drives evolutionary selection. Validation
+		instances are used only for monitoring generalization.}
+	\label{fig:ga_imsbs}
+\end{figure}
+
 
 \section{Discussion}
 
