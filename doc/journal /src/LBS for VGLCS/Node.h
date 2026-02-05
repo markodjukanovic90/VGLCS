@@ -24,15 +24,15 @@ public:
     // Pokazivač na roditeljski čvor
     Node* parent;  
     double score;        // vrijednost heuristike 
-    
+    double second_score;
     //feature vector is stored here after calculation in LBS
     std::vector<double> features;
 
     // Konstruktor
     Node(const std::vector<int>& pos_,
          const std::string& seq_,
-         Node* parent_ = nullptr, double score_ = 0.0)
-        : pos(pos_), seq(seq_), parent(parent_), score(score_) {}
+         Node* parent_ = nullptr, double score_ = 0.0, double _second_score = 0.0)
+        : pos(pos_), seq(seq_), parent(parent_), score(score_), second_score(_second_score) {}
 
     // Ekvivalent @property length
     int length() const {

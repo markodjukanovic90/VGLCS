@@ -64,17 +64,21 @@ static void write_result(
 }
 
    
-   static void compute_heuristic_values(std::vector<Node*>& V_ext,  MLP* neural_network){    
+   static void compute_heuristic_values(std::vector<Node*>& V_ext,  MLP* neural_network, Instance* inst){    
       
        for(Node* node : V_ext){
            // forward pass: assign a heuristic value from NN to each node 
            Eigen::Map<const Eigen::VectorXd> eigen_features(node->features.data(), node->features.size());
            node->score = neural_network->forward(eigen_features)(0);
            //std::cout << "Node score from NN: " << node->score << std::endl;
-           /*if(use_secondary_measure){ 
-              TODO
-              node->secondary_heuristic_value = ...
-          }*/
+           //if(use_secondary_measure){ 
+              //TODO
+              double primary_score = node->score;
+              node->evaluate(inst, HeuristicType::H5);
+              node->second_score =  node->score;
+              node->score = primary_score;
+              
+           //}
       }
   }
 
@@ -232,7 +236,7 @@ static void write_result(
                 }
              else{ //use the outcome from NN as heuristic guidance  
                  compute_features(candidates, inst);
-                 compute_heuristic_values(candidates, neural_network); 
+                 compute_heuristic_values(candidates, neural_network, inst); 
              }
              
             std::sort(candidates.begin(), candidates.end(),
@@ -388,10 +392,14 @@ static void write_result(
              
              if(runtime >= time_limit_sec) //time has exceeded 
                  break;
-             //sort out R vector:
-             std::sort(R.begin(), R.end(), [](const Node* a, const Node* b){ return a->score > b->score; });
+             //sort out R vector by UB (makes sense as partial solutions here are different)
+             if(neural_network == nullptr) // if the basic IMSBS
+                 std::sort(R.begin(), R.end(), [](const Node* a, const Node* b) { return a->score > b->score; });
+             else // if the learning BS included (sort by UB)
+                 std::sort(R.begin(), R.end(), [](const Node* a, const Node* b) { return a->second_score > b->second_score; });
         }
         //cleanup nodes  
+        
         for(Node* node: all_nodes)
             if (node != nullptr)
                 delete node;

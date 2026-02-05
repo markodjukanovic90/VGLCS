@@ -1,6 +1,6 @@
 # -------- Compiler & flags --------
 CXX      := g++
-CXXFLAGS := -std=c++17 -O2 -Wall -Wextra -pedantic      -I../
+CXXFLAGS := -std=c++17 -O4 -Wall -Wextra -pedantic      -I../
 
 # -------- Target --------
 TARGET := beamsearch
