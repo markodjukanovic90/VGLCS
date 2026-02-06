@@ -12,7 +12,7 @@
 \usetikzlibrary{arrows.meta, positioning}
 
 
-\title{Learning a Data-Driven Beam Search Heuristic Using a Feed-Forward Neural Network and Genetic Algorithms}
+\title{Learning a Data-Driven Beam Search Heuristic for the Variable Gapped Longest Common Subsequence Problem}
 \author{}
 \date{}
 
@@ -21,19 +21,20 @@
 
 \section{Overview}
 
-This work proposes a learning framework for constructing a data-driven heuristic to guide Beam Search in combinatorial optimization problems. A feed-forward neural network (FFNN) is used to parameterize the heuristic function. Instead of relying on gradient-based training, the network weights are optimized using a Genetic Algorithm (GA).
+This work proposes a learning framework for constructing a data-driven heuristic to guide Beam Search in combinatorial optimization problems, and specifically one sequence problem that arises in bioinformatics, the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP). A feed-forward neural network (FFNN) is used to parameterize the heuristic function. Instead of relying on gradient-based training, the network weights are optimized using a Genetic Algorithm (GA), precisely its popular version called the \textit{Random key generic algorithm} (RKGA).  
 
-Each individual in the GA population represents a complete set of neural network weights. The quality of an individual is evaluated by embedding the neural network inside Beam Search and measuring the average solution quality obtained on a set of training instances. Validation instances are used exclusively to monitor generalization.
+Each individual in the GA population represents a complete set of neural network weights. The quality of an individual is evaluated by embedding the neural network inside the \textit{Iterative Multi-source Beam Search} (IMSBS) framework (proposed in the EUROCAST paper) to guide the search in the process of  forward passes of the Beam search,  
+and measuring the average solution quality obtained on a set of training instances. Validation instances are used exclusively to monitor generalization.
 
 Formally, the learning problem is defined as:
 \[
-\max_{\theta} \; \frac{1}{|T|} \sum_{I \in T} f(\text{BeamSearch}(I, h_\theta)),
+\max_{\theta} \; \frac{1}{|T|} \sum_{I \in T} f(\text{IMS\_BeamSearch}(I, h_\theta)),
 \]
 where $T$ denotes the training set, $h_\theta$ is the neural heuristic parameterized by weights $\theta$, and $f(\cdot)$ measures solution quality.
 
 \section{Neural Network Model}
 
-The heuristic is represented by a multilayer perceptron with an arbitrary number of hidden layers and user-defined units per layer. Supported activation functions include hyperbolic tangent, ReLU, and sigmoid.
+The heuristic is represented by a \textit{multilayer perceptron} with an arbitrary number of hidden layers and user-defined units per layer. Supported activation functions include \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}.
 
 For each layer $l$, forward propagation is defined as:
 \[
@@ -44,24 +45,43 @@ where $W^{(l)}$ and $b^{(l)}$ are the weight matrix and bias vector, respectivel
 
 All weights and biases are flattened into a single vector, which forms the chromosome of a GA individual.
 
-\section{Fitness Evaluation}
+\subsection{Fitness Evaluation}
 
 Given a candidate weight vector:
 \begin{enumerate}
     \item The weights are loaded into the FFNN.
-    \item Beam Search is executed on each training instance using the neural heuristic.
+    \item IMSBS is executed on each training instance using the neural heuristic (guiding the search in the forward iterations as more sensible than the backward iterations).
     \item The size of the best sequence obtained for each instance is recorded.
 \end{enumerate}
 
 The fitness value is computed as the average solution quality over all training instances. Validation performance is computed analogously on a separate dataset and is used only for reporting.
 
+\subsection{Feature Extraction for the Variable-Gap LCS}
+
+To guide the search process, each partial solution (node) is represented by a fixed-length numerical feature vector capturing both the current state of the construction and the structure of the remaining search space. These features are designed to be instance-independent and comparable across problem sizes.
+
+Let $S=\{s_1,\ldots, s_k\}$ denote the set of input sequences, and let $p_i$ be the current matched position in sequence $s_i$ at a given node. The vector $\mathbf{p}^L=(p_1,\ldots,p_k)$ is first normalized by the corresponding sequence lengths,
+\[
+p_i \leftarrow \frac{p_i}{|s_i|},
+\]
+so that progress in each sequence lies in $[0,1]$ and becomes independent of absolute input sizes.
+
+From this normalized position vector, four statistical descriptors are extracted: maximum, minimum, mean, and standard deviation. These quantities characterize, respectively, the most advanced and least advanced sequences, the average depth of the search, and the imbalance of progress among sequences. In addition, \textit{the current length of the partially constructed subsequence} is included as a feature. Together, these values provide a compact description of the current search state.
+
+To capture the feasibility of future extensions, gap-related features are computed from the remaining suffixes of all sequences. For each sequence $s_i$, all gap bounds associated with positions strictly after the current node position are collected. From this aggregated set of gap values: the maximum, minimum, mean, and standard deviation are calculated. These statistics summarize the remaining flexibility of the instance: large average or maximum gaps indicate greater freedom for future matches, whereas small minimum gaps and large variability typically signal tighter constraints and increased difficulty.
+
+Depending on the selected configuration, additional instance-level characteristics are appended to the feature vector. These may include the alphabet size $|\Sigma|$, the number of sequences $(m)$. %, and (when applicable) the common sequence length (no). 
+Such attributes provide global structural information about the instance and help the learning model adapt to varying problem scales.
+
+Finally, all features are standardized to zero mean and unit variance prior to being passed to the learning component. Overall, the resulting representation combines information about (i) the current construction progress, (ii) the remaining gap-constraint landscape, and (iii) global instance properties, yielding between 9 and 11 features depending on the configuration. This compact yet expressive encoding enables effective learning-based guidance of the search for high-quality variable-gap longest common subsequences.
+ 
 \section{Genetic Algorithm}
 
 The optimization process follows a population-based evolutionary scheme.
 
 \subsection{Initialization}
 
-Each individual is initialized by sampling weights uniformly from a predefined interval [$-w, w$].
+Each individual is initialized by sampling weights uniformly from a predefined interval [$-w, w$] (the value $w$ parametrized, but fixed to -1).
 
 \subsection{Elitism}
 
@@ -81,13 +101,16 @@ Three alternative parent-selection strategies are supported:
     \item \textbf{Lexicase Selection}: Training instances are randomly shuffled. Individuals are filtered iteratively by retaining those achieving the best performance on each instance. Parents are selected randomly from the remaining candidates.
 \end{itemize}
 
+We opt to use the \textit{RKGA} as the first option to work well, but other options may also be tried. 
+
+
 \subsection{Replacement and Termination}
 
-The new population consists of elites, mutants, and offspring. The algorithm terminates once a predefined time limit is reached. The best individual encountered during training is continuously tracked and stored.
+The new population consists of elites, mutants, and offspring. The algorithm terminates once a predefined time limit is reached (in this case we used 2 hours). The best individual encountered during training is continuously tracked and stored.
 
 \section{Overall Learning Procedure}
 
-The learning process alternates between evolutionary optimization of network weights and evaluation through (iterative multi-source) Beam Search. Importantly, the neural network does not directly predict solutions; instead, it learns how to guide the search procedure. This places the method within the class of neuro-evolutionary hyper-heuristics.
+The learning process alternates between evolutionary optimization of network weights and evaluation through (iterative multi-source) Beam Search. Importantly, the neural network does not directly predict solutions; instead, it learns how to \textit{guide} the search procedure. This places the method within the class of neuro-evolutionary hyper-heuristics.
 
 \section{Algorithm}
 
@@ -98,8 +121,8 @@ The learning process alternates between evolutionary optimization of network wei
 \STATE Evaluate all individuals on training set $T$
 \STATE Store best solution $\theta^\ast$
 \STATE $start \leftarrow$ current time
-\WHILE{current time $- start < T_{\max}$}
-    \STATE Sort $P$ by fitness (descending)
+\WHILE{time limit $T_{\max}$ has not exceeded}
+    \STATE Sort $P$ by fitness (descending) // {Section 2.1}
     \STATE Initialize empty population $P'$
     \STATE Copy top $n_{elites}$ individuals from $P$ to $P'$
     \FOR{$i = 1$ to $n_{mutants}$}
@@ -109,7 +132,7 @@ The learning process alternates between evolutionary optimization of network wei
         \STATE Update $\theta^\ast$ if improved
     \ENDFOR
     \FOR{$i = 1$ to $n_{offspring}$}
-        \STATE Select parents using RKGA, BRKGA, or Lexicase
+        \STATE Select parents using \textbf{RKGA}, BRKGA, or Lexicase
         \STATE Generate offspring by crossover
         \STATE Evaluate offspring on $T$
         \STATE Add offspring to $P'$
@@ -169,7 +192,7 @@ The learning process alternates between evolutionary optimization of network wei
 
 \section{Discussion}
 
-The proposed framework learns heuristics rather than explicit solutions. The neural network is optimized exclusively through downstream search performance, enabling learning in non-differentiable settings. This tightly coupled integration of evolutionary learning and Beam Search allows the system to adapt its guidance strategy to the structure of the problem instances.
+The proposed framework learns heuristics rather than explicit solutions. The neural network is optimized exclusively through downstream search performance, enabling learning in non-differentiable settings. This tightly coupled integration of evolutionary learning and the classical optimization algorithm Beam Search allows the system to adapt its guidance strategy to the structure of the problem instances.
 
 \end{document}
 
