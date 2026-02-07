@@ -1,0 +1,94 @@
+\documentclass{beamer}
+%\usetheme{madrid}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{On Solving the Multiple Variable Gapped Longest Common Subsequence Problem}
+
+\author{Marko Djukanović\inst{1,2, 6}  \and Nikola Balaban\inst{2}  \and
+Christian Blum\inst{3}  \and 
+Aleksandar Kartelj\inst{4}  \and
+Sašo Džeroski\inst{5}  \and
+Žiga Zebec\inst{6}
+}
+
+\institute{ $^1$University of Nova Gorica, Nova Gorica, Slovenia \\ 
+$^2$Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina \\ 
+$^3$Artificial Intelligence Research Institute (IIIA-CSIC), Barcelona, Spain \\ 
+$^4$Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\
+$^5$Jožef Stefan Institute, Ljubljana, Slovenia \ \\
+$^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm}
+
+\footnotesize{-- \textcolor{blue}{Eurocast 2026: 20th International Conference on Computer Aided Systems Theory, February 23-27, 2026,  Las Palmas de Gran Canaria, Spain}--}
+\centering
+\includegraphics[width=90pt,height=50pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}
+\includegraphics[width=80pt,height=50pt]{IFEEL\_1.png}
+\includegraphics[width=110pt,height=40pt]{CofundedbytheEU\_RGB\_NEG.png}
+}
+
+\begin{document}
+\begin{frame}[plain]
+    \maketitle
+\end{frame}
+
+\begin{frame}{Outline}
+    
+    \begin{itemize}
+        \item Introduction \& Preliminaries \vspace{0.2cm}
+        \item Problem Definition  \vspace{0.2cm}
+        \item Graph state space  \vspace{0.2cm}
+        \item Iterative multi-source Beam Search  \vspace{0.2cm}
+        \item Experimental Evaluation
+        \begin{itemize}
+            \item General problem
+            \item Special problem
+        \end{itemize} \vspace{0.2cm}
+        \item Conclusions
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Introduction}
+   \begin{itemize}
+       \item Objects we deal with: sequences (strings) over finite alphabet 
+       \begin{itemize}
+       \item DNA/RNA over $\{\texttt{A}, \texttt{T}, \texttt{G}, \texttt{C/U}\}$
+       \item Proteins over 20 (canonical) amino acids: $\{\texttt{A}, \texttt{C}, \texttt{D}, \texttt{E}, \texttt{P}, \texttt{Q} ...\}$ 
+       \end{itemize} \vspace{0.3cm}
+       \item Computational biology
+       \begin{itemize}
+          \item \textbf{One of central tasks:} sequence comparison, finding common motifs between sequences
+          \item compare structurally but also semantically/functionality 
+          \item sequence alignment problems 
+       \end{itemize} \vspace{0.4cm}
+       
+       \item Subsequences: reveal structural similarities $\rightarrow$ \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants
+   \end{itemize}
+\end{frame}
+
+\begin{frame}{Longest common subsequence problem (LCSP)}
+    
+    \begin{itemize}
+      \item Basic problem in Computational biology
+      \item Intensively solved over last 50 years
+      \begin{itemize}
+      \item theoretically as well as practically 
+      \item Practically: many approximation algorothms, (meta-) heuristics, exact approaches, etc.
+      \end{itemize}
+    \end{itemize}
+    
+    \begin{definition}[LCSP]
+        \textbf{Input}: Given a set of sequences $S=\{s_1, \ldots, s_m\}$ \\
+        \textbf{Task}: Find a   subsequence $s$ which is \textcolor{blue}{common} for all sequences from $S$ of \textcolor{blue}{maximum} possible length. 
+    \end{definition}
+    \begin{example}
+       Input: S=\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
+       Solution: s=\textcolor{red}{ATTC}
+    \end{example}
+\end{frame}
+
+\begin{frame}{Variants of LCS problems}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+\end{document}
