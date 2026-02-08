@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  7 FEB 2026 22:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  8 FEB 2026 10:00
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -670,6 +670,10 @@ Package: amsthm 2020/05/29 v2.20.6
 \beamer@dimb=\dimen283
 )
 (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerouterthemedefault.sty)))
+(/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerthemeCambridgeUS.sty
+(/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerinnerthemerounded.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerouterthemeinfolines.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/beamer/beamercolorthemebeaver.sty))
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count329
@@ -705,14 +709,14 @@ LaTeX Font Info:    ... okay on input line 29.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: includehead includefoot 
-* h-part:(L,W,R)=(28.45274pt, 307.28987pt, 28.45274pt)
+* h-part:(L,W,R)=(10.95003pt, 342.2953pt, 10.95003pt)
 * v-part:(T,H,B)=(0.0pt, 273.14662pt, 0.0pt)
 * \paperwidth=364.19536pt
 * \paperheight=273.14662pt
-* \textwidth=307.28987pt
+* \textwidth=342.2953pt
 * \textheight=244.6939pt
-* \oddsidemargin=-43.81725pt
-* \evensidemargin=-43.81725pt
+* \oddsidemargin=-61.31996pt
+* \evensidemargin=-61.31996pt
 * \topmargin=-72.26999pt
 * \headheight=14.22636pt
 * \headsep=0.0pt
@@ -851,20 +855,20 @@ Dictionary: translator-numbers-dictionary, Language: English
 ry-English.dict
 Dictionary: translator-theorem-dictionary, Language: English 
 ) (./eurocast-2026-djukanovic.nav)
-LaTeX Font Info:    Trying to load font information for U+msa on input line 32.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 29.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 32.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 29.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on inp
-ut line 32.
+ut line 29.
 
 (/usr/share/texlive/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/ma
@@ -874,28 +878,99 @@ thkerncmss.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 32.
+line 29.
 (pdftex.def)             Requested size: 89.99026pt x 49.99593pt.
 <IFEEL_1.png, id=14, 593.21625pt x 536.0025pt>
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 32.
+Package pdftex.def Info: IFEEL_1.png  used on input line 29.
 (pdftex.def)             Requested size: 79.99927pt x 49.99657pt.
 <CofundedbytheEU_RGB_NEG.png, id=16, 992.2671pt x 221.3871pt>
+File: CofundedbytheEU_RGB_NEG.png Graphic file (type png)
+<use CofundedbytheEU_RGB_NEG.png>
+Package pdftex.def Info: CofundedbytheEU_RGB_NEG.png  used on input line 29.
+(pdftex.def)             Requested size: 109.99759pt x 39.99997pt.
+
+Overfull \hbox (2109.8691pt too wide) in paragraph at lines 29--29
+ [][]  \OT1/cmss/m/n/6 ([])  
+ []
+
+
+Overfull \hbox (97.25397pt too wide) in paragraph at lines 29--29
+ [][][][]  
+ []
+
+File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
+<use SMASH_CMYK-ENG-horizontal_on_white.pdf>
+Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
+line 32.
+(pdftex.def)             Requested size: 89.99026pt x 49.99593pt.
+File: IFEEL_1.png Graphic file (type png)
+<use IFEEL_1.png>
+Package pdftex.def Info: IFEEL_1.png  used on input line 32.
+(pdftex.def)             Requested size: 79.99927pt x 49.99657pt.
 File: CofundedbytheEU_RGB_NEG.png Graphic file (type png)
 <use CofundedbytheEU_RGB_NEG.png>
 Package pdftex.def Info: CofundedbytheEU_RGB_NEG.png  used on input line 32.
 (pdftex.def)             Requested size: 109.99759pt x 39.99997pt.
 
-Overfull \vbox (23.80785pt too high) detected at line 32
+Overfull \vbox (34.83784pt too high) detected at line 32
  []
 
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./SMASH_CMYK-ENG-horizonta
-l_on_white.pdf> <./IFEEL_1.png> <./CofundedbytheEU_RGB_NEG.png>] [2
+l_on_white.pdf> <./IFEEL_1.png> <./CofundedbytheEU_RGB_NEG.png>]
+File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
+<use SMASH_CMYK-ENG-horizontal_on_white.pdf>
+Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
+line 48.
+(pdftex.def)             Requested size: 89.99026pt x 49.99593pt.
+File: IFEEL_1.png Graphic file (type png)
+<use IFEEL_1.png>
+Package pdftex.def Info: IFEEL_1.png  used on input line 48.
+(pdftex.def)             Requested size: 79.99927pt x 49.99657pt.
+File: CofundedbytheEU_RGB_NEG.png Graphic file (type png)
+<use CofundedbytheEU_RGB_NEG.png>
+Package pdftex.def Info: CofundedbytheEU_RGB_NEG.png  used on input line 48.
+(pdftex.def)             Requested size: 109.99759pt x 39.99997pt.
 
-] [3
+Overfull \hbox (2109.8691pt too wide) has occurred while \output is active
+ [][]  \OT1/cmss/m/n/6 ([])  
+ []
+
+
+Overfull \hbox (97.25397pt too wide) has occurred while \output is active
+ [][][][]  
+ []
+
+[2
+
+]
+File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
+<use SMASH_CMYK-ENG-horizontal_on_white.pdf>
+Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
+line 66.
+(pdftex.def)             Requested size: 89.99026pt x 49.99593pt.
+File: IFEEL_1.png Graphic file (type png)
+<use IFEEL_1.png>
+Package pdftex.def Info: IFEEL_1.png  used on input line 66.
+(pdftex.def)             Requested size: 79.99927pt x 49.99657pt.
+File: CofundedbytheEU_RGB_NEG.png Graphic file (type png)
+<use CofundedbytheEU_RGB_NEG.png>
+Package pdftex.def Info: CofundedbytheEU_RGB_NEG.png  used on input line 66.
+(pdftex.def)             Requested size: 109.99759pt x 39.99997pt.
+
+Overfull \hbox (2109.8691pt too wide) has occurred while \output is active
+ [][]  \OT1/cmss/m/n/6 ([])  
+ []
+
+
+Overfull \hbox (97.25397pt too wide) has occurred while \output is active
+ [][][][]  
+ []
+
+[3
 
 ]
 LaTeX Font Info:    Trying to load font information for OMS+cmss on input line 
@@ -907,9 +982,112 @@ LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
 (Font)              for symbol `textbraceleft' on input line 87.
 
+File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
+<use SMASH_CMYK-ENG-horizontal_on_white.pdf>
+Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
+line 87.
+(pdftex.def)             Requested size: 89.99026pt x 49.99593pt.
+File: IFEEL_1.png Graphic file (type png)
+<use IFEEL_1.png>
+Package pdftex.def Info: IFEEL_1.png  used on input line 87.
+(pdftex.def)             Requested size: 79.99927pt x 49.99657pt.
+File: CofundedbytheEU_RGB_NEG.png Graphic file (type png)
+<use CofundedbytheEU_RGB_NEG.png>
+Package pdftex.def Info: CofundedbytheEU_RGB_NEG.png  used on input line 87.
+(pdftex.def)             Requested size: 109.99759pt x 39.99997pt.
+
+Overfull \hbox (2109.8691pt too wide) has occurred while \output is active
+ [][]  \OT1/cmss/m/n/6 ([])  
+ []
+
+
+Overfull \hbox (97.25397pt too wide) has occurred while \output is active
+ [][][][]  
+ []
+
 [4
 
-] [5
+]
+File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
+<use SMASH_CMYK-ENG-horizontal_on_white.pdf>
+Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
+line 106.
+(pdftex.def)             Requested size: 89.99026pt x 49.99593pt.
+File: IFEEL_1.png Graphic file (type png)
+<use IFEEL_1.png>
+Package pdftex.def Info: IFEEL_1.png  used on input line 106.
+(pdftex.def)             Requested size: 79.99927pt x 49.99657pt.
+File: CofundedbytheEU_RGB_NEG.png Graphic file (type png)
+<use CofundedbytheEU_RGB_NEG.png>
+Package pdftex.def Info: CofundedbytheEU_RGB_NEG.png  used on input line 106.
+(pdftex.def)             Requested size: 109.99759pt x 39.99997pt.
+
+Overfull \hbox (2109.8691pt too wide) has occurred while \output is active
+ [][]  \OT1/cmss/m/n/6 ([])  
+ []
+
+
+Overfull \hbox (97.25397pt too wide) has occurred while \output is active
+ [][][][]  
+ []
+
+[5
+
+]
+
+LaTeX Font Warning: Font shape `OT1/cmss/m/sc' in size <10.95> not available
+(Font)              Font shape `OT1/cmr/m/sc' tried instead on input line 121.
+
+File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
+<use SMASH_CMYK-ENG-horizontal_on_white.pdf>
+Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
+line 121.
+(pdftex.def)             Requested size: 89.99026pt x 49.99593pt.
+File: IFEEL_1.png Graphic file (type png)
+<use IFEEL_1.png>
+Package pdftex.def Info: IFEEL_1.png  used on input line 121.
+(pdftex.def)             Requested size: 79.99927pt x 49.99657pt.
+File: CofundedbytheEU_RGB_NEG.png Graphic file (type png)
+<use CofundedbytheEU_RGB_NEG.png>
+Package pdftex.def Info: CofundedbytheEU_RGB_NEG.png  used on input line 121.
+(pdftex.def)             Requested size: 109.99759pt x 39.99997pt.
+
+Overfull \hbox (2109.8691pt too wide) has occurred while \output is active
+ [][]  \OT1/cmss/m/n/6 ([])  
+ []
+
+
+Overfull \hbox (97.25397pt too wide) has occurred while \output is active
+ [][][][]  
+ []
+
+[6
+
+]
+File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
+<use SMASH_CMYK-ENG-horizontal_on_white.pdf>
+Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
+line 126.
+(pdftex.def)             Requested size: 89.99026pt x 49.99593pt.
+File: IFEEL_1.png Graphic file (type png)
+<use IFEEL_1.png>
+Package pdftex.def Info: IFEEL_1.png  used on input line 126.
+(pdftex.def)             Requested size: 79.99927pt x 49.99657pt.
+File: CofundedbytheEU_RGB_NEG.png Graphic file (type png)
+<use CofundedbytheEU_RGB_NEG.png>
+Package pdftex.def Info: CofundedbytheEU_RGB_NEG.png  used on input line 126.
+(pdftex.def)             Requested size: 109.99759pt x 39.99997pt.
+
+Overfull \hbox (2109.8691pt too wide) has occurred while \output is active
+ [][]  \OT1/cmss/m/n/6 ([])  
+ []
+
+
+Overfull \hbox (97.25397pt too wide) has occurred while \output is active
+ [][][][]  
+ []
+
+[7
 
 ]
 \tf@nav=\write6
@@ -930,28 +1108,30 @@ d.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 21563 strings out of 479648
- 419273 string characters out of 5886115
- 673710 words of memory out of 5000000
- 39070 multiletter control sequences out of 15000+600000
- 481676 words of font info for 74 fonts, out of 8000000 for 9000
+ 21888 strings out of 479648
+ 430655 string characters out of 5886115
+ 682312 words of memory out of 5000000
+ 39378 multiletter control sequences out of 15000+600000
+ 481670 words of font info for 74 fonts, out of 8000000 for 9000
  475 hyphenation exceptions out of 8191
- 128i,14n,122p,424b,552s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
-s/symbols/msam10.pfb>
-Output written on eurocast-2026-djukanovic.pdf (5 pages, 499093 bytes).
+ 128i,19n,122p,426b,627s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/ms
+bm10.pfb>
+Output written on eurocast-2026-djukanovic.pdf (7 pages, 535799 bytes).
 PDF statistics:
- 307 PDF objects out of 1000 (max. 8388607)
- 227 compressed objects within 3 object streams
- 11 named destinations out of 1000 (max. 500000)
- 58 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 444 PDF objects out of 1000 (max. 8388607)
+ 323 compressed objects within 4 object streams
+ 15 named destinations out of 1000 (max. 500000)
+ 256 words of extra memory for PDF output out of 10000 (max. 10000000)
 

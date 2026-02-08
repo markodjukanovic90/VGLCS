@@ -64,86 +64,106 @@ static void write_result(
 }
 
    
-   static void compute_heuristic_values(std::vector<Node*>& V_ext,  MLP* neural_network, Instance* inst){    
-      
+   static void compute_heuristic_values(std::vector<Node*>& V_ext,  MLP* neural_network, Instance* inst){
+
        for(Node* node : V_ext){
            // forward pass: assign a heuristic value from NN to each node 
-           Eigen::Map<const Eigen::VectorXd> eigen_features(node->features.data(), node->features.size());
-           node->score = neural_network->forward(eigen_features)(0);
-           //std::cout << "Node score from NN: " << node->score << std::endl;
-           //if(use_secondary_measure){ 
-              //TODO
-              double primary_score = node->score;
-              node->evaluate(inst, HeuristicType::H5);
-              node->second_score =  node->score;
-              node->score = primary_score;
-              
+           if(not node->features.empty())
+           {
+               Eigen::Map<const Eigen::VectorXd> eigen_features(node->features.data(), node->features.size());
+               node->score = neural_network->forward(eigen_features)(0);
+               //std::cout << "Node score from NN: " << node->score << std::endl;
+               double primary_score = node->score;
+               node->evaluate(inst, HeuristicType::H5);
+               node->second_score =  node->score;
+               node->score = primary_score;
+           }else{
+               node->second_score=-10000;
+               node->score=-10000; //node->length();//node->length();
+           }
            //}
       }
   }
 
 
-  static void compute_features(std::vector<Node*>& V_ext, Instance* inst)
+   static void compute_features(std::vector<Node*>& V_ext, Instance* inst)
   {
     //calculate features for the nodes in V_ext
-    for(Node* node : V_ext){
+    for(Node* node : V_ext)
+    {
         //first option: consider p^{L,v} and l^v. first do p^{L,v}_i = p^{L,v}_i / |s_i| and l^v_j = l^v_j / |r_j| for al input and restricted strings. 
         // then consider the max, min, std, avg of both vectors as features (8 features). Add also length of partial sol represented by node u^v (9 in total) (config1)
         //Add the alphabet size (config2)
         //Add length and number of input and restricted strings (config3)
-        std::vector<double> pL_v;
+        std::vector<double> pL_v; int index=0; bool complete_node=false;
         pL_v.reserve(node->pos.size());
-        for (int x : node->pos)  
+        for (int x : node->pos)
+        {
+            if(x >= (int)inst->sequences[index].size()-1)
+                  complete_node=true;
+
             pL_v.push_back(static_cast<double>(x));
+
+           index++;
+        }
+        // determine the features;
+
         int len_partial = node->length();
-        
         //normalize left position vectors so that they do not depend on the length of the input strings
         for(int i = 0; i < (int)pL_v.size(); ++i) pL_v[i] /=  inst->sequences[i].size();
-        
-        vector<double> features; 
+
+        if(complete_node)
+          continue;
+
+        vector<double> features;
         //features of vectors pL_v and lv
         double mean_pL_v = compute_average(pL_v);
-        
-        features.push_back(compute_max(pL_v));
+
+       features.push_back(compute_max(pL_v));
         features.push_back(compute_min(pL_v));
         features.push_back(mean_pL_v);
         features.push_back(compute_std(pL_v, mean_pL_v));
         features.push_back(len_partial);
 
         //gaps features
-        std::vector<double> gaps_all_features; gaps_all_features.push_back(100000);
+        std::vector<double> gaps_all_features; //gaps_all_features.push_back(10000);
         for(int i = 0; i < (int)inst->sequences.size(); ++i){
 
                 for(int j = node->pos[i]+1; j < (int)inst->sequences[i].size(); ++j)
                     gaps_all_features.push_back(static_cast<double>(inst->gaps[i][j]));
-                
+
         }
+
         double mean_gaps = compute_average(gaps_all_features);
         features.push_back(compute_max(gaps_all_features));
         features.push_back(compute_min(gaps_all_features));
         features.push_back(mean_gaps);
-        features.push_back(compute_std(gaps_all_features, mean_gaps));          
+        features.push_back(compute_std(gaps_all_features, mean_gaps));
         //additional features based on configuration (for now 9 of them in total)         
 
         if(feature_config == 2) // add alphabet size, 10 features 
             features.push_back( (int)inst->Sigma.size() );
-            
+
         else if(feature_config == 3){ // 11 features
-            
+
             features.push_back( (int)inst->Sigma.size() );
             features.push_back( (int) inst->sequences.size() ); // number of instance 
         }
         else if(feature_config == 4){ // 12 features
-        
-            features.push_back( (int)inst->Sigma.size() );  
+
+            features.push_back( (int)inst->Sigma.size() );
             features.push_back( (int) inst->sequences.size() );
             features.push_back((inst->sequences[0]).size()); //note that this config only makes sense if all input strings have the same length
+            
         }
         standardize(features);
 
         node->features = features;
       }
    }
+
+
+
 
     static Result run_forward_backward_BS(
         Instance* inst,

@@ -1,5 +1,5 @@
 \documentclass{beamer}
-%\usetheme{madrid}
+\usetheme{CambridgeUS}
 \usepackage{amsmath}
 \usepackage{amssymb}
 
@@ -21,8 +21,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \footnotesize{-- \textcolor{blue}{Eurocast 2026: 20th International Conference on Computer Aided Systems Theory, February 23-27, 2026,  Las Palmas de Gran Canaria, Spain}--}
 \centering
-\includegraphics[width=90pt,height=50pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}
-\includegraphics[width=80pt,height=50pt]{IFEEL\_1.png}
+\includegraphics[width=90pt,height=50pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}~ \hfill
+\includegraphics[width=80pt,height=50pt]{IFEEL\_1.png}~\hfill
 \includegraphics[width=110pt,height=40pt]{CofundedbytheEU\_RGB\_NEG.png}
 }
 
@@ -82,13 +82,48 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \end{definition}
     \begin{example}
        Input: S=\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
-       Solution: s=\textcolor{red}{ATTC}
+       LCS solution: s=\textcolor{red}{ATTC}
     \end{example}
 \end{frame}
 
-\begin{frame}{Variants of LCS problems}
+\begin{frame}{Literature \& LCS Problem Variants }
+Theoretically:
   \begin{itemize}
-  \item TODO
+  \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Schlimanski, ... 
+  \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
+   \begin{itemize}
+   \item subject of interest within last 30 years: approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, anytime approaches,...)
+   \end{itemize}  
+  \end{itemize}\vspace{0.3cm}
+  
+  Problem-related variants:
+  \begin{itemize}
+  		\item Arc-annotated LCS problem
+ 		 \item Constrained (restricted/imposed) LCS problem
+  		\item Repetition-free, Longest filled LCS,...
+  		\item \textbf{Gapped LCS problem}
   \end{itemize}
 \end{frame}
+
+\begin{frame}{The gaped LCS problem}
+   \begin{definition}[A gap sequence]
+       Given is a sequence $s$ and an assigned function 
+       $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. An ordered pair $(s, G_s)$ is called a \textbf{sequence with gaps}.
+   \end{definition} \vspace{0.5cm}
+   
+   \begin{definition}[A gapped subsequence ]
+         Sequence $\tilde{s}$ is a gapped subsequence of $(s, G_s)$ ifff 
+         \begin{itemize}
+         \item \textsc{s} is a subsequence of $s$
+         \item the gapped constraint $G_s$ is fulfilled
+         \end{itemize}
+   \end{definition}
+\end{frame}
+
+
+\begin{frame}{Literature \& Motivation}
+content...
+\end{frame}
+
+
 \end{document}
