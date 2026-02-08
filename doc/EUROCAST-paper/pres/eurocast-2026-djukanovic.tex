@@ -2,6 +2,24 @@
 \usetheme{CambridgeUS}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+\usepackage{cancel}
+\usetikzlibrary{positioning}
+
+\tikzset{
+box/.style={
+draw,
+rectangle,
+rounded corners,
+align=left,
+font=\small,
+inner sep=4pt,
+fill=green!15
+}
+}
+
+
 
 \title{On Solving the Multiple Variable Gapped Longest Common Subsequence Problem}
 
@@ -135,7 +153,7 @@ Theoretically:
       \end{itemize}
    \end{example} \vspace{0.3cm}
     
-   \begin{definition}[The multiple (variable) gapped LCS problem]
+   \begin{definition}[The multiple (variable) gapped LCS problem -- MVGLCSP]
         \textbf{Input}: Given is a set of gapped sequences $(s_1, G_{s_1}), \ldots, (s_m, G_{s_m})$. \\
         \textbf{Task}: Find the longest  subsequence $\tilde{s}$ so that 
         \begin{itemize}
@@ -148,21 +166,132 @@ Theoretically:
 \begin{frame}{Literature \& Motivation}
    
    \begin{itemize}
-       \item  Peng and Yang (2014): studied the problem with $m=2$ (poly-version): \textbf{Three dynamic programming} approaches (basic and sparse ones, advanced data-structures)
+       \item  Peng and Yang (2014): studied the problem with $m=2$ (poly-version): \textbf{Three dynamic programming} approaches (basic and sparse, sparse + advanced data-structures)
        \item  Manea et al. (2024): Complexity bounds,  (parameterised) complexity analysis investigated
    \end{itemize} \vspace{0.3cm}
    
    Motivation:
    \begin{itemize}
        \item  \textbf{Bioinformatics}: applications in DNA and protein analysis where variable structural distances between residues must be respected
-       \item \textbf{Time-series analysis}:  especially in settings where events are required to occur within specified temporal delays~\cite{lainscsek2015delay}
+       \item \textbf{Time-series analysis}:  especially in settings where events are required to occur within specified temporal delays~(Lainscsek et al. (2015))
    \end{itemize}
    
 \end{frame}
 
 \begin{frame}{Methodology}
-    content...
+    \begin{itemize}
+        \item Based on the significant extension of the state space graph formulation for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
+        \item Gap constraints: incorporated to cut-off the invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
+        \item Reach-ability of all extensions is an issue (\textbf{many root nodes} in the state graph, possibly separated subgraphs)
+    \end{itemize}
+    
 \end{frame}
 
+
+\begin{frame}{Root-based state graph formulation: rough idea}
+  
+  \begin{itemize}
+      \item Each \textbf{state} $v=(p^L, l^v)$: one or more feasible partial solutions characterized by a vector of positions $p^L$ referring to relevant suffixes of input sequences to  further expand these sols, and by the current subsequence length $l^v$ \vspace{0.3cm}
+      \item \textbf{Node expansion} of $v$: extend partial solutions feasibly by one letter  (concatenation) in all possible ways (like in LCS case),  respecting gap constraints \vspace{0.3cm}
+      \item \textbf{Non-expandable nodes}: complete solutions 
+  \end{itemize} \vspace{0.5cm}
+  
+  \fbox{\textcolor{red}{\textbf{Crucial: selection of position $r$ for root node 
+   (corresp. to empty partial sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State graphs space induced by root node $(r, 0)$ we denote by \emph{Space(r)}.
+\end{frame}
+
+\begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously right root node)}
+   
+   % U nekom delu LaTeX dokumenta:
+   \begin{figure}[h!]
+   \centering
+   \scalebox{0.4}{
+   
+   
+   \begin{tikzpicture}[
+   state/.style={circle, draw=blue!50, fill=blue!10, thick, minimum size=8mm},
+   edge/.style={-Latex, thick},
+   node distance=2cm and 2cm
+   ]
+   
+   % Čvorovi
+   \node[state, fill=blue] (s0) {((1, 1),0)};
+   \node[state, below left=of s0] (s1) {((2, 2),1)};
+   \node[state, below right=of s0] (s2) {((4,3),2)};
+   %\node[state, below=of s2] (s3) {(4,3)};
+   \node[state, below=of s2, fill=gray] (s4) {((5,4),3)}; % krajnje, ali ne koristi se ovde
+   \node[state, left=of s4, fill=white] (s5) {((3, 5), 2)}; % krajnje, ali ne koristi se ovde
+   
+   % Right of root ((1,1),0)
+   \node[box, right=12mm of s0] (b0) {
+   $s_1=\text{{A}BCA}$\\
+   $s_2=\text{{A}CAB}$\\
+   $s^v=\varepsilon$
+   };
+   
+   % Left of ((2,2),1)
+   \node[box, left=14mm of s1] (b1) {
+   $s_1=\text{\textcolor{gray}{A}BCA}$\\
+   $s_2=\text{\textcolor{gray}{A}CAB}$\\
+   $s^v=\text{A}$
+   };
+   
+   % Right of ((4,3),2)
+   \node[box, right=12mm of s2] (b2) {
+   $s_1=\text{\textcolor{gray}{ABC}A}$\\
+   $s_2=\text{\textcolor{gray}{AC}AB}$\\
+   $s^v=\text{AC}$
+   };
+   
+   % Right of ((5,4),3)
+   \node[box, right=42mm of s5] (b3) {
+   $s_1=\text{\textcolor{gray}{ABCA}}$\\
+   $s_2=\text{\textcolor{gray}{ACAB}}$\\
+   $s^v=\text{ACA}$
+   };
+   
+ 
+   
+   % Grane (samo validne poklapanja)
+   \draw[edge] (s0) -- node[above] {\small A} (s1);
+   %\draw[edge] (s0) -- node[above] {\small A} (s2);
+   \draw[edge] (s1) -- node[above] {\small C} (s2);
+   %\draw[edge] (s2) -- node[right] {\small A} (s3);
+   %\draw[edge] (s3) -- node[right] {\texttt{A}} (s4);
+   \draw[edge,  scale=2.2, dashed, red] (s1) -- node[right, fill=lightgray] {$\cancel{\texttt{B}}$} (s5);
+   
+    \draw[edge,  scale=2.2, dashed, red] (s1) -- node[right, fill=lightgray] {$\cancel{\texttt{A}}$} (s4);
+   % Oznake
+   \node[above=0.3cm of s0] {\textbf{Root state}};
+   %\node[below=1.5cm of s3] {\small \textbf{Krajnje stanje}};
+   \draw[edge] (s2) -- node[right] {\texttt{A}} (s4);
+   
+   \end{tikzpicture}}
+   
+   \caption{State space graph $Space(r=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$. Two final/terminal state is displayed in gray. The white-filled node  is the valid LCS node, but not as defined by the root-based space formulation (the second gap has been  violated). % \fxnote{Add VGLCS example}
+   }
+   
+   \label{fig:vgcs-grafstanja}
+   \end{figure}
+   
+\end{frame}
+
+
+\begin{frame}{An issue with the root-state-space formulation: example}
+
+   \begin{itemize}
+   \item The VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space.
+   \item  A search strategy that expands states from a single initial root may fail to reach feasible and even optimal solutions.     \end{itemize}
+   \begin{example}
+   		$
+   		S = \{ s_1 = \texttt{ATGGAAAA},\; s_2 = \texttt{ATCCAAAA} \},
+   		$
+   		with gap constraints $G_{s_1} = G_{s_2} = 1$. In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by standard directed transitions. 
+
+  \end{example}
+  
+   The optimal common subsequence \texttt{AAA} is unreachable from the basic root $((1,1),0)$,  therefore missed by traditional search strategies.
+   
+\end{frame}
 
 \end{document}

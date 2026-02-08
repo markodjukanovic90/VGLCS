@@ -24,6 +24,21 @@
  
 \usepackage{graphicx}
 \usepackage{subcaption}
+ 
+\usetikzlibrary{positioning}
+
+\tikzset{
+	box/.style={
+		draw,
+		rectangle,
+		rounded corners,
+		align=left,
+		font=\small,
+		inner sep=4pt,
+		fill=green!15
+	}
+}
+
 
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
@@ -125,7 +140,7 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
      (ii) $l^v = |s^v|$ denotes the length of the partial subsequence; and
      (iii) all gap constraints $G_i$ are \textit{satisfied} by $s^v$ with respect to every input sequence $s_i$.
      
-     A directed arc $\alpha = (v_1, v_2)$, labeled with $lett(\alpha) = a \in \Sigma$, exists if
+     A direct arc $\alpha = (v_1, v_2)$, labeled with $lett(\alpha) = a \in \Sigma$, exists if
      \[
      l^{v_2} = l^{v_1} + 1
      \quad \text{and} \quad
@@ -142,52 +157,86 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
      \]
      In that way, a child state
      $w = (\mathbf{p}^{L,a} + \mathbf{1},\, l^v + 1)$
-     is generated, unless it is dominated by another child state according to the dominance criteria defined later in this section.  To efficiently compute child states and their associated position vectors, we employ a preprocessing data structure denoted by \texttt{Succ}. This structure is represented by a three-dimensional integer array indexed by $(i,j,a)$, where $i$ refers to the input sequence $s_i$, $1 \le j \le |s_i|$ denotes a position within that sequence, and $a \in \Sigma$ is a character. The value
+     is generated, unless it is dominated by another child state according to the dominance criteria defined later in this section.  To efficiently compute children and their associated position vectors, we employ a preprocessing data structure denoted by \texttt{Succ}. This structure is represented by a three-dimensional integer array indexed by $(i,j,a)$, where $i$ refers to the input sequence $s_i$, $1 \le j \le |s_i|$ denotes a position within that sequence, and $a \in \Sigma$ is a character. The value
      \[
      q = \texttt{Succ}[i,j,a]
      \]
      stores the smallest index $q \ge j$ such that $s_i[q] = a$ and the gap constraint is satisfied at position $q$, that is, $q - j \le G_i(q).$ 
      If no such position exists, the value $-1$ is assigned.
      
-     The (basic) root state is defined as $
-     r = ((1,\ldots,1),\, 0),$ 
-     corresponding to the empty subsequence. Goal states are feasible states that cannot be further expanded. The search space rooted at $r$ is denoted by $\mathrm{Space}(r)$, consisting of all nodes (and corresponding transitions) that can be reached via root node $r$.  As will be discussed in the following section, the structure of this space heavily depends on the choice of the root state from which the search is initiated. As an example, we illustrate  the state space of an instance,  depicted in Fig.~\ref{fig:vgcs-grafstanja}. 
+     The trivial root state is defined as $
+     r = ((1,\ldots,1),\, 0)$.. Goal states are feasible ones that cannot be further expanded. The search space rooted with the match $u$ is denoted by $\mathrm{Space}(u)$, consisting of all nodes (and corresponding transitions) that can be reached via root node $(u, 0)$.  As will be discussed in the following section, the structure of this space heavily depends on the choice of the root state from which the search is initiated. As an example, we illustrate  the state space of \emph{Space(u=(1, 1), 0)},  depicted in Fig.~\ref{fig:vgcs-grafstanja}. Note that here the position $(1,1)$ correspond to the match of letter \texttt{A} at positions 1 in $s_1$ and $s_2$, and indeed $u=(1, 1), 0)$ represents a root node. 
      
      
-% U nekom delu LaTeX dokumenta:
+   % U nekom delu LaTeX dokumenta:
 \begin{figure}[h!]
 	\centering
 	\scalebox{0.4}{
-	\begin{tikzpicture}[
-		state/.style={circle, draw=blue!50, fill=blue!10, thick, minimum size=8mm},
-		edge/.style={-Latex, thick},
-		node distance=2cm and 2cm
-		]
 		
-		% Čvorovi
-		\node[state, fill=blue] (s0) {((1, 1),0)};
-		\node[state, below left=of s0] (s1) {((2, 2),1)};
-		\node[state, below right=of s0] (s2) {((4,3),2)};
-		%\node[state, below=of s2] (s3) {(4,3)};
-		\node[state, below=of s2, fill=gray] (s4) {((5,4),3)}; % krajnje, ali ne koristi se ovde
-		\node[state, left=of s4, fill=white] (s5) {((3, 5), 2)}; % krajnje, ali ne koristi se ovde
 		
-		% Grane (samo validne poklapanja)
-		\draw[edge] (s0) -- node[above] {\small A} (s1);
-		%\draw[edge] (s0) -- node[above] {\small A} (s2);
-		\draw[edge] (s1) -- node[above] {\small C} (s2);
-		%\draw[edge] (s2) -- node[right] {\small A} (s3);
-		%\draw[edge] (s3) -- node[right] {\texttt{A}} (s4);
-		\draw[edge,  scale=2.2, dashed, red] (s1) -- node[right, fill=lightgray] {$\cancel{\texttt{B}}$} (s5);
-		% Oznake
-		\node[above=0.3cm of s0] {\textbf{Root state}};
-		%\node[below=1.5cm of s3] {\small \textbf{Krajnje stanje}};
-		\draw[edge] (s2) -- node[right] {\texttt{A}} (s4);
-		
+		\begin{tikzpicture}[
+			state/.style={circle, draw=blue!50, fill=blue!10, thick, minimum size=8mm},
+			edge/.style={-Latex, thick},
+			node distance=2cm and 2cm
+			]
+			
+			% Čvorovi
+			\node[state, fill=blue] (s0) {((1, 1),0)};
+			\node[state, below left=of s0] (s1) {((2, 2),1)};
+			\node[state, below right=of s0] (s2) {((4,3),2)};
+			%\node[state, below=of s2] (s3) {(4,3)};
+			\node[state, below=of s2, fill=gray] (s4) {((5,4),3)}; % krajnje, ali ne koristi se ovde
+			\node[state, left=of s4, fill=white] (s5) {((3, 5), 2)}; % krajnje, ali ne koristi se ovde
+			
+			% Right of root ((1,1),0)
+			\node[box, right=12mm of s0] (b0) {
+				$s_1=\text{{A}BCA}$\\
+				$s_2=\text{{A}CAB}$\\
+				$s^v=\varepsilon$
+			};
+			
+			% Left of ((2,2),1)
+			\node[box, left=14mm of s1] (b1) {
+				$s_1=\text{\textcolor{gray}{A}BCA}$\\
+				$s_2=\text{\textcolor{gray}{A}CAB}$\\
+				$s^v=\text{A}$
+			};
+			
+			% Right of ((4,3),2)
+			\node[box, right=12mm of s2] (b2) {
+				$s_1=\text{\textcolor{gray}{ABC}A}$\\
+				$s_2=\text{\textcolor{gray}{AC}AB}$\\
+				$s^v=\text{AC}$
+			};
+			
+			% Right of ((5,4),3)
+			\node[box, right=42mm of s5] (b3) {
+				$s_1=\text{\textcolor{gray}{ABCA}}$\\
+				$s_2=\text{\textcolor{gray}{ACAB}}$\\
+				$s^v=\text{ACA}$
+			};
+			
+			
+			
+			% Grane (samo validne poklapanja)
+			\draw[edge] (s0) -- node[above] {\small A} (s1);
+			%\draw[edge] (s0) -- node[above] {\small A} (s2);
+			\draw[edge] (s1) -- node[above] {\small C} (s2);
+			%\draw[edge] (s2) -- node[right] {\small A} (s3);
+			%\draw[edge] (s3) -- node[right] {\texttt{A}} (s4);
+			\draw[edge,  scale=2.2, dashed, red] (s1) -- node[right, fill=lightgray] {$\cancel{\texttt{B}}$} (s5);
+			
+			\draw[edge,  scale=2.2, dashed, red] (s1) -- node[right, fill=lightgray] {$\cancel{\texttt{A}}$} (s4);
+			% Oznake
+			\node[above=0.3cm of s0] {\textbf{Root state}};
+			%\node[below=1.5cm of s3] {\small \textbf{Krajnje stanje}};
+			\draw[edge] (s2) -- node[right] {\texttt{A}} (s4);
+			
 	\end{tikzpicture}}
-	\caption{State space graph $Space(r=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$. Two final/terminal state is displayed in gray. The white-filled node  is the valid LCS node, but not as defined by the root-based space formulation (the second gap has been  violated). % \fxnote{Add VGLCS example}
+	
+	\caption{State space graph $Space(u=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$. Two final/terminal state is displayed in gray. The white-filled node  is the valid LCS node, but not as defined by the root-based space formulation (the second gap has been  violated). % \fxnote{Add VGLCS example}
 	}
-
+	
 	\label{fig:vgcs-grafstanja}
 \end{figure}
 
@@ -200,9 +249,9 @@ with gap constraints $G_{s_1} = G_{s_2} = 1$. In this instance, any state with p
 
 To address this issue, we define the full state space of a VGLCSP instance naturally by
 \[
-\bigcup_{q \in \mathcal{R}} \mathrm{Space}(q),
+\bigcup_{q \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L,q}),
 \]
-where $\mathcal{R}$ denotes the set of all root states, i.e., states with position vectors $\mathbf{p}^{L,q}$ that cannot be reached from any other state by direct transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time in the worst case, and is thus infeasible for instances with large $m$ or $n$.
+where $\mathcal{R}$ denotes the set of all root states, i.e., states defined by position vectors (matches) $\mathbf{p}^{L,q}$ that cannot be reached from any other state by a series of direct transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time in the worst case, and is thus infeasible for instances with large $m$ or $n$.
 
 This structural characteristic of the VGLCSP motivates the proposed methodology titled \textit{Iterative Multi-Source Beam Search} (IMSBS) approach, which is specifically designed to dynamically explore multiple promising regions of the state space moving from one rooted subgraph to another one. By iteratively identifying and expanding a set of candidate root states, IMSBS effectively mitigates the disconnection effects induced by gap constraints and enables the discovery of high-quality solutions that would otherwise remain inaccessible to single-source search methods.
 
