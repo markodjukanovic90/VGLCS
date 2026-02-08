@@ -111,18 +111,57 @@ Theoretically:
        $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. An ordered pair $(s, G_s)$ is called a \textbf{sequence with gaps}.
    \end{definition} \vspace{0.5cm}
    
-   \begin{definition}[A gapped subsequence ]
-         Sequence $\tilde{s}$ is a gapped subsequence of $(s, G_s)$ ifff 
+   \begin{definition}[A gapped subsequence]
+         Sequence $\tilde{s}$ is a gapped subsequence of $(s, G_s)$ iff 
          \begin{itemize}
-         \item \textsc{s} is a subsequence of $s$
-         \item the gapped constraint $G_s$ is fulfilled
+             \item $\tilde{s}$ is a subsequence of $s$
+             \item the gapped constraint $G_s$ is fulfilled w.r.t.\ \textit{positions of appearances} of letters of $\tilde{s}$ in $s$
+         \begin{itemize}
+             \item  suppose $i_1, \ldots, i_{|\tilde{s}|}$ are \textbf{positions of embedding} $\tilde{s}$ in $s$
+             \item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, i_{j} - i_{j-1} \leq G_{s}(i_{j})+1$ 
          \end{itemize}
+       \end{itemize}
    \end{definition}
+   
 \end{frame}
 
+\begin{frame}{Problem definition}
+
+   \begin{example}
+      $s=\texttt{AATTGC}$, $G_s(\cdot)=1$
+      \begin{itemize}
+         \item  $\tilde{s}=\texttt{ATG}$, the embedding: \textcolor{red}{A}A\textcolor{red}{T}T\textcolor{red}{G}C (\textcolor{blue}{valid} gapped subsequence)
+         \item  $\tilde{s}=\texttt{ATG}$, the embedding: \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid} gapped subsequence)
+      \end{itemize}
+   \end{example} \vspace{0.3cm}
+    
+   \begin{definition}[The multiple (variable) gapped LCS problem]
+        \textbf{Input}: Given is a set of gapped sequences $(s_1, G_{s_1}), \ldots, (s_m, G_{s_m})$. \\
+        \textbf{Task}: Find the longest  subsequence $\tilde{s}$ so that 
+        \begin{itemize}
+            \item  $\tilde{s}$ is common subusequence of each $s_i$
+            \item $\tilde{s}$ fulfills all gap constraints $G_{s_i}$  for each $i=1, \ldots, m$
+        \end{itemize}
+    \end{definition}
+\end{frame}
 
 \begin{frame}{Literature \& Motivation}
-content...
+   
+   \begin{itemize}
+       \item  Peng and Yang (2014): studied the problem with $m=2$ (poly-version): \textbf{Three dynamic programming} approaches (basic and sparse ones, advanced data-structures)
+       \item  Manea et al. (2024): Complexity bounds,  (parameterised) complexity analysis investigated
+   \end{itemize} \vspace{0.3cm}
+   
+   Motivation:
+   \begin{itemize}
+       \item  \textbf{Bioinformatics}: applications in DNA and protein analysis where variable structural distances between residues must be respected
+       \item \textbf{Time-series analysis}:  especially in settings where events are required to occur within specified temporal delays~\cite{lainscsek2015delay}
+   \end{itemize}
+   
+\end{frame}
+
+\begin{frame}{Methodology}
+    content...
 \end{frame}
 
 
