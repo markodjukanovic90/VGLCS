@@ -331,6 +331,13 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     		\Ensure Approximate common subsequence $s_{\textrm{best}}$ which fulfills the gap constraints
     		
     		\State Initialize $\mathcal{R} \gets \{ (\mathbf{1},0) \}$ \Comment{A set of root nodes}
+    		
+    		
+    		
+    	    \ForAll{ $a \in \Sigma$} \Comment{Find closest matching positions for each letter}
+    		\State $\textbf{p}^w_{a} = ({p}^w_{i, a})_{i=1}^m \gets$ minimum position  $p^w_{i, a} \geq 1$ and $s_i[p^w_{i, a}] = a$ (ignore all gap constraints, remove dominated root positions)
+    		    \State $R \gets R \cup \{ (p^w_a, 0)\}$
+    		\EndFor
     		\State $iter \gets 0$
     		\State $s_{\textrm{best}} \gets  \varepsilon$
     		
