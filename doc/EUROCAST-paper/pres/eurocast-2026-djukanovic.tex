@@ -161,19 +161,21 @@ Theoretically:
             \item $\tilde{s}$ fulfills all gap constraints $G_{s_i}$  for each $i=1, \ldots, m$
         \end{itemize}
     \end{definition}
+    \textbf{Note}: when $G_{s_i}=n$ (the length of longest sequence) $\Rightarrow$ VGLCSP = LCSP.
 \end{frame}
 
 \begin{frame}{Literature \& Motivation}
    
    \begin{itemize}
-       \item  Peng and Yang (2014): studied the problem with $m=2$ (poly-version): \textbf{Three dynamic programming} approaches (basic and sparse, sparse + advanced data-structures)
+       \item  Peng and Yang (2012, 2014): studied the problem with $m=2$ (poly-version): \textbf{Three dynamic programming} approaches (basic and sparse, sparse + advanced data-structures)
        \item  Manea et al. (2024): Complexity bounds,  (parameterised) complexity analysis investigated
+       \item NP-hard under arbitrary $m$ 
    \end{itemize} \vspace{0.3cm}
    
    Motivation:
    \begin{itemize}
-       \item  \textbf{Bioinformatics}: applications in DNA and protein analysis where variable structural distances between residues must be respected
-       \item \textbf{Time-series analysis}:  especially in settings where events are required to occur within specified temporal delays~(Lainscsek et al. (2015))
+       \item  \textbf{Genetics and molecular biology}: applications in DNA and protein analysis where variable structural distances between residues must be respected
+       \item \textbf{Time-series analysis}: in settings where events are required to occur within specified temporal delays~(Lainscsek et al. (2015))
    \end{itemize}
    
 \end{frame}
@@ -197,7 +199,7 @@ Theoretically:
   \end{itemize} \vspace{0.5cm}
   
   \fbox{\textcolor{red}{\textbf{Crucial: selection of position $r$ for root node 
-   (corresp. to empty partial sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State graphs space induced by root node $(r, 0)$ we denote by \emph{Space(r)}.
+   (corr.\ to empty part.\ sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State graphs space induced by root node $(r, 0)$ we denote by \emph{Space(r)}.
 \end{frame}
 
 \begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously right root node)}
@@ -268,7 +270,7 @@ Theoretically:
    
    \end{tikzpicture}}
    
-   \caption{State space graph $Space(r=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$. Two final/terminal state is displayed in gray. The white-filled node  is the valid LCS node, but not as defined by the root-based space formulation (the second gap has been  violated). % \fxnote{Add VGLCS example}
+   \caption{State space graph $Space(r=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$.   % \fxnote{Add VGLCS example}
    }
    
    \label{fig:vgcs-grafstanja}
@@ -281,17 +283,84 @@ Theoretically:
 
    \begin{itemize}
    \item The VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space.
-   \item  A search strategy that expands states from a single initial root may fail to reach feasible and even optimal solutions.     \end{itemize}
+   \item  If started from $(1, 1)$, it fails to reach    optimal solutions.     \end{itemize}
    \begin{example}
    		$
-   		S = \{ s_1 = \texttt{ATGGAAAA},\; s_2 = \texttt{ATCCAAAA} \},
+   		S = \{ s_1 = \texttt{ATGG\fbox{A}AA},\; s_2 = \texttt{ATCC\fbox{A}AA} \},
    		$
-   		with gap constraints $G_{s_1} = G_{s_2} = 1$. In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by standard directed transitions. 
+   		with gap constraints $G_{s_1} = G_{s_2} = 1$. In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by standard direct transitions. 
 
-  \end{example}
+  \end{example} \vspace{0.5cm}
   
-   The optimal common subsequence \texttt{AAA} is unreachable from the basic root $((1,1),0)$,  therefore missed by traditional search strategies.
+   \textbf{Consequence}: $((5, 5), 0) \not \in Space((1, 1))$  $\Rightarrow$  
+   \textcolor{blue}{The optimal common subsequence \texttt{AAA} is unreachable.} %from the basic root $((1,1),0)$,  therefore missed by traditional search strategies.
    
+\end{frame}
+
+\begin{frame}{Iterative multi-source beam search (IMSBS) strategy}
+      
+      \begin{itemize}
+      		\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $\mathcal{R}$ all root states %, i.e., states defined by position vectors (matches) $\mathbf{p}^{L,q}$ 
+      		\item Explicitly enumerating all root states computationally prohibitive (requiring $O(n^m)$ time) \vspace{0.3cm}
+      		\item \textbf{IMSBS} (idea):
+      		\begin{itemize}
+      		    \item Based on \textbf{beam search}: limited breadth-first-search (BFS) strategy (for exploring \emph{Space(r)})
+      		    
+      		    \item dynamically explore multiple promising regions of the state space: move from one rooted subgraph to another one 
+      		    \item \textbf{iteratively identifies and expands} a set of \textcolor{red}{promising} candidate root states
+      		\end{itemize}
+      \end{itemize}  
+\end{frame}
+
+\begin{frame}{Components and characteristics of IMSBS}
+     
+     
+     \begin{itemize}
+     	\item $\mathcal{R}$: a global set of root-node candidates, dynamically updated over iterations
+     	\item \textbf{Beam search} (backward): not all candidate nodes from $\mathcal{R}$ are root nodes
+     	\begin{itemize}
+     		\item \textcolor{blue}{\textbf{refine}} them by performing the \textcolor{blue}{\textbf{backward}} approximate passes from candidate-root nodes to effectively reach distant (real) and promising root node in the state space
+     	\end{itemize}
+     	\item \textcolor{blue}{\textbf{Beam search}} (forward): \textcolor{red}{intensification} in the chosen root-space \emph{Space(p)}: seek for high-quality (complete) solutions in the corresponding search sub-regions
+     	\item \textcolor{red}{diversification}:  during each BS (forward), the complete nodes  are expanded in all possible ways (gaps ignored) to generate candidates for roots (distant from the current region)
+     \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Working example}
+	 TODO: draw some plots regarding the workflow of the approach
+	 
+ 
+\end{frame}
+
+\begin{frame}{The core advantages of the IMSBS approach}
+ 
+     \begin{itemize}
+     	\item Balance between complete beam search execution (local exploration of promising paths) and the generation of new source nodes (\textbf{global coverage} of the search space)
+     	\item Preventing from direct suboptimal solutions reduced by executing backward beam search procedure (\textbf{refinement})
+     \end{itemize}
+      
+\end{frame}
+
+\begin{frame}{Heuristic guidances in BS}
+    
+    Three LCS heuristic guidances used:
+        \begin{itemize}
+       	    \item  \textit{``Look-ahead'' for the remaining length:}
+    	    \begin{equation}
+    		    \textrm{UB}_1(\mathbf{v}) = l^v + \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)
+        	\end{equation}
+    	  	\item  \textit{Character Frequency Alignment:}
+    	   \begin{equation}
+    	   	\textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
+    	   	\min\left(  |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)
+    	   \end{equation}
+    	   \item \textit{A probability-based heuristic} guidance by the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012)). These probabilities approximate the probability for the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Experimental Evaluation}
+	TODO
 \end{frame}
 
 \end{document}
