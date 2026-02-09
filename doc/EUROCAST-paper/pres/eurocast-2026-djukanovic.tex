@@ -7,6 +7,7 @@
 \usepackage{cancel}
 \usetikzlibrary{positioning}
 \usepackage{subcaption}
+\usepackage{booktabs}
 
 \tikzset{
 box/.style={
@@ -454,12 +455,155 @@ Theoretically:
 		\label{fig:imsbs_tuning}
 	\end{figure}
 	
-	$\Longrightarrow h = \textrm{UB}_2$ and $\beta = 500$.\\ \vspace{0.3cm}
+	$\Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$ and $\textcolor{red}{\beta = 500}$.\\ \vspace{0.3cm}
 	\textsc{Imsbs-Greedy}:  $\beta=1$, $imsbs\_iter=10,000$ (comparable avg. runtime to \textsc{Imsbs})
 \end{frame}
 
 \begin{frame}{Numerical results}
-	content...
+   
+       
+   
+   \begin{table}[H]
+   	%\caption{Numerical results on the \textsc{Random} benchmark suite. }\label{tab:numerical_results_general_m}
+   	\centering
+   	\scalebox{0.4}{
+   		\begin{tabular}{lll|rr|rr|rr}
+   			\hline
+   			\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Bs}} & \multicolumn{2}{c}{\textsc{Imsbs-Greedy}} & \multicolumn{2}{c}{\textsc{Imsbs}} \\
+   			\cmidrule(lrr){1-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} \\ 
+   			$m$ & $n$ & $|\Sigma|$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$ & $\overline{t}[s]$ \\
+   			\hline
+   			\midrule
+   			2 &       50 &         2 &            33.6 &         0.02 &                     33.1 &                  0.00 &         \textbf{37.7} &      0.06 \\
+   			2 &       50 &         4 &            30.1 &         0.98 &                     27.7 &                  0.00 &         \textbf{30.1} &      0.16 \\
+   			2 &      100 &         2 &            48.9 &         2.07 &                     64.5 &                  0.01 &         \textbf{72.8} &      0.94 \\
+   			2 &      100 &         4 &            \textbf{62.1} &        11.19 &                     56.9 &                  0.01 &         61.6 &      0.91 \\
+   			2 &      200 &         2 &            99.1 &        18.56 &                     95.5 &                  0.02 &        \textbf{136.4} &      6.21 \\
+   			2 &      200 &         4 &           120.5 &        38.15 &                    116.1 &                  0.05 &        \textbf{124.9} &      6.58 \\
+   			2 &      500 &         2 &            65.3 &        23.27 &                    153.6 &                  0.07 &        \textbf{265.7} &    119.75 \\
+   			2 &      500 &         4 &           214.6 &       163.69 &                    227.7 &                  0.12 &        \textbf{294.4} &     60.49 \\ \hline
+   			3 &       50 &         2 &            17.5 &         0.03 &                     27.2 &                  0.00 &         \textbf{31.2} &      0.14 \\
+   			3 &       50 &         4 &            21.7 &         0.18 &                     21.5 &                  0.00 &         \textbf{22.9} &      0.19 \\
+   			3 &      100 &         2 &            19.7 &         0.06 &                     41.8 &                  0.01 &         \textbf{58.5} &      3.15 \\
+   			3 &      100 &         4 &            34.1 &         2.35 &                     43.4 &                  0.03 &         \textbf{48.4} &      5.58 \\
+   			3 &      200 &         2 &            15.2 &         0.16 &                     63.6 &                  0.02 &         \textbf{90.0} &     22.48 \\
+   			3 &      200 &         4 &            85.3 &        23.45 &                     77.2 &                  0.08 &         \textbf{97.1} &     72.25 \\
+   			3 &      500 &         2 &            12.6 &         0.10 &                     69.9 &                  0.07 &        \textbf{102.9} &     53.56 \\
+   			3 &      500 &         4 &            90.7 &        86.35 &                    104.2 &                  0.29 &        \textbf{187.7} &    412.27 \\ \hline
+   			5 &       50 &         2 &             4.8 &         0.00 &                     14.9 &                  0.00 &         \textbf{20.0} &      0.36 \\
+   			5 &       50 &         4 &             8.9 &         0.01 &                     13.6 &                  0.06 &         \textbf{15.3} &      0.79 \\
+   			5 &      100 &         2 &             6.3 &         0.01 &                     17.7 &                  0.01 &         \textbf{22.4} &      0.57 \\
+   			5 &      100 &         4 &             5.3 &         0.01 &                     \textbf{23.2} &                 10.85 &         22.1 &      1.44 \\
+   			5 &      200 &         2 &             5.3 &         0.01 &                     21.6 &                  0.03 &         \textbf{26.6} &      1.07 \\
+   			5 &      200 &         4 &             6.4 &         0.02 &                     \textbf{32.5} &                604.11 &         {25.7} &      2.10 \\
+   			5 &      500 &         2 &             5.9 &         0.10 &                     25.5 &                  0.14 &         \textbf{27.9} &      3.22 \\
+   			5 &      500 &         4 &             6.8 &         0.10 &                     \textbf{43.6} &               1341.25 &         26.9 &      3.52 \\ \hline
+   			10 &       50 &         2 &             1.7 &         0.00 &                      8.8 &                  2.28 &          \textbf{9.1} &      0.47 \\ 
+   			10 &       50 &         4 &             1.9 &         0.00 &                      \textbf{7.0} &                508.36 &          6.1 &      1.46 \\
+   			10 &      100 &         2 &             1.1 &         0.00 &                     \textbf{14.0} &               1421.10 &          8.6 &      0.54 \\
+   			10 &      100 &         4 &             2.2 &         0.01 &                      \textbf{8.9} &               1800.45 &          {6.3} &      1.51 \\
+   			10 &      200 &         2 &             2.5 &         0.01 &                     \textbf{13.2} &               1710.49 &         10.3 &      0.77 \\
+   			10 &      200 &         4 &             2.2 &         0.02 &                      \textbf{7.9} &               1800.54 &          6.1 &      1.74 \\
+   			10 &      500 &         2 &             1.8 &         0.08 &                     \textbf{13.8} &               1611.70 &          {9.5} &      1.53 \\
+   			10 &      500 &         4 &             1.9 &         0.09 &                      \textbf{8.2} &               1800.46 &          6.1 &      2.37 \\
+   			\hline \hline
+   			\textbf{Avg.} &  &  &  32.38 & 10.97 & 46.82 & 394.14 &  \textbf{59.73} & 24.63  \\ \hline \hline
+   	\end{tabular}}
+   \end{table}
+   
+   
 \end{frame}
+
+\begin{frame}{Numerical results for $m=2$ case}
+	    
+	    \begin{itemize}
+	 	    \item \textsc{Dp}: the basic dynamic programming algorithm
+	 	    \item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm
+	 	    \item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup
+	 	    \item \textsc{Ilp}: an integer linear programming method \textbf{proposed in this work}, motivated by the ILP model for LCS problems
+	 \end{itemize} \vspace{0.5cm}
+\textcolor{blue}{\textbf{The first known empirical comparison for the $m=2$} (80 instances).}
+\end{frame}
+
+\begin{frame}{Experimental evaluation}
+	 
+	 \begin{table}[H]
+	 	\caption{Results on the \textsc{Random} benchmark set for $m=2$: the exact approaches from the literature.}\label{tab:results-2d-literature}
+	 	\centering
+	 	\scalebox{0.7}{
+	 		\begin{tabular}{lll|lr|rr|rr|rr}
+	 			\hline
+	 			\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Dp}}  &
+	 			\multicolumn{2}{c}{\textsc{Dp-1}} & \multicolumn{2}{c}{\textsc{Dp-2}} & 
+	 			\multicolumn{2}{c}{\textsc{Ilp}}  \\
+	 			\cmidrule(lrr){1-3} \cmidrule(lr){4-5}
+	 			\cmidrule(lr){6-7} \cmidrule(lr){8-9}
+	 			\cmidrule(lr){10-11} 	\\ 
+	 			$m$ & $n$ & $|\Sigma|$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ &$\overline{obj}$  & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ \\
+	 			\hline
+	 			2 &   50 &         2 &              38.1 &          0.01 & 38.1 &          \textbf{0.01} &              38.1 &          0.01  & 38.1 & 168.3 \\
+	 			2 &   50 &         4 &              30.3 &          \textbf{0.01} &              30.3 &          0.02 &              30.3 &          0.02 & 30.3  & 28.0 \\ \hline
+	 			2 &  100 &         2 &              77.4 &          0.1 &              77.4 &          \textbf{0.03} &              77.4 &          0.05 & -- & -- \\
+	 			2 &  100 &         4 &              62.3 &          0.07 &              62.3 &         \textbf{0.06} &              62.3 &          0.09 & 0.00 & 1800.0 \\ \hline
+	 			
+	 			2 &  200 &         2 &             156.4 &          0.75 &             156.4 &          \textbf{0.13} &             156.4 &          0.16  & -- & -- \\
+	 			2 &  200 &         4 &             127.2 &          0.59 &             127.2 &          \textbf{0.25} &             127.2 &          0.32  & -- & -- \\ \hline
+	 			
+	 			2 &  500 &         2 &             395.9 &         13.57 &             395.9 &          \textbf{0.84}  &             395.9 &          1.05 & -- & -- \\
+	 			2 &  500 &         4 &             317.2 &         10.18 &             317.2 &          \textbf{1.70} & 317.2 &  2.1 & -- &-- \\    
+	 			\hline \hline
+	 	\end{tabular}}
+	 	
+	 \end{table} 
+	 
+	 
+	 
+	 
+\end{frame}
+
+\begin{frame}{The $m=2$ case: heuristic performance vs. optimal solution }
+	
+	  \begin{figure}[htbp]
+		\centering
+		\begin{minipage}{0.48\textwidth}
+			\includegraphics[width=\linewidth]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
+			\caption*{(a) Relative solution quality percentage distribution for each heuristic approach with respect to the optimal solutions.} 
+		\end{minipage}
+		\hfill
+		\begin{minipage}{0.48\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
+			\caption*{(b) Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
+		\end{minipage}
+		%\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
+		%\label{fig:optimal-vs-heuristic}
+	\end{figure}
+	
+	
+\end{frame}
+
+\begin{frame}{Conclusions and Future Work}
+	
+	\begin{itemize}
+		\item Proposed a general heuristic approach to solve the VGLCS problem with arbitrary input strings 
+		\item IMSBS designed: combines Beam search (backward and forward manner) in an iterative way while producing promising source nodes as candidates of further iterations
+		\item Balancing intensification and diversification 
+		\item Empirical studies conducted for the first time on synthetic instances: the tuned IMSBS clearly wins over the baseline Beam search approach  
+	\end{itemize}    \vspace{0.5cm}
+	
+\textbf{Future work:}
+	\begin{itemize}
+		\item Real-world instance-case scenario
+		\item Data-driven heuristic involving locl and global instance features (NN-based)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	
+	\centering
+	\Large{\textcolor{blue}{\textbf{Thank you for your attention!}}}
+	
+\end{frame}
+
 
 \end{document}
