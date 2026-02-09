@@ -6,6 +6,7 @@
 \usetikzlibrary{arrows.meta, positioning}
 \usepackage{cancel}
 \usetikzlibrary{positioning}
+\usepackage{subcaption}
 
 \tikzset{
 box/.style={
@@ -202,7 +203,7 @@ Theoretically:
    (corr.\ to empty part.\ sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State graphs space induced by root node $(r, 0)$ we denote by \emph{Space(r)}.
 \end{frame}
 
-\begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously right root node)}
+\begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously a valid root node)}
    
    % U nekom delu LaTeX dokumenta:
    \begin{figure}[h!]
@@ -300,11 +301,11 @@ Theoretically:
 \begin{frame}{Iterative multi-source beam search (IMSBS) strategy}
       
       \begin{itemize}
-      		\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $\mathcal{R}$ all root states %, i.e., states defined by position vectors (matches) $\mathbf{p}^{L,q}$ 
+      		\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $\mathcal{R}$ all root states  
       		\item Explicitly enumerating all root states computationally prohibitive (requiring $O(n^m)$ time) \vspace{0.3cm}
       		\item \textbf{IMSBS} (idea):
       		\begin{itemize}
-      		    \item Based on \textbf{beam search}: limited breadth-first-search (BFS) strategy (for exploring \emph{Space(r)})
+      		    \item Based on \textbf{beam search}: limited breadth-first-search (BFS) strategy (for exploring \emph{Space(r)}), \textcolor{blue}{parameter $\beta$} controls the number of nodes to be further pursued
       		    
       		    \item dynamically explore multiple promising regions of the state space: move from one rooted subgraph to another one 
       		    \item \textbf{iteratively identifies and expands} a set of \textcolor{red}{promising} candidate root states
@@ -328,6 +329,7 @@ Theoretically:
 \end{frame}
 
 \begin{frame}{Working example}
+	%start from the empty source node (0, 0), generating initial (proven) root nodes first -- for each a \in \Sigma => the first occurances of letter a as position p^{L, a} ...   
 	 TODO: draw some plots regarding the workflow of the approach
 	 
  
@@ -353,14 +355,111 @@ Theoretically:
     	  	\item  \textit{Character Frequency Alignment:}
     	   \begin{equation}
     	   	\textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
-    	   	\min\left(  |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)
+    	   	\min \underbrace{\left( |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)}_{\text{remaining valid suffixes}}
     	   \end{equation}
-    	   \item \textit{A probability-based heuristic} guidance by the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012)). These probabilities approximate the probability for the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
+    	   \item \textit{A probability-based heuristic} guidance $h_{prob}$: by the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012)). These probabilities approximate the probability for the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Experimental Evaluation}
-	TODO
+\begin{frame}{Experimental Evaluation: arbitrary large $m$-case}
+	
+	\begin{itemize}
+		\item \textsc{Bs}: a baseline beam search approach, allowing \textbf{a single iteration} of IMSBS (utilizing a huge $\beta$)
+		
+		\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed \textbf{beam-width parameter} \( \beta = 1 \) for the forward BS. This configuration highlights the impact of performing a larger number of beam search iterations on the overall performance of \textsc{Imsbs}
+		\item \textsc{Imsbs}: a tuned version;  configured to use an average runtime comparable to that of \textsc{Bs}
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}{Benchmark set \textsc{Random}}
+	 
+	 For each combination of instance parameters
+	 \begin{itemize}
+	 	  \item  $n \in \{50, 100, 200, 500\}$
+	 	  \item $m \in \{2, 3, 5, 10\}$
+	 	  \item $|\Sigma| \in \{2, 4\}$
+	 \end{itemize} 
+	 
+	 10 random problem instances are generated (sequences uniformly at random). \\ \vspace{0.3cm}
+	 
+	 The gap constraints: generated such that $G_{s_i}(j) \in \mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.   \\ \vspace{0.7cm}
+	 
+	 $\Longrightarrow$ A total of \textcolor{red}{\textbf{320 problem instances}} is generated.
+	 
+\end{frame}
+
+\begin{frame}{Parameter tuning of IMSBS}
+	We fixed:
+	\begin{itemize}
+		\item \textsc{Bs}: $\beta=10$, and UB for the backwards BS (efficient)
+		\item Candidate root nodes from $\mathcal{R}$ ordered by $UB$ (decreasingly)
+		\item At each iteration, 10 best nodes from $\mathcal{R}$ taken
+	\end{itemize} \vspace{0.3cm}
+	
+	Tuned parameters:
+	\begin{itemize}
+		\item $\beta$ (in BS-forward)
+		\item Heuristic guidance in BS-forward
+		\begin{itemize}
+			\item $\{\text{UB}_1, \text{UB}_2, h\}$
+		\end{itemize}
+	\end{itemize}
+	
+	
+\end{frame}
+
+\begin{frame}{$\textsc{Bs}$: influence of $\beta$ and heuristic guidances}
+	
+	   \begin{figure}[!ht]
+	  	\centering
+	  	\begin{subfigure}[t]{0.48\textwidth}
+	  		\centering
+	  		\includegraphics[width=\linewidth, height=120pt]{figures/bs_tuning_quality.png}
+	  		\caption{Avg. quality over all instances from the \textsc{Random} benchmark suite.}
+	  		\label{fig:tune_bs}
+	  	\end{subfigure}
+	  	~
+	  	\begin{subfigure}[t]{0.48\textwidth}
+	  		\centering
+	  		\includegraphics[width=\linewidth, height=120pt]{figures/bs_tuning_time.png}
+	  		\caption{Avg. runtime over all instances from the \textsc{Random} benchmark suite.}
+	  		\label{fig:tune_bs_time}
+	  	\end{subfigure}
+	  	\caption{Beam search tuning results on the \textsc{Random} benchmark suite.}
+	  	\label{fig:bs_tuning}
+	  \end{figure}
+	  
+	  $\Longrightarrow \beta = 10,000$ and $h = h_{\text{prob}}$
+\end{frame}
+
+\begin{frame}{Parameter tuning of \textsc{Imsbs}}
+	
+	 \begin{figure}[!h]
+		\centering
+		\begin{minipage}{0.48\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{figures/imsbs_tuning.png}
+			\caption*{(a) Avg. quality for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
+			\label{fig:tune_imsbs}
+		\end{minipage}
+		~
+		\begin{minipage}{0.48\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{figures/imsbs_tuning_time.png}
+			\caption*{(b) Avg. runtime for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
+			\label{fig:tune_imsbs_time}
+		\end{minipage}
+		\caption{IMSBS parameter tuning results on the \textsc{Random} benchmark suite.}
+		\label{fig:imsbs_tuning}
+	\end{figure}
+	
+	$\Longrightarrow h = \textrm{UB}_2$ and $\beta = 500$.\\ \vspace{0.3cm}
+	\textsc{Imsbs-Greedy}:  $\beta=1$, $imsbs\_iter=10,000$ (comparable avg. runtime to \textsc{Imsbs})
+\end{frame}
+
+\begin{frame}{Numerical results}
+	content...
 \end{frame}
 
 \end{document}
