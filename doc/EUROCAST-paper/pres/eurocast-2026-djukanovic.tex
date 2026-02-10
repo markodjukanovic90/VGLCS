@@ -81,7 +81,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
           \item sequence alignment problems 
        \end{itemize} \vspace{0.4cm}
        
-       \item Subsequences: reveal structural similarities $\rightarrow$ \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants
+       \item Subsequences: reveal structural similarities $\rightarrow$ \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants (studied 50 years already)
    \end{itemize}
 \end{frame}
 
@@ -89,8 +89,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    
     
     \begin{definition}[LCSP]
-        \textbf{Input}: Given a set of sequences $S=\{s_1, \ldots, s_m\}$ \\
-        \textbf{Task}: Find a   subsequence $s$ which is \textcolor{blue}{common} for all sequences from $S$ of \textcolor{blue}{maximum} possible length. 
+        \textbf{Input}: Given an arbitrary set of sequences $S=\{s_1, \ldots, s_m\}$ \\
+        \textbf{Task}: Find a   subsequence $s$  \textcolor{blue}{common} to all sequences from $S$ with \textcolor{blue}{maximum} possible length. 
     \end{definition}
     \begin{example}
        Input: S=\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
@@ -98,16 +98,11 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \end{example}
         \vspace{0.3cm}
         \begin{itemize}
-    	\item Basic problem in computational biology, solved over last 50 years
-    	\begin{itemize}
-    		\item theoretically as well as practically 
-    		%\item many approximation algorithms, (meta-) heuristics, exact approaches, etc.
-    	\end{itemize}
+    	\item Basic problem in computational biology, well-solved  theoretically and practically 
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Literature \& LCS Problem Variants }
-Theoretically:
   \begin{itemize}
   \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Schymanski, ... 
   \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
@@ -116,7 +111,7 @@ Theoretically:
    \end{itemize}  
   \end{itemize}\vspace{0.3cm}
   
-  Problem-related variants:
+  Problem-related practical variants:
   \begin{itemize}
   		\item Arc-annotated LCS problem
  		 \item Constrained (restricted/imposed) LCS problem
@@ -125,7 +120,7 @@ Theoretically:
   \end{itemize}
 \end{frame}
 
-\begin{frame}{The gaped LCS problem}
+\begin{frame}{The gapped LCS problem}
    \begin{definition}[A gap sequence]
        Given is a sequence $s$ and an assigned function 
        $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. An ordered pair $(s, G_s)$ is called a \textbf{sequence with gaps}.
@@ -156,7 +151,7 @@ Theoretically:
    \end{example} \vspace{0.3cm}
     
    \begin{definition}[The multiple (variable) gapped LCS problem -- MVGLCSP]
-        \textbf{Input}: Given is a set of gapped sequences $(s_1, G_{s_1}), \ldots, (s_m, G_{s_m})$. \\
+        \textbf{Input}: Given is a set of gapped sequences $\{ (s_1, G_{s_1}), \ldots, (s_m, G_{s_m}) \}$. \\
         \textbf{Task}: Find the longest  subsequence $\tilde{s}$ so that 
         \begin{itemize}
             \item  $\tilde{s}$ is common subusequence of each $s_i$
@@ -166,12 +161,12 @@ Theoretically:
     \textbf{Note}: when $G_{s_i}=n$ (the length of longest sequence) $\Rightarrow$ VGLCSP = LCSP.
 \end{frame}
 
-\begin{frame}{Literature \& Motivation}
+\begin{frame}{Literature \& Motivation for VGLCSP}
    
    \begin{itemize}
        \item  Peng and Yang (2012, 2014): studied the problem with $m=2$ (poly-version): \textbf{Three dynamic programming} approaches (basic and sparse, sparse + advanced data-structures)
        \item  Manea et al. (2024): Complexity bounds,  (parameterised) complexity analysis investigated
-       \item \textcolor{red}{NP-hard} under arbitrary $m$ 
+       \item \textcolor{red}{NP-hard} under arbitrary large $m$ 
    \end{itemize} \vspace{0.3cm}
    
    Motivation:
@@ -195,13 +190,16 @@ Theoretically:
 \begin{frame}{Root-based state graph formulation: rough idea}
   
   \begin{itemize}
-      \item Each \textbf{state} $v=(p^L, l^v)$: one or more feasible partial solutions characterized by a vector of positions $p^L$ referring to suffixes of input sequences relevant to  further expand these sols, and by the current subsequence length $l^v$ \vspace{0.3cm}
-      \item \textbf{Node expansion} of $v$: extend partial solutions feasibly by one letter  (concatenation) in all possible ways (like in LCS case),  respecting gap constraints \vspace{0.3cm}
+      \item Each \textbf{state} $v=(p^L, l^v)$: one or more feasible partial solutions characterized by
+      \begin{itemize}
+      	\item  a vector of positions $p^L$ referring to suffixes of input sequences relevant to  further expand these sols \item the  length of current partial solution $l^v$ 
+      \end{itemize}\vspace{0.3cm}
+      \item \textbf{Expansion} of node $v$: extend partial solutions feasibly by one letter  (concatenation) in all possible ways (non-dominantly),  respecting gap constraints \vspace{0.3cm}
       \item \textbf{Non-expandable nodes}: complete solutions 
   \end{itemize} \vspace{0.5cm}
   
-  \fbox{\textcolor{red}{\textbf{Crucial: selection of (match) position $p^L$ for root node 
-   (corr. empty sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State (sub) graph space induced by root node $(p^L, 0)$ we denote by {Space($p^L$)}.
+  \fbox{\textcolor{red}{\textbf{Crucial: selection of (match) pos.\ $p^L$ for root node 
+   (corr. empty solution)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State (sub) graph space induced by root node $(p^L, 0)$ we denote by {Space($p^L$)}.
 \end{frame}
 
 \begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously a valid root node)}
@@ -209,7 +207,7 @@ Theoretically:
    % U nekom delu LaTeX dokumenta:
    \begin{figure}[h!]
    \centering
-   \scalebox{0.4}{
+   \scalebox{0.5}{
    
    
    \begin{tikzpicture}[
@@ -272,7 +270,7 @@ Theoretically:
    
    \end{tikzpicture}}
    
-   \caption{State space graph Space($r=((1, 1), 0)$) for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$.   % \fxnote{Add VGLCS example}
+   \caption{State space graph Space($r=((1, 1), 0)$) for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=1$.   % \fxnote{Add VGLCS example}
    }
    
    \label{fig:vgcs-grafstanja}
@@ -285,7 +283,7 @@ Theoretically:
 
    \begin{itemize}
    \item The VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space.
-   \item  If started from $(1, 1)$, it fails to reach    optimal solutions.     \end{itemize}
+   \item  \textcolor{red}{If started from $(1, 1)$}, it fails to reach    optimal solutions.     \end{itemize}
    \begin{example}
    		$
    		S = \{ s_1 = \texttt{ATGG\fbox{A}AA},\; s_2 = \texttt{ATCC\fbox{A}AA} \},
@@ -317,13 +315,13 @@ Theoretically:
 \begin{frame}{Components and characteristics of IMSBS}
      
      
-     \begin{itemize}
-     	\item $\mathcal{R}$: a global set of root-node candidates, dynamically updated over iterations
-     	\item \textbf{Beam search} (backward): not all candidate nodes from $\mathcal{R}$ are root nodes
+   \begin{itemize}
+     	\item $\mathcal{R}$: a \textbf{global set} of root-node candidates, dynamically updated over iterations
+     	\item \textbf{Beam search} (\textbf{backward}): not all candidate nodes from $\mathcal{R}$ are root nodes
      	\begin{itemize}
-     		\item \textcolor{blue}{\textbf{refine}} them by performing the  {\textbf{backward}} approximate (BS) passes from candidate root nodes to effectively reach distant (real) \textcolor{red}{root node} in the state space
+     		\item \textcolor{blue}{\textbf{refine}} them by performing the  {backward} approximate (BS) passes from candidate root nodes to effectively reach distant (real) \textcolor{red}{root node} in the state space
      	\end{itemize}
-     	\item \textcolor{blue}{\textbf{Beam search}} (forward): \textcolor{red}{intensification} in the current root-space {Space($p$)}: seek for high-quality (complete) solutions in the corresponding search sub-regions
+     	\item  {\textbf{Beam search}} (\textbf{forward}): \textcolor{red}{intensification} in the current root (sub-)space {Space($p$)} -- seek for high-quality (complete) solutions in the corresponding search sub-regions
      	\item \textcolor{red}{diversification}:  during each BS (forward), complete nodes expanded in all possible ways (\textbf{gaps ignored}) to generate candidates for roots (distant from the current region)
      \end{itemize}
 
@@ -613,7 +611,7 @@ Theoretically:
 	 	    \item \textsc{Dp}: the basic dynamic programming algorithm $(O(n^2m^2))$
 	 	    \item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm $(O(n^2 + mn))$
 	 	    \item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup (slightly modified w.r.t.\ the literature)
-	 	    \item \textsc{Ilp}: an integer linear programming method \textbf{proposed in this work}, motivated by the ILP model for LCS problems
+	 	    \item \textsc{Ilp}: an integer linear programming method \textbf{proposed in this work}, motivated by the ILP model for LCS problem with $m=2$
 	 \end{itemize} \vspace{0.5cm}
 \textcolor{blue}{\textbf{The first known empirical comparison for the $m=2$} (80 instances).}
 \end{frame}
