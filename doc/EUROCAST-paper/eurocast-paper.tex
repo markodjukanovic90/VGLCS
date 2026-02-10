@@ -331,8 +331,7 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     		\Ensure Approximate common subsequence $s_{\textrm{best}}$ which fulfills the gap constraints
     		
     		\State Initialize $\mathcal{R} \gets \{ (\mathbf{1},0) \}$ \Comment{A set of root nodes}
-    		
-    		
+	
     		
     	    \ForAll{ $a \in \Sigma$} \Comment{Find closest matching positions for each letter}
     		\State $\textbf{p}^w_{a} = ({p}^w_{i, a})_{i=1}^m \gets$ minimum position  $p^w_{i, a} \geq 1$ and $s_i[p^w_{i, a}] = a$ (ignore all gap constraints, remove dominated root positions)
@@ -376,6 +375,7 @@ At each iteration, a fixed number of the most promising root nodes from $\mathca
     		\State \Return $s_{\textrm{best}}$
     	\end{algorithmic}
     \end{algorithm}
+    
     The core advantages of the IMSBS approach over the baseline BS are: 
     \begin{itemize}
     	\item A provision of  balance between complete beam search execution (local exploration of promising paths) and the generation of new sources (global coverage of the search space).

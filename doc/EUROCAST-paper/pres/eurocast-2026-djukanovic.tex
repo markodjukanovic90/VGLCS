@@ -86,15 +86,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \end{frame}
 
 \begin{frame}{Longest common subsequence problem (LCSP)}
-    
-    \begin{itemize}
-      \item Basic problem in Computational biology
-      \item Intensively solved over last 50 years
-      \begin{itemize}
-      \item theoretically as well as practically 
-      \item Practically: many approximation algorothms, (meta-) heuristics, exact approaches, etc.
-      \end{itemize}
-    \end{itemize}
+   
     
     \begin{definition}[LCSP]
         \textbf{Input}: Given a set of sequences $S=\{s_1, \ldots, s_m\}$ \\
@@ -104,15 +96,23 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
        Input: S=\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
        LCS solution: s=\textcolor{red}{ATTC}
     \end{example}
+        \vspace{0.3cm}
+        \begin{itemize}
+    	\item Basic problem in computational biology, solved over last 50 years
+    	\begin{itemize}
+    		\item theoretically as well as practically 
+    		%\item many approximation algorithms, (meta-) heuristics, exact approaches, etc.
+    	\end{itemize}
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{Literature \& LCS Problem Variants }
 Theoretically:
   \begin{itemize}
-  \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Schlimanski, ... 
+  \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Schymanski, ... 
   \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
    \begin{itemize}
-   \item subject of interest within last 30 years: approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, anytime approaches,...)
+   \item subject of interest within last 30 years: approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, anytime approaches, DAG-based, ...)
    \end{itemize}  
   \end{itemize}\vspace{0.3cm}
   
@@ -120,7 +120,7 @@ Theoretically:
   \begin{itemize}
   		\item Arc-annotated LCS problem
  		 \item Constrained (restricted/imposed) LCS problem
-  		\item Repetition-free, Longest filled LCS,...
+  		\item Repetition-free, filled, ...
   		\item \textbf{Gapped LCS problem}
   \end{itemize}
 \end{frame}
@@ -171,7 +171,7 @@ Theoretically:
    \begin{itemize}
        \item  Peng and Yang (2012, 2014): studied the problem with $m=2$ (poly-version): \textbf{Three dynamic programming} approaches (basic and sparse, sparse + advanced data-structures)
        \item  Manea et al. (2024): Complexity bounds,  (parameterised) complexity analysis investigated
-       \item NP-hard under arbitrary $m$ 
+       \item \textcolor{red}{NP-hard} under arbitrary $m$ 
    \end{itemize} \vspace{0.3cm}
    
    Motivation:
@@ -186,7 +186,7 @@ Theoretically:
     \begin{itemize}
         \item Based on the significant extension of the state space graph formulation for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
         \item Gap constraints: incorporated to cut-off the invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item Reach-ability of all extensions is an issue (\textbf{many root nodes} in the state graph, possibly separated subgraphs)
+        \item Reach-ability of all nodes is an issue (\textbf{many root/source nodes} in the state graph, possibly separated subgraphs)
     \end{itemize}
     
 \end{frame}
@@ -195,13 +195,13 @@ Theoretically:
 \begin{frame}{Root-based state graph formulation: rough idea}
   
   \begin{itemize}
-      \item Each \textbf{state} $v=(p^L, l^v)$: one or more feasible partial solutions characterized by a vector of positions $p^L$ referring to relevant suffixes of input sequences to  further expand these sols, and by the current subsequence length $l^v$ \vspace{0.3cm}
+      \item Each \textbf{state} $v=(p^L, l^v)$: one or more feasible partial solutions characterized by a vector of positions $p^L$ referring to suffixes of input sequences relevant to  further expand these sols, and by the current subsequence length $l^v$ \vspace{0.3cm}
       \item \textbf{Node expansion} of $v$: extend partial solutions feasibly by one letter  (concatenation) in all possible ways (like in LCS case),  respecting gap constraints \vspace{0.3cm}
       \item \textbf{Non-expandable nodes}: complete solutions 
   \end{itemize} \vspace{0.5cm}
   
-  \fbox{\textcolor{red}{\textbf{Crucial: selection of position $r$ for root node 
-   (corr.\ to empty part.\ sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State graphs space induced by root node $(r, 0)$ we denote by \emph{Space(r)}.
+  \fbox{\textcolor{red}{\textbf{Crucial: selection of (match) position $p^L$ for root node 
+   (corr. empty sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State (sub) graph space induced by root node $(p^L, 0)$ we denote by {Space($p^L$)}.
 \end{frame}
 
 \begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously a valid root node)}
@@ -272,7 +272,7 @@ Theoretically:
    
    \end{tikzpicture}}
    
-   \caption{State space graph $Space(r=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$.   % \fxnote{Add VGLCS example}
+   \caption{State space graph Space($r=((1, 1), 0)$) for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$.   % \fxnote{Add VGLCS example}
    }
    
    \label{fig:vgcs-grafstanja}
@@ -290,7 +290,7 @@ Theoretically:
    		$
    		S = \{ s_1 = \texttt{ATGG\fbox{A}AA},\; s_2 = \texttt{ATCC\fbox{A}AA} \},
    		$
-   		with gap constraints $G_{s_1} = G_{s_2} = 1$. In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by standard direct transitions. 
+   		with gap constraints $G_{s_1} = G_{s_2} = 1$. In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ \textcolor{red}{cannot be reached} from the initial state $((1,1),0)$ by standard direct transitions. 
 
   \end{example} \vspace{0.5cm}
   
@@ -302,14 +302,14 @@ Theoretically:
 \begin{frame}{Iterative multi-source beam search (IMSBS) strategy}
       
       \begin{itemize}
-      		\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $\mathcal{R}$ all root states  
-      		\item Explicitly enumerating all root states computationally prohibitive (requiring $O(n^m)$ time) \vspace{0.3cm}
-      		\item \textbf{IMSBS} (idea):
+      		\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $v=(\mathbf{p}^{L, v}, 0) \in \mathcal{R}$ all root states  
+      		\item Explicitly enumerating all root states computationally prohibitive ($O(n^m)$ time) \vspace{0.7cm}
+      		\item \textcolor{red}{\textbf{IMSBS}} (rough idea):  \vspace{0.2cm}
       		\begin{itemize}
-      		    \item Based on \textbf{beam search}: limited breadth-first-search (BFS) strategy (for exploring \emph{Space(r)}), \textcolor{blue}{parameter $\beta$} controls the number of nodes to be further pursued
+      		    \item Based on \textbf{beam search} (for exploring \text{Space}($r$)): limited breadth-first-search (BFS) strategy, \textcolor{blue}{parameter $\beta$} controls the number of nodes to be further pursued \vspace{0.2cm}
       		    
-      		    \item dynamically explore multiple promising regions of the state space: move from one rooted subgraph to another one 
-      		    \item \textbf{iteratively identifies and expands} a set of \textcolor{red}{promising} candidate root states
+      		    \item dynamically explore multiple promising regions (\text{Space}($r$)) of the state space: move from one to another rooted subgraph   \vspace{0.2cm}
+      		    \item \textbf{iteratively identify} a set of \textcolor{red}{promising} candidate root states
       		\end{itemize}
       \end{itemize}  
 \end{frame}
@@ -321,29 +321,121 @@ Theoretically:
      	\item $\mathcal{R}$: a global set of root-node candidates, dynamically updated over iterations
      	\item \textbf{Beam search} (backward): not all candidate nodes from $\mathcal{R}$ are root nodes
      	\begin{itemize}
-     		\item \textcolor{blue}{\textbf{refine}} them by performing the \textcolor{blue}{\textbf{backward}} approximate passes from candidate-root nodes to effectively reach distant (real) and promising root node in the state space
+     		\item \textcolor{blue}{\textbf{refine}} them by performing the  {\textbf{backward}} approximate (BS) passes from candidate root nodes to effectively reach distant (real) \textcolor{red}{root node} in the state space
      	\end{itemize}
-     	\item \textcolor{blue}{\textbf{Beam search}} (forward): \textcolor{red}{intensification} in the chosen root-space \emph{Space(p)}: seek for high-quality (complete) solutions in the corresponding search sub-regions
-     	\item \textcolor{red}{diversification}:  during each BS (forward), the complete nodes  are expanded in all possible ways (gaps ignored) to generate candidates for roots (distant from the current region)
+     	\item \textcolor{blue}{\textbf{Beam search}} (forward): \textcolor{red}{intensification} in the current root-space {Space($p$)}: seek for high-quality (complete) solutions in the corresponding search sub-regions
+     	\item \textcolor{red}{diversification}:  during each BS (forward), complete nodes expanded in all possible ways (\textbf{gaps ignored}) to generate candidates for roots (distant from the current region)
      \end{itemize}
 
 \end{frame}
 
-\begin{frame}{Working example}
+\begin{frame}{Workflow of the IMSBS}
 	%start from the empty source node (0, 0), generating initial (proven) root nodes first -- for each a \in \Sigma => the first occurances of letter a as position p^{L, a} ...   
-	 TODO: draw some plots regarding the workflow of the approach
+	 %TODO: draw some plots regarding the workflow of the approach
+	 
+	 %\begin{figure}[!ht]
+	 \centering
+	 \scalebox{0.4}{
+	 	\begin{tikzpicture}[
+	 		node distance=0.8cm and 1.3cm,
+	 		every node/.style={font=\small},
+	 		block/.style={
+	 			rectangle,
+	 			draw,
+	 			rounded corners,
+	 			align=center,
+	 			minimum width=2.0cm,
+	 			minimum height=0.6cm,
+	 			fill=green!10
+	 		},
+	 		decision/.style={
+	 			diamond,
+	 			draw,
+	 			align=center,
+	 			aspect=2,
+	 			fill=green!5
+	 		},
+	 		arrow/.style={
+	 			->,
+	 			thick,
+	 			>=Latex,
+	 			shorten >=2pt,
+	 			shorten <=2pt
+	 		}
+	 		]
+	 		
+	 		% Nodes
+	 		\node[block] (start) {Start};
+	 		
+	 		\node[block, below=of start] (init) {Initialize root queue $\mathcal{R}=\{(\mathbf{1},0)\}$\\
+	 			$s_{\text{best}} \leftarrow \varepsilon$, $iter \leftarrow 0$};
+	 		
+	 		\node[block, below=of init] (expandR) {Initial expansion of $\{(\mathbf{1},0)\} \rightarrow \mathcal{R}$\\
+	 			(using closest matches for each $a \in \Sigma$)};
+	 		
+	 		\node[decision, below=of expandR] (while) {$\mathcal{R} \neq \emptyset$\\
+	 			$iter < beam\_iters$\\
+	 			time limit not exceeded};
+	 		
+	 		\node[block, below=of while] (selectL) {Select subset $\mathcal{L} \subseteq \mathcal{R}$\\
+	 			(priority by $h'$)};
+	 		
+	 		\node[block, below=of selectL] (backward) {Backward refinement of $v \in \mathcal{L}$\\
+	 			(Rooted Beam Search on reversed sequences)};
+	 		
+	 		\node[block, below=of backward] (forward) {Forward beam search from $\mathcal{L}$ as initial beam\\
+	 			(Rooted Beam Search)};
+	 		
+	 		\node[block, below=of forward] (updateBest) {Update best solution $s_{\text{best}}$};
+	 		
+	 		\node[block, below=of updateBest] (expandNew) {Generate new roots from completed states\\
+	 			(ignoring gaps) and update $\mathcal{R}$};
+	 		
+	 		\node[block, below=of expandNew] (iter) {$iter \leftarrow iter + 1$};
+	 		
+	 		\node[block, below=of iter] (end) {Return $s_{\text{best}}$};
+	 		
+	 		% Arrows (main flow)
+	 		\draw[arrow] (start) -- (init);
+	 		\draw[arrow] (init) -- (expandR);
+	 		\draw[arrow] (expandR) -- (while);
+	 		
+	 		\draw[arrow] (while) -- node[right] {yes} (selectL);
+	 		\draw[arrow] (selectL) -- (backward);
+	 		\draw[arrow] (backward) -- (forward);
+	 		\draw[arrow] (forward) -- (updateBest);
+	 		\draw[arrow] (updateBest) -- (expandNew);
+	 		\draw[arrow] (expandNew) -- (iter);
+	 		
+	 		% Explicit loop-back arrow (FIXED)
+	 		\draw[arrow]
+	 		(iter.east) -- ++(2.5,0)
+	 		|- (while.east);
+	 		
+	 		% Exit arrow
+	 		\draw[arrow]
+	 		(while.west) -- ++(-1.8,0)
+	 		node[left] {no}
+	 		|- (end.west);
+	 		
+	 	\end{tikzpicture}
+	 }
+	 
+	 	%\caption{Simplified workflow of the Iterated Multi-source Beam Search (IMSBS) framework.}
+	 	%\label{fig:imsbs_workflow}
+	 %\end{figure}
 	 
  
 \end{frame}
 
-\begin{frame}{The core advantages of the IMSBS approach}
- 
-     \begin{itemize}
-     	\item Balance between complete beam search execution (local exploration of promising paths) and the generation of new source nodes (\textbf{global coverage} of the search space)
-     	\item Preventing from direct suboptimal solutions reduced by executing backward beam search procedure (\textbf{refinement})
-     \end{itemize}
-      
-\end{frame}
+%\begin{frame}{The core advantages of the IMSBS}
+% 
+%     \begin{itemize}
+%     	\item Balance between complete beam search execution (local exploration of promising paths) and the generation of new, promising source nodes (\textcolor{red}{\textbf{global coverage}} of generally weakly-connected search space) \vspace{0.3cm}
+%     	\item Preventing from direct suboptimal solutions reduced by employing backward beam search procedure (\textcolor{red}{\textbf{refinement}})
+%     \end{itemize}
+%      
+%\end{frame}
 
 \begin{frame}{Heuristic guidances in BS}
     
@@ -358,16 +450,17 @@ Theoretically:
     	   	\textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
     	   	\min \underbrace{\left( |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)}_{\text{remaining valid suffixes}}
     	   \end{equation}
-    	   \item \textit{A probability-based heuristic} guidance $h_{prob}$: by the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012)). These probabilities approximate the probability for the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
+    	   \item \textit{A probability-based heuristic} guidance $h_{prob}$: by the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012)) %These probabilities approximate the probability of the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Experimental Evaluation: arbitrary large $m$-case}
 	
 	\begin{itemize}
-		\item \textsc{Bs}: a baseline beam search approach, allowing \textbf{a single iteration} of IMSBS (utilizing a huge $\beta$)
-		
-		\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed \textbf{beam-width parameter} \( \beta = 1 \) for the forward BS. This configuration highlights the impact of performing a larger number of beam search iterations on the overall performance of \textsc{Imsbs}
+		\item \textsc{Bs}: a baseline beam search approach, allowing only \textbf{a single iteration} of IMSBS (utilizing a huge $\beta$)
+ 		\vspace{0.3cm}
+		\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed \textbf{beam-width parameter} \( \beta = 1 \) for the forward BS, performing a larger number of beam search (impact of iterations on the overall performance of \textsc{Imsbs})
+	    \vspace{0.3cm}
 		\item \textsc{Imsbs}: a tuned version;  configured to use an average runtime comparable to that of \textsc{Bs}
 	\end{itemize}
 	
@@ -384,7 +477,7 @@ Theoretically:
 	 
 	 10 random problem instances are generated (sequences uniformly at random). \\ \vspace{0.3cm}
 	 
-	 The gap constraints: generated such that $G_{s_i}(j) \in \mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.   \\ \vspace{0.7cm}
+	 The gap constraints: generated such that $G_{s}(\cdot) \in \mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.   \\ \vspace{0.7cm}
 	 
 	 $\Longrightarrow$ A total of \textcolor{red}{\textbf{320 problem instances}} is generated.
 	 
@@ -393,24 +486,24 @@ Theoretically:
 \begin{frame}{Parameter tuning of IMSBS}
 	We fixed:
 	\begin{itemize}
-		\item \textsc{Bs}: $\beta=10$, and UB for the backwards BS (efficient)
-		\item Candidate root nodes from $\mathcal{R}$ ordered by $UB$ (decreasingly)
-		\item At each iteration, 10 best nodes from $\mathcal{R}$ taken
+		\item \textsc{Bs} (backward): $\beta'=10$, and $\textrm{UB}_2$  (efficient)
+		\item Candidate root nodes from $\mathcal{R}$ ordered by $\textrm{UB}_2$ (decreasingly)
+		\item At each iteration, \textbf{10 best nodes} taken from $\mathcal{R}$ as the initial beam
 	\end{itemize} \vspace{0.3cm}
 	
-	Tuned parameters:
+\textbf{Tuned parameters:}
 	\begin{itemize}
 		\item $\beta$ (in BS-forward)
-		\item Heuristic guidance in BS-forward
+		\item Heuristic guidance in BS (forward)
 		\begin{itemize}
-			\item $\{\text{UB}_1, \text{UB}_2, h\}$
+			\item $\{\text{UB}_1, \text{UB}_2, h_{prob}\}$
 		\end{itemize}
 	\end{itemize}
 	
 	
 \end{frame}
 
-\begin{frame}{$\textsc{Bs}$: influence of $\beta$ and heuristic guidances}
+\begin{frame}{$\textsc{Bs}$: influence of different $\beta$ and heuristic guidances}
 	
 	   \begin{figure}[!ht]
 	  	\centering
@@ -427,11 +520,11 @@ Theoretically:
 	  		\caption{Avg. runtime over all instances from the \textsc{Random} benchmark suite.}
 	  		\label{fig:tune_bs_time}
 	  	\end{subfigure}
-	  	\caption{Beam search tuning results on the \textsc{Random} benchmark suite.}
-	  	\label{fig:bs_tuning}
+	  %	\caption{Beam search tuning results on the \textsc{Random} benchmark suite.}
+	  %\label{fig:bs_tuning}
 	  \end{figure}
 	  
-	  $\Longrightarrow \beta = 10,000$ and $h = h_{\text{prob}}$
+	  $ \text{(Baseline)}\ \textsc{Bs} \Longrightarrow  \textcolor{blue}{\beta = 10,000}$ and $\textcolor{blue}{h = h_{\text{prob}}}$
 \end{frame}
 
 \begin{frame}{Parameter tuning of \textsc{Imsbs}}
@@ -451,12 +544,12 @@ Theoretically:
 			\caption*{(b) Avg. runtime for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
 			\label{fig:tune_imsbs_time}
 		\end{minipage}
-		\caption{IMSBS parameter tuning results on the \textsc{Random} benchmark suite.}
-		\label{fig:imsbs_tuning}
+		%\caption{IMSBS parameter tuning results on the \textsc{Random} benchmark suite.}
+		%\label{fig:imsbs_tuning}
 	\end{figure}
 	
-	$\Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$ and $\textcolor{red}{\beta = 500}$.\\ \vspace{0.3cm}
-	\textsc{Imsbs-Greedy}:  $\beta=1$, $imsbs\_iter=10,000$ (comparable avg. runtime to \textsc{Imsbs})
+	$ \textsc{Imsbs} \Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$ and $\textcolor{red}{\beta = 500},$ and $\textcolor{red}{beam\_iter = 100}$.\\ \vspace{0.3cm}
+	\textsc{Imsbs-Greedy}:  $\beta=1$, $beam\_iter=10,000$ (comparable/slightly larger avg. runtime to that of \textsc{Imsbs})
 \end{frame}
 
 \begin{frame}{Numerical results}
@@ -517,9 +610,9 @@ Theoretically:
 \begin{frame}{Numerical results for $m=2$ case}
 	    
 	    \begin{itemize}
-	 	    \item \textsc{Dp}: the basic dynamic programming algorithm
-	 	    \item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm
-	 	    \item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup
+	 	    \item \textsc{Dp}: the basic dynamic programming algorithm $(O(n^2m^2))$
+	 	    \item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm $(O(n^2 + mn))$
+	 	    \item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup (slightly modified w.r.t.\ the literature)
 	 	    \item \textsc{Ilp}: an integer linear programming method \textbf{proposed in this work}, motivated by the ILP model for LCS problems
 	 \end{itemize} \vspace{0.5cm}
 \textcolor{blue}{\textbf{The first known empirical comparison for the $m=2$} (80 instances).}
@@ -585,16 +678,18 @@ Theoretically:
 \begin{frame}{Conclusions and Future Work}
 	
 	\begin{itemize}
-		\item Proposed a general heuristic approach to solve the VGLCS problem with arbitrary input strings 
-		\item IMSBS designed: combines Beam search (backward and forward manner) in an iterative way while producing promising source nodes as candidates of further iterations
-		\item Balancing intensification and diversification 
-		\item Empirical studies conducted for the first time on synthetic instances: the tuned IMSBS clearly wins over the baseline Beam search approach  
-	\end{itemize}    \vspace{0.5cm}
+		\item Proposed a \textcolor{red}{\textbf{general heuristic framework}} to solve the VGLCS problem with arbitrary input strings 
+		\item IMSBS designed: combines Beam search calls (backward and forward manner) in an \textcolor{red}{\textbf{iterative way}} while producing promising source nodes as candidates for further BS iterations
+		\begin{itemize}
+			\item  Balancing intensification and diversification 
+	    \end{itemize}
+		\item Empirical studies conducted for the first time on the \textcolor{red}{\textbf{synthetic instances}}: the tuned IMSBS wins over the baseline Beam search approach  
+	\end{itemize}    \vspace{0.3cm}
 	
 \textbf{Future work:}
 	\begin{itemize}
-		\item Real-world instance-case scenario
-		\item Data-driven heuristic involving locl and global instance features (NN-based)
+		\item \textcolor{red}{\textbf{Real-world}} instance-case scenario
+		\item Lack of more advanced heuristic guidance: \textcolor{red}{\textbf{Data-driven/ML heuristic}} involving various local and global features (NN-based)
 	\end{itemize}
 \end{frame}
 
