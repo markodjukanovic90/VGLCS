@@ -33,7 +33,7 @@ Sašo Džeroski\inst{5}  \and
 }
 
 \institute{ $^1$University of Nova Gorica, Nova Gorica, Slovenia \\ 
-$^2$Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina \\ 
+$^2$Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, B\&H \\ 
 $^3$Artificial Intelligence Research Institute (IIIA-CSIC), Barcelona, Spain \\ 
 $^4$Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\
 $^5$Jožef Stefan Institute, Ljubljana, Slovenia \ \\
@@ -69,7 +69,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Introduction}
    \begin{itemize}
-       \item Objects we deal with: sequences (strings) over finite alphabet 
+       \item Objects we deal with: sequences (strings) over finite alphabet  $\Sigma$
        \begin{itemize}
        \item DNA/RNA over $\{\texttt{A}, \texttt{T}, \texttt{G}, \texttt{C/U}\}$
        \item Proteins over 20 (canonical) amino acids: $\{\texttt{A}, \texttt{C}, \texttt{D}, \texttt{E}, \texttt{P}, \texttt{Q} ...\}$ 
@@ -81,7 +81,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
           \item sequence alignment problems 
        \end{itemize} \vspace{0.4cm}
        
-       \item Subsequences: reveal structural similarities $\rightarrow$ \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants (studied 50 years already)
+       \item \textbf{Subsequences}: reveal structural similarities $\rightarrow$ \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants (studied 50 years already)
    \end{itemize}
 \end{frame}
 
@@ -93,8 +93,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         \textbf{Task}: Find a   subsequence $s$  \textcolor{blue}{common} to all sequences from $S$ with \textcolor{blue}{maximum} possible length. 
     \end{definition}
     \begin{example}
-       Input: S=\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
-       LCS solution: s=\textcolor{red}{ATTC}
+       Input: $S=$\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
+       LCS solution: $s=$\textcolor{red}{ATTC}
     \end{example}
         \vspace{0.3cm}
         \begin{itemize}
@@ -102,35 +102,35 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Literature \& LCS Problem Variants }
+\begin{frame}{LCS: Literature \& Problem Variants }
   \begin{itemize}
-  \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Schymanski, ... 
+  \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Szymanski, ... 
   \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
    \begin{itemize}
    \item subject of interest within last 30 years: approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, anytime approaches, DAG-based, ...)
    \end{itemize}  
-  \end{itemize}\vspace{0.3cm}
+  \end{itemize}\vspace{0.5cm}
   
-  Problem-related practical variants:
+  \textbf{Problem-related practical variants}:
   \begin{itemize}
   		\item Arc-annotated LCS problem
  		 \item Constrained (restricted/imposed) LCS problem
   		\item Repetition-free, filled, ...
-  		\item \textbf{Gapped LCS problem}
+  		\item \textcolor{red}{Gapped LCS problem}
   \end{itemize}
 \end{frame}
 
 \begin{frame}{The gapped LCS problem}
    \begin{definition}[A gap sequence]
        Given is a sequence $s$ and an assigned function 
-       $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. An ordered pair $(s, G_s)$ is called a \textbf{sequence with gaps}.
+       $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. A pair $(s, G_s)$ is called a \textbf{sequence with gaps}.
    \end{definition} \vspace{0.5cm}
    
    \begin{definition}[A gapped subsequence]
-         Sequence $\tilde{s}$ is a gapped subsequence of $(s, G_s)$ iff 
+         Sequence $\tilde{s}$ is a \textcolor{red}{gapped subsequence} of $(s, G_s)$ iff 
          \begin{itemize}
              \item $\tilde{s}$ is a subsequence of $s$
-             \item the gapped constraint $G_s$ is fulfilled w.r.t.\ \textit{positions of appearances} of letters of $\tilde{s}$ in $s$
+             \item the gap constraint $G_s$ is fulfilled w.r.t.\ \textit{positions of appearances} of letters of $\tilde{s}$ in $s$
          \begin{itemize}
              \item  suppose $i_1, \ldots, i_{|\tilde{s}|}$ are \textbf{positions of embedding} $\tilde{s}$ in $s$
              \item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, i_{j} - i_{j-1} \leq G_{s}(i_{j})+1$ 
@@ -143,7 +143,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Problem definition}
 
    \begin{example}
-      $s=\texttt{AATTGC}$, $G_s(\cdot)=1$
+      $s=\texttt{AATTGC}$, $\textcolor{red}{G_s(\cdot)=1}$
       \begin{itemize}
          \item  $\tilde{s}=\texttt{ATG}$, the embedding: \textcolor{red}{A}A\textcolor{red}{T}T\textcolor{red}{G}C (\textcolor{blue}{valid} gapped subsequence)
          \item  $\tilde{s}=\texttt{ATG}$, the embedding: \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid} gapped subsequence)
@@ -155,7 +155,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         \textbf{Task}: Find the longest  subsequence $\tilde{s}$ so that 
         \begin{itemize}
             \item  $\tilde{s}$ is common subusequence of each $s_i$
-            \item $\tilde{s}$ fulfills all gap constraints $G_{s_i}$  for each $i=1, \ldots, m$
+            \item $\tilde{s}$ fulfills all gap constraints $G_{s_i}$ ($i=1, \ldots, m$)
         \end{itemize}
     \end{definition}
     \textbf{Note}: when $G_{s_i}=n$ (the length of longest sequence) $\Rightarrow$ VGLCSP = LCSP.
@@ -164,15 +164,15 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Literature \& Motivation for VGLCSP}
    
    \begin{itemize}
-       \item  Peng and Yang (2012, 2014): studied the problem with $m=2$ (poly-version): \textbf{Three dynamic programming} approaches (basic and sparse, sparse + advanced data-structures)
+       \item  Peng and Yang (2012, 2014): studied the  $m=2$ (poly)  version by \textbf{three dynamic programming} approaches (basic one, two advanced involving complex data-structures to speed up)
        \item  Manea et al. (2024): Complexity bounds,  (parameterised) complexity analysis investigated
        \item \textcolor{red}{NP-hard} under arbitrary large $m$ 
    \end{itemize} \vspace{0.3cm}
    
-   Motivation:
+   \textbf{Motivation}:
    \begin{itemize}
-       \item  \textbf{Genetics and molecular biology}: applications in DNA and protein analysis where variable structural distances between residues must be respected
-       \item \textbf{Time-series analysis}: in settings where events are required to occur within specified temporal delays~(Lainscsek et al. (2015))
+       \item  \textcolor{blue}{Genetics and molecular biology}: applications in DNA/protein analysis where variable structural distances between residues must be respected
+       \item \textcolor{blue}{Time-series analysis}: in settings where events are required to occur within specified temporal delays~(Lainscsek et al. (2015))
    \end{itemize}
    
 \end{frame}
@@ -180,8 +180,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Methodology}
     \begin{itemize}
         \item Based on the significant extension of the state space graph formulation for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
-        \item Gap constraints: incorporated to cut-off the invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item Reach-ability of all nodes is an issue (\textbf{many root/source nodes} in the state graph, possibly separated subgraphs)
+        \item \textbf{Gap constraints}: incorporated to cut-off the invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
+        \item Reach-ability of all nodes is an issue (\textbf{many root/source nodes} in the state graph, generally separated subgraphs)
     \end{itemize}
     
 \end{frame}
@@ -198,7 +198,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       \item \textbf{Non-expandable nodes}: complete solutions 
   \end{itemize} \vspace{0.5cm}
   
-  \fbox{\textcolor{red}{\textbf{Crucial: selection of (match) pos.\ $p^L$ for root node 
+  \fbox{\textcolor{red}{\textbf{Crucial: selection of (match)\ $p^L$ for root node 
    (corr. empty solution)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State (sub) graph space induced by root node $(p^L, 0)$ we denote by {Space($p^L$)}.
 \end{frame}
 
@@ -207,7 +207,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    % U nekom delu LaTeX dokumenta:
    \begin{figure}[h!]
    \centering
-   \scalebox{0.5}{
+   \scalebox{0.55}{
    
    
    \begin{tikzpicture}[
@@ -270,7 +270,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    
    \end{tikzpicture}}
    
-   \caption{State space graph Space($r=((1, 1), 0)$) for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=1$.   % \fxnote{Add VGLCS example}
+   \caption{State space graph Space($r=((1, 1), 0)$) for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $\textcolor{red}{G_1=G_2=1}$.   % \fxnote{Add VGLCS example}
    }
    
    \label{fig:vgcs-grafstanja}
@@ -281,9 +281,6 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{An issue with the root-state-space formulation: example}
 
-   \begin{itemize}
-   \item The VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space.
-   \item  \textcolor{red}{If started from $(1, 1)$}, it fails to reach    optimal solutions.     \end{itemize}
    \begin{example}
    		$
    		S = \{ s_1 = \texttt{ATGG\fbox{A}AA},\; s_2 = \texttt{ATCC\fbox{A}AA} \},
@@ -294,6 +291,12 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
   
    \textbf{Consequence}: $((5, 5), 0) \not \in Space((1, 1))$  $\Rightarrow$  
    \textcolor{blue}{The optimal common subsequence \texttt{AAA} is unreachable.} %from the basic root $((1,1),0)$,  therefore missed by traditional search strategies.
+
+\vspace{0.5cm}
+   \begin{itemize}
+	    \item The VGLCSP may exhibit multiple, -- potentially exponentially many-- \emph{disconnected root components} 
+	   % \item  \textcolor{red}{If started from $(1, 1)$}, it fails to reach    optimal solutions.    
+\end{itemize}
    
 \end{frame}
 
@@ -313,7 +316,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \end{frame}
 
 \begin{frame}{Components and characteristics of IMSBS}
-     
+     TODO: Consider not to display this slide!
      
    \begin{itemize}
      	\item $\mathcal{R}$: a \textbf{global set} of root-node candidates, dynamically updated over iterations
@@ -368,7 +371,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		\node[block, below=of start] (init) {Initialize root queue $\mathcal{R}=\{(\mathbf{1},0)\}$\\
 	 			$s_{\text{best}} \leftarrow \varepsilon$, $iter \leftarrow 0$};
 	 		
-	 		\node[block, below=of init] (expandR) {Initial expansion of $\{(\mathbf{1},0)\} \rightarrow \mathcal{R}$\\
+	 		\node[block, below=of init] (expandR) {Initial generation of sources from $\{(\mathbf{1},0)\} \rightarrow \mathcal{R}$\\
 	 			(using closest matches for each $a \in \Sigma$)};
 	 		
 	 		\node[decision, below=of expandR] (while) {$\mathcal{R} \neq \emptyset$\\
@@ -475,7 +478,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 
 	 10 random problem instances are generated (sequences uniformly at random). \\ \vspace{0.3cm}
 	 
-	 The gap constraints: generated such that $G_{s}(\cdot) \in \mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.   \\ \vspace{0.7cm}
+	 The gap constraints generated from $G_{s}(\cdot) \in \mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.   \\ \vspace{0.7cm}
 	 
 	 $\Longrightarrow$ A total of \textcolor{red}{\textbf{320 problem instances}} is generated.
 	 
@@ -511,13 +514,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	  		\caption{Avg. quality over all instances from the \textsc{Random} benchmark suite.}
 	  		\label{fig:tune_bs}
 	  	\end{subfigure}
-	  	~
-	  	\begin{subfigure}[t]{0.48\textwidth}
-	  		\centering
-	  		\includegraphics[width=\linewidth, height=120pt]{figures/bs_tuning_time.png}
-	  		\caption{Avg. runtime over all instances from the \textsc{Random} benchmark suite.}
-	  		\label{fig:tune_bs_time}
-	  	\end{subfigure}
+	  %	~
+	  %	\begin{subfigure}[t]{0.48\textwidth}
+	  %		\centering
+	  %		\includegraphics[width=\linewidth, height=120pt]{figures/bs_tuning_time.png}
+	  %		\caption{Avg. runtime over all instances from the \textsc{Random} benchmark suite.}
+	  %		\label{fig:tune_bs_time}
+	  %	\end{subfigure}
 	  %	\caption{Beam search tuning results on the \textsc{Random} benchmark suite.}
 	  %\label{fig:bs_tuning}
 	  \end{figure}
@@ -535,13 +538,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 			\caption*{(a) Avg. quality for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
 			\label{fig:tune_imsbs}
 		\end{minipage}
-		~
-		\begin{minipage}{0.48\textwidth}
-			\centering
-			\includegraphics[width=\linewidth]{figures/imsbs_tuning_time.png}
-			\caption*{(b) Avg. runtime for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
-			\label{fig:tune_imsbs_time}
-		\end{minipage}
+	%	~
+	%	\begin{minipage}{0.48\textwidth}
+	%		\centering
+	%		\includegraphics[width=\linewidth]{figures/imsbs_tuning_time.png}
+	%		\caption*{(b) Avg. runtime for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
+	%		\label{fig:tune_imsbs_time}
+	%	\end{minipage}
 		%\caption{IMSBS parameter tuning results on the \textsc{Random} benchmark suite.}
 		%\label{fig:imsbs_tuning}
 	\end{figure}
@@ -608,9 +611,9 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Numerical results for $m=2$ case}
 	    
 	    \begin{itemize}
-	 	    \item \textsc{Dp}: the basic dynamic programming algorithm $(O(n^2m^2))$
-	 	    \item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm $(O(n^2 + mn))$
-	 	    \item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup (slightly modified w.r.t.\ the literature)
+	 	    \item \textsc{Dp}-1: the basic dynamic programming algorithm $(O(n^2m^2))$
+	 	    \item \textsc{Dp}-2: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm $(O(n^2 + mn))$
+	 	    \item \textsc{Dp}-3: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup (slightly modified w.r.t.\ the literature)
 	 	    \item \textsc{Ilp}: an integer linear programming method \textbf{proposed in this work}, motivated by the ILP model for LCS problem with $m=2$
 	 \end{itemize} \vspace{0.5cm}
 \textcolor{blue}{\textbf{The first known empirical comparison for the $m=2$} (80 instances).}
@@ -624,8 +627,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 	\scalebox{0.7}{
 	 		\begin{tabular}{lll|lr|rr|rr|rr}
 	 			\hline
-	 			\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Dp}}  &
-	 			\multicolumn{2}{c}{\textsc{Dp-1}} & \multicolumn{2}{c}{\textsc{Dp-2}} & 
+	 			\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Dp}-1}  &
+	 			\multicolumn{2}{c}{\textsc{Dp}-2} & \multicolumn{2}{c}{\textsc{Dp}-3} & 
 	 			\multicolumn{2}{c}{\textsc{Ilp}}  \\
 	 			\cmidrule(lrr){1-3} \cmidrule(lr){4-5}
 	 			\cmidrule(lr){6-7} \cmidrule(lr){8-9}
@@ -671,7 +674,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	\end{figure}
 	
 	
-\end{frame}
+ \end{frame}
 
 \begin{frame}{Conclusions and Future Work}
 	
