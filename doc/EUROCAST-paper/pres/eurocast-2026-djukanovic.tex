@@ -104,10 +104,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{LCS: Literature \& Problem Variants }
   \begin{itemize}
-  \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Szymanski, Hirschenberg,  ... 
+  \item When $m=2$: polynomially solvable (in $O(n^2)$):
+  \begin{itemize}
+  	   \item  \textcolor{blue}{Dynamic programming}, Hunt-Szymanski, Hirschenberg,  ... 
+    \end{itemize}
   \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
    \begin{itemize}
-   \item subject of interest within last 30 years: approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, anytime approaches, DAG-based, ...)
+   \item subject of interest within last 30 years -- approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, anytime approaches, DAG-based, ...)
    \end{itemize}  
   \end{itemize}\vspace{0.5cm}
   
@@ -129,10 +132,10 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
          Sequence $\tilde{s}$ is a \textcolor{red}{gapped subsequence} of $(s, G_s)$ iff 
          \begin{itemize}
              \item $\tilde{s}$ is a subsequence of $s$
-             \item the gap constraint $G_s$ is fulfilled w.r.t.\ \textit{positions of appearances} of letters of $\tilde{s}$ in $s$
+             \item the gap constraint $G_s$ is fulfilled w.r.t.\ \textit{positions of embedding} letters of $\tilde{s}$ in $s$
          \begin{itemize}
-             \item  suppose $i_1, \ldots, i_{|\tilde{s}|}$ are \textbf{positions of embedding} $\tilde{s}$ in $s$
-             \item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, i_{j} - i_{j-1} \leq G_{s}(i_{j})+1$ 
+             \item  suppose $i_1, \ldots, i_{|\tilde{s}|}$ are those \textbf{positions}  
+             \item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, i_{j} - i_{j-1} \leq G_{s}(i_{j})+1$  (consecutive positions close enough)
          \end{itemize}
        \end{itemize}
    \end{definition}
@@ -163,7 +166,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Literature \& Motivation for VGLCSP}
    
    \begin{itemize}
-       \item  Peng and Yang (2012, 2014): studied the  $m=2$ (poly)  version by \textbf{three dynamic programming} approaches (basic one, two advanced involving complex data-structures to speed up)
+       \item  Peng and Yang (2012, 2014): studied the  $m=2$ (poly)  version by \textbf{three dynamic programming} approaches (basic one, two advanced)
        \item  Manea et al. (2024): Complexity bounds,  (parameterised) complexity analysis investigated
        \item \textcolor{red}{NP-hard} under arbitrary large $m$ 
    \end{itemize} \vspace{0.3cm}
@@ -471,7 +474,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	\begin{itemize}
 		\item \textsc{Bs}: a baseline beam search approach, allowing only \textcolor{blue}{a single iteration} of IMSBS (utilizing a huge $\beta$)
  		\vspace{0.3cm}
-		\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed \textcolor{blue}{beam-width} \( \beta = 1 \) for the forward BS, performing a larger number of beam search (impact of iterations on the overall performance of \textsc{Imsbs})
+		\item \textsc{Imsbs-greedy}: fix \textcolor{blue}{beam-width} \( \beta = 1 \) for the forward BS of IMSBS, perform a large number of beam search (impact of iterations on the overall performance of \textsc{Imsbs})
 	    \vspace{0.3cm}
 		\item \textsc{Imsbs}: \textcolor{blue}{a tuned version};  configured to use an average runtime comparable to that of \textsc{Bs}
 	\end{itemize}
@@ -510,9 +513,10 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 		\begin{itemize}
 			\item $\{\text{UB}_1, \text{UB}_2, h_{prob}\}$
 		\end{itemize}
-	\end{itemize}
+	\end{itemize} \vspace{0.5cm}
 	
-	
+  \textcolor{red}{\textbf{Grid search used over all (320) instances!}}
+
 \end{frame}
 
 \begin{frame}{$\textsc{Bs}$: influence of different $\beta$ and heuristic guidances}
@@ -622,6 +626,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \end{frame}
 
 \begin{frame}{Numerical results for $m=2$ case}
+	    TODO: make it less verbose!!
 	    
 	    \begin{itemize}
 	 	    \item \textsc{Dp}-1: the basic dynamic programming $(O(n^2m^2))$
