@@ -56,9 +56,10 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Outline}
     
     \begin{itemize}
-        \item Introduction \& Preliminaries \vspace{0.2cm}
+        \item Introduction  
+         \vspace{0.2cm}
         \item Problem Definition  \vspace{0.2cm}
-        \item Graph state space  \vspace{0.2cm}
+        \item Rooted graph state space  \vspace{0.2cm}
         \item Iterative multi-source Beam Search  \vspace{0.2cm}
         \item Experimental Evaluation: General \& special problem
         \vspace{0.2cm}
@@ -179,7 +180,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \begin{itemize}
         \item Based on the significant extension of the state space graph formulation for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item \textbf{First position to start the search free} --- many root/source nodes in the state graph, generally separated subgraphs
+        \item Many root/source nodes in the state graph, generally separated subgraphs (the leading letter in a common subsequence free)
     \end{itemize}
     
 \end{frame}
@@ -187,17 +188,20 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Root-based state graph formulation: rough idea}
   
+  
   \begin{itemize}
-      \item Each \textbf{state} $v=(p^L, l^v)$: one or more feasible partial solutions characterized by
+      
+      %\item Start with $p^L=1$, and empty partial solution, refers to the complete problem
+      
+      \item Each \textbf{state} $v=(p^L, l^v)$: one or more feasible partial solutions where
       \begin{itemize}
-      	\item  a vector of positions $p^L$ referring to suffixes of input sequences relevant to  further expand these sols \item the  length of current partial solution $l^v$ 
+      	  \item  a vector of positions $p^L$ refer to the positions of suffixes of input sequences relevant to  further expand these sols \item the  length of current partial solution $l^v$ 
       \end{itemize}\vspace{0.3cm}
-      \item \textbf{Expansion} of $v$: extend partial solutions feasibly by one letter  (concatenation) in all possible ways (non-dominantly),  respecting gap constraints \vspace{0.3cm}
-      \item \textbf{Non-expandable nodes}: complete solutions; start from $p^L=1$ (empty solution), the complete problem
+      \item \textbf{Expansion} of $v$: extend (concatenate)  partial solutions feasibly (and non-dominantly) by one letter  in all possible ways,  respecting gap constraints \vspace{0.3cm}
+      \item \textbf{Non-expandable nodes}: complete solutions; 
   \end{itemize} \vspace{0.15cm}
   
-  \fbox{\textcolor{red}{\textbf{Decision: selection of (match)\ $p^L$ for root node 
-   (corr. empty sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes} (the search start) \\ {Space($p^L$)}: State (sub) graph  induced by node $(p^L, 0)$.
+  \fbox{\textcolor{red}{\textbf{Decision: select appropriate (match)\ $p^L$ for start}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}  \\ {Space($p^L$)}: root-based state (sub) graph  induced by node $(p^L, 0)$.
 \end{frame}
 
 \begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously a valid root node)}
@@ -302,13 +306,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Iterative multi-source beam search (IMSBS) strategy}
       
       \begin{itemize}
-      		\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $v=(\mathbf{p}^{L, v}, 0) \in \mathcal{R}$ all root states  
+      	%	\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $v=(\mathbf{p}^{L, v}, 0) \in \mathcal{R}$ all root states  
       		\item Explicitly enumerating all root states computationally prohibitive ($O(n^m)$ time) \vspace{0.7cm}
       		\item \textcolor{red}{\textbf{IMSBS}} (rough idea):  \vspace{0.2cm}
       		\begin{itemize}
-      		    \item Based on \textbf{beam search} (for exploring \text{Space}($r$)): limited breadth-first-search (BFS) strategy, \textcolor{blue}{parameter $\beta$} controls the number of nodes to be further pursued \vspace{0.2cm}
+      		    \item  Exploring \text{Space}($r$): \textbf{beam search} --- limited breadth-first-search (BFS) strategy; \textcolor{blue}{parameter $\beta$} controls the number of nodes to be further pursued \vspace{0.2cm}
       		    
-      		    \item Dynamically explore multiple promising regions (\text{Space}($\cdot$)) of the state space: move from one to another rooted subgraph   \vspace{0.2cm}
+      		    \item Dynamically explore multiple promising regions (\text{Space}($\cdot$)) of the state space  \vspace{0.2cm}
       		    \item \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states
       		\end{itemize}
       \end{itemize}  
@@ -467,7 +471,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	\begin{itemize}
 		\item \textsc{Bs}: a baseline beam search approach, allowing only \textcolor{blue}{a single iteration} of IMSBS (utilizing a huge $\beta$)
  		\vspace{0.3cm}
-		\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed \textcolor{blue}{beam-width parameter} \( \beta = 1 \) for the forward BS, performing a larger number of beam search (impact of iterations on the overall performance of \textsc{Imsbs})
+		\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed \textcolor{blue}{beam-width} \( \beta = 1 \) for the forward BS, performing a larger number of beam search (impact of iterations on the overall performance of \textsc{Imsbs})
 	    \vspace{0.3cm}
 		\item \textsc{Imsbs}: \textcolor{blue}{a tuned version};  configured to use an average runtime comparable to that of \textsc{Bs}
 	\end{itemize}
@@ -513,7 +517,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{$\textsc{Bs}$: influence of different $\beta$ and heuristic guidances}
 	
-
+ TODO: maybe to remove the plot
 	   \begin{figure}[!ht]
 	  	\centering
 	  	%\begin{subfigure}[t]{0.48\textwidth}
@@ -690,8 +694,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Conclusions and Future Work}
 	
 	\begin{itemize}
-		\item Proposed a \textcolor{red}{\textbf{general heuristic framework}} to solve the multiple VGLCS problem  
-		\item IMSBS designed: combines Beam search calls (backward-and-forward manner) in an \textcolor{red}{\textbf{iterative way}} while producing promising source nodes as candidates for further BS iterations
+		\item Proposed a \textcolor{red}{\textbf{general heuristic framework}} IMSBS to solve the multiple VGLCS problem  
+		\item Combines Beam search calls (backward-and-forward manner) in an \textcolor{red}{\textbf{iterative way}} while producing promising source nodes for further BS iterations
 		\begin{itemize}
 			\item  Balancing intensification and diversification 
 	    \end{itemize}
