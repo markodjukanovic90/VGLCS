@@ -113,8 +113,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
   \textbf{Problem-related practical variants}:
   \begin{itemize}
   		\item Arc-annotated LCS problem
- 		 \item Constrained (restricted/imposed) LCS problem
-  		\item Repetition-free, filled, ...
+ 		 \item Constrained, Repetition-free, filled LCS problem, ...
   		\item \textcolor{red}{Gapped LCS problem}
   \end{itemize}
 \end{frame}
@@ -289,13 +288,14 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
   \end{example} \vspace{0.5cm}
   
    \textbf{Consequence}: $((5, 5), 0) \not \in Space((1, 1))$  $\Rightarrow$  
-   \textcolor{blue}{The optimal common subsequence \texttt{AAA} is unreachable.} %from the basic root $((1,1),0)$,  therefore missed by traditional search strategies.
+   \textcolor{blue}{The optimal common subsequence \texttt{AAA} is unreachable} \\ \vspace{0.5cm}%from the basic root $((1,1),0)$,  therefore missed by traditional search strategies.
 
-\vspace{0.5cm}
-   \begin{itemize}
-	    \item The VGLCSP may exhibit multiple, -- potentially exponentially many-- \emph{disconnected root components} 
+\textcolor{red}{\textbf{How to fix it?}}
+%\vspace{0.5cm}
+%   \begin{itemize}
+%	    \item The VGLCSP may exhibit multiple, -- potentially exponentially many-- \emph{disconnected root components} 
 	   % \item  \textcolor{red}{If started from $(1, 1)$}, it fails to reach    optimal solutions.    
-\end{itemize}
+%\end{itemize}
    
 \end{frame}
 
@@ -308,7 +308,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       		\begin{itemize}
       		    \item Based on \textbf{beam search} (for exploring \text{Space}($r$)): limited breadth-first-search (BFS) strategy, \textcolor{blue}{parameter $\beta$} controls the number of nodes to be further pursued \vspace{0.2cm}
       		    
-      		    \item Dynamically explore multiple promising regions (\text{Space}($r$)) of the state space: move from one to another rooted subgraph   \vspace{0.2cm}
+      		    \item Dynamically explore multiple promising regions (\text{Space}($\cdot$)) of the state space: move from one to another rooted subgraph   \vspace{0.2cm}
       		    \item \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states
       		\end{itemize}
       \end{itemize}  
