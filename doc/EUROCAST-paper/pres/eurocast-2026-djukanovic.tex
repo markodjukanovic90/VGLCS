@@ -8,6 +8,8 @@
 \usetikzlibrary{positioning}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{comment}
+\usetikzlibrary{shapes.geometric}
 
 \tikzset{
 box/.style={
@@ -23,9 +25,9 @@ fill=green!15
 
 
 
-\title{On Solving the Multiple Variable Gapped Longest Common Subsequence Problem}
+\title[On solving the VGLCSP]{On Solving the Multiple Variable Gapped Longest Common Subsequence Problem}
 
-\author{Marko Djukanović\inst{1,2, 6}  \and Nikola Balaban\inst{2}  \and
+\author[Djukanovic et al.\ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ ]{Marko Djukanović\inst{1,2, 6}  \and Nikola Balaban\inst{2}  \and
 Christian Blum\inst{3}  \and 
 Aleksandar Kartelj\inst{4}  \and
 Sašo Džeroski\inst{5}  \and
@@ -39,7 +41,7 @@ $^4$Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\
 $^5$Jožef Stefan Institute, Ljubljana, Slovenia \ \\
 $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm}
 
-\footnotesize{-- \textcolor{blue}{Eurocast 2026: 20th International Conference on Computer Aided Systems Theory, February 23-27, 2026,  Las Palmas de Gran Canaria, Spain}--}
+\footnotesize{-- \textcolor{blue}{EUROCAST 2026: 20th International Conference on Computer Aided Systems Theory, February 23-27, 2026,  Las Palmas de Gran Canaria, Spain}--}
 \centering
 \includegraphics[width=90pt,height=50pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}~ \hfill
 \includegraphics[width=80pt,height=50pt]{IFEEL\_1.png}~\hfill
@@ -58,11 +60,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         \item Problem Definition  \vspace{0.2cm}
         \item Graph state space  \vspace{0.2cm}
         \item Iterative multi-source Beam Search  \vspace{0.2cm}
-        \item Experimental Evaluation
-        \begin{itemize}
-            \item General problem
-            \item Special problem
-        \end{itemize} \vspace{0.2cm}
+        \item Experimental Evaluation: General \& special problem
+        \vspace{0.2cm}
         \item Conclusions
     \end{itemize}
 \end{frame}
@@ -74,9 +73,9 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
        \item DNA/RNA over $\{\texttt{A}, \texttt{T}, \texttt{G}, \texttt{C/U}\}$
        \item Proteins over 20 (canonical) amino acids: $\{\texttt{A}, \texttt{C}, \texttt{D}, \texttt{E}, \texttt{P}, \texttt{Q} ...\}$ 
        \end{itemize} \vspace{0.3cm}
-       \item Computational biology
-       \begin{itemize}
-          \item \textbf{One of central tasks:} sequence comparison, finding common motifs between sequences
+        \item \textbf{One of central tasks in computational biology:} 
+        \begin{itemize}
+        	\item  sequence comparison, finding common motifs between sequences
           \item compare structurally but also semantically/functionality 
           \item sequence alignment problems 
        \end{itemize} \vspace{0.4cm}
@@ -90,7 +89,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     
     \begin{definition}[LCSP]
         \textbf{Input}: Given an arbitrary set of sequences $S=\{s_1, \ldots, s_m\}$ \\
-        \textbf{Task}: Find a   subsequence $s$  \textcolor{blue}{common} to all sequences from $S$ with \textcolor{blue}{maximum} possible length. 
+        \textbf{Task}: Find a   subsequence $s$  \textcolor{blue}{common} for all sequences from $S$ with \textcolor{blue}{maximum} possible length ($|s|$). 
     \end{definition}
     \begin{example}
        Input: $S=$\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
@@ -104,7 +103,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{LCS: Literature \& Problem Variants }
   \begin{itemize}
-  \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Szymanski, ... 
+  \item When $m=2$ -- polynomially solvable (in $O(n^2)$): \textcolor{blue}{Dynamic programming}, Hunt-Szymanski, Hirschenberg,  ... 
   \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
    \begin{itemize}
    \item subject of interest within last 30 years: approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, anytime approaches, DAG-based, ...)
@@ -180,8 +179,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Methodology}
     \begin{itemize}
         \item Based on the significant extension of the state space graph formulation for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
-        \item \textbf{Gap constraints}: incorporated to cut-off the invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item Reach-ability of all nodes is an issue (\textbf{many root/source nodes} in the state graph, generally separated subgraphs)
+        \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
+        \item \textbf{First position to start the search free} --- many root/source nodes in the state graph, generally separated subgraphs
     \end{itemize}
     
 \end{frame}
@@ -194,12 +193,12 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       \begin{itemize}
       	\item  a vector of positions $p^L$ referring to suffixes of input sequences relevant to  further expand these sols \item the  length of current partial solution $l^v$ 
       \end{itemize}\vspace{0.3cm}
-      \item \textbf{Expansion} of node $v$: extend partial solutions feasibly by one letter  (concatenation) in all possible ways (non-dominantly),  respecting gap constraints \vspace{0.3cm}
-      \item \textbf{Non-expandable nodes}: complete solutions 
-  \end{itemize} \vspace{0.5cm}
+      \item \textbf{Expansion} of $v$: extend partial solutions feasibly by one letter  (concatenation) in all possible ways (non-dominantly),  respecting gap constraints \vspace{0.3cm}
+      \item \textbf{Non-expandable nodes}: complete solutions; start from $p^L=1$ (empty solution), the complete problem
+  \end{itemize} \vspace{0.15cm}
   
-  \fbox{\textcolor{red}{\textbf{Crucial: selection of (match)\ $p^L$ for root node 
-   (corr. empty solution)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}. \\ State (sub) graph space induced by root node $(p^L, 0)$ we denote by {Space($p^L$)}.
+  \fbox{\textcolor{red}{\textbf{Decision: selection of (match)\ $p^L$ for root node 
+   (corr. empty sol.)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes} (the search start) \\ {Space($p^L$)}: State (sub) graph  induced by node $(p^L, 0)$.
 \end{frame}
 
 \begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously a valid root node)}
@@ -309,12 +308,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       		\begin{itemize}
       		    \item Based on \textbf{beam search} (for exploring \text{Space}($r$)): limited breadth-first-search (BFS) strategy, \textcolor{blue}{parameter $\beta$} controls the number of nodes to be further pursued \vspace{0.2cm}
       		    
-      		    \item dynamically explore multiple promising regions (\text{Space}($r$)) of the state space: move from one to another rooted subgraph   \vspace{0.2cm}
-      		    \item \textbf{iteratively identify} a set of \textcolor{red}{promising} candidate root states
+      		    \item Dynamically explore multiple promising regions (\text{Space}($r$)) of the state space: move from one to another rooted subgraph   \vspace{0.2cm}
+      		    \item \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states
       		\end{itemize}
       \end{itemize}  
 \end{frame}
 
+\begin{comment}
 \begin{frame}{Components and characteristics of IMSBS}
      TODO: Consider not to display this slide!
      
@@ -329,6 +329,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
      \end{itemize}
 
 \end{frame}
+\end{comment}
 
 \begin{frame}{Workflow of the IMSBS}
 	%start from the empty source node (0, 0), generating initial (proven) root nodes first -- for each a \in \Sigma => the first occurances of letter a as position p^{L, a} ...   
@@ -336,9 +337,9 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 
 	 %\begin{figure}[!ht]
 	 \centering
-	 \scalebox{0.4}{
+	 \scalebox{0.40}{
 	 	\begin{tikzpicture}[
-	 		node distance=0.8cm and 1.3cm,
+	 		node distance=0.7cm and 1.2cm,
 	 		every node/.style={font=\small},
 	 		block/.style={
 	 			rectangle,
@@ -440,29 +441,35 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Heuristic guidances in BS}
     
-    Three LCS heuristic guidances used:
+    Three LCS heuristic guidances used: \vspace{0.2cm}
         \begin{itemize}
-       	    \item  \textit{``Look-ahead'' for the remaining length:}
-    	    \begin{equation}
-    		    \textrm{UB}_1(\mathbf{v}) = l^v + \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)
-        	\end{equation}
-    	  	\item  \textit{Character Frequency Alignment:}
-    	   \begin{equation}
-    	   	\textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
-    	   	\min \underbrace{\left( |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)}_{\text{remaining valid suffixes}}
-    	   \end{equation}
-    	   \item \textit{A probability-based heuristic} guidance $h_{prob}$: by the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012)) %These probabilities approximate the probability of the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
+       	    \item  ``Look-ahead'' for the remaining sequence length: $\textrm{UB}_1(v)$
+    	    %\begin{equation}
+    		%    \textrm{UB}_1(\mathbf{v}) = l^v + \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)
+        	%\end{equation}
+        	\vspace{0.3cm}
+    	  	\item  \textit{Character Frequency Alignment} score: $\textrm{UB}_2$ 
+    	  	\begin{itemize}
+    	  		\item sum up the maximum possible occurrences of each  letters in subsequences
+    	  	\end{itemize}
+    	   
+    	   %\begin{equation}
+    	   %	    \textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
+    	   %	    \min \underbrace{\left( |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)}_{\text{remaining valid suffixes}}
+    	   %\end{equation}
+    	   \vspace{0.3cm}
+    	   \item \textit{A probability-based heuristic} guidance: $h_{prob}$ ( the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012))) %These probabilities approximate the probability of the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Experimental Evaluation: arbitrary large $m$-case}
 	
 	\begin{itemize}
-		\item \textsc{Bs}: a baseline beam search approach, allowing only \textbf{a single iteration} of IMSBS (utilizing a huge $\beta$)
+		\item \textsc{Bs}: a baseline beam search approach, allowing only \textcolor{blue}{a single iteration} of IMSBS (utilizing a huge $\beta$)
  		\vspace{0.3cm}
-		\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed \textbf{beam-width parameter} \( \beta = 1 \) for the forward BS, performing a larger number of beam search (impact of iterations on the overall performance of \textsc{Imsbs})
+		\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed \textcolor{blue}{beam-width parameter} \( \beta = 1 \) for the forward BS, performing a larger number of beam search (impact of iterations on the overall performance of \textsc{Imsbs})
 	    \vspace{0.3cm}
-		\item \textsc{Imsbs}: a tuned version;  configured to use an average runtime comparable to that of \textsc{Bs}
+		\item \textsc{Imsbs}: \textcolor{blue}{a tuned version};  configured to use an average runtime comparable to that of \textsc{Bs}
 	\end{itemize}
 	
 \end{frame}
@@ -485,7 +492,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \end{frame}
 
 \begin{frame}{Parameter tuning of IMSBS}
-	We fixed:
+	We fixed (less sensible) params:
 	\begin{itemize}
 		\item \textsc{Bs} (backward): $\beta'=10$, and $\textrm{UB}_2$  (efficient)
 		\item Candidate root nodes from $\mathcal{R}$ ordered by $\textrm{UB}_2$ (decreasingly)
@@ -506,14 +513,16 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{$\textsc{Bs}$: influence of different $\beta$ and heuristic guidances}
 	
+
 	   \begin{figure}[!ht]
 	  	\centering
-	  	\begin{subfigure}[t]{0.48\textwidth}
+	  	%\begin{subfigure}[t]{0.48\textwidth}
 	  		\centering
-	  		\includegraphics[width=\linewidth, height=120pt]{figures/bs_tuning_quality.png}
+	  		\scalebox{0.75}{
+	  		\includegraphics[width=\linewidth, height=140pt]{figures/bs_tuning_quality.png}}
 	  		\caption{Avg. quality over all instances from the \textsc{Random} benchmark suite.}
 	  		\label{fig:tune_bs}
-	  	\end{subfigure}
+	  	%\end{subfigure}
 	  %	~
 	  %	\begin{subfigure}[t]{0.48\textwidth}
 	  %		\centering
@@ -532,12 +541,12 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	
 	 \begin{figure}[!h]
 		\centering
-		\begin{minipage}{0.48\textwidth}
-			\centering
-			\includegraphics[width=\linewidth]{figures/imsbs_tuning.png}
-			\caption*{(a) Avg. quality for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
+		%\begin{minipage}{0.48\textwidth}
+		\scalebox{0.7}{
+			\includegraphics[width=\linewidth]{figures/imsbs_tuning.png}}
+			\caption*{Avg. quality for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
 			\label{fig:tune_imsbs}
-		\end{minipage}
+		%\end{minipage}
 	%	~
 	%	\begin{minipage}{0.48\textwidth}
 	%		\centering
@@ -611,10 +620,12 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Numerical results for $m=2$ case}
 	    
 	    \begin{itemize}
-	 	    \item \textsc{Dp}-1: the basic dynamic programming algorithm $(O(n^2m^2))$
-	 	    \item \textsc{Dp}-2: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm $(O(n^2 + mn))$
-	 	    \item \textsc{Dp}-3: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup (slightly modified w.r.t.\ the literature)
-	 	    \item \textsc{Ilp}: an integer linear programming method \textbf{proposed in this work}, motivated by the ILP model for LCS problem with $m=2$
+	 	    \item \textsc{Dp}-1: the basic dynamic programming $(O(n^2m^2))$
+	 	    \item \textsc{Dp}-2: an advanced dynamic programming, uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices for acceleration %the basic DP algorithm
+	 	     $(O(n^2 + mn))$
+	 	    \item \textsc{Dp}-3: an enhanced dynamic programming that handles ISMQ with a \textit{dequeue} data structure %for further speedup 
+	 	    (slightly modified w.r.t.\ the literature)
+	 	    \item \textsc{Ilp}: an integer linear programming, \textbf{proposed in this work}, motivated by the ILP model for LCSP with $m=2$
 	 \end{itemize} \vspace{0.5cm}
 \textcolor{blue}{\textbf{The first known empirical comparison for the $m=2$} (80 instances).}
 \end{frame}
@@ -657,18 +668,18 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{The $m=2$ case: heuristic performance vs. optimal solution }
 	
-	  \begin{figure}[htbp]
-		\centering
-		\begin{minipage}{0.48\textwidth}
-			\includegraphics[width=\linewidth]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
-			\caption*{(a) Relative solution quality percentage distribution for each heuristic approach with respect to the optimal solutions.} 
-		\end{minipage}
-		\hfill
-		\begin{minipage}{0.48\textwidth}
+  \begin{figure}[htbp]
+	%	\centering
+	%	\begin{minipage}{0.48\textwidth}
+	%		\includegraphics[width=\linewidth]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
+	%		\caption*{(a) Relative solution quality percentage distribution for each heuristic approach with respect to the optimal solutions.} 
+	%	\end{minipage}
+	%	\hfill
+	%	\begin{minipage}{0.48\textwidth}
 			\centering
 			\includegraphics[width=\linewidth]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
-			\caption*{(b) Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
-		\end{minipage}
+			\caption*{ Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
+		%\end{minipage}
 		%\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
 		%\label{fig:optimal-vs-heuristic}
 	\end{figure}
@@ -679,12 +690,12 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Conclusions and Future Work}
 	
 	\begin{itemize}
-		\item Proposed a \textcolor{red}{\textbf{general heuristic framework}} to solve the VGLCS problem with arbitrary input strings 
-		\item IMSBS designed: combines Beam search calls (backward and forward manner) in an \textcolor{red}{\textbf{iterative way}} while producing promising source nodes as candidates for further BS iterations
+		\item Proposed a \textcolor{red}{\textbf{general heuristic framework}} to solve the multiple VGLCS problem  
+		\item IMSBS designed: combines Beam search calls (backward-and-forward manner) in an \textcolor{red}{\textbf{iterative way}} while producing promising source nodes as candidates for further BS iterations
 		\begin{itemize}
 			\item  Balancing intensification and diversification 
 	    \end{itemize}
-		\item Empirical studies conducted for the first time on the \textcolor{red}{\textbf{synthetic instances}}: the tuned IMSBS wins over the baseline Beam search approach  
+		\item Empirical studies conducted for the first time on the \textcolor{red}{\textbf{synthetic instances}}: IMSBS wins over the baseline Beam search  
 	\end{itemize}    \vspace{0.3cm}
 	
 \textbf{Future work:}
