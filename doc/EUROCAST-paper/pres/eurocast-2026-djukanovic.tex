@@ -27,13 +27,13 @@ fill=green!15
 
 \title[On solving the VGLCSP]{On Solving the Multiple Variable Gapped Longest Common Subsequence Problem}
 
-\author[Djukanovic et al.\ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ ]{Marko Djukanović\inst{1,2, 6}  \and Nikola Balaban\inst{2}  \and
+\author[Djukanovic et al.\ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ ]{Marko Djukanović\inst{1,2,6}  \and Nikola Balaban\inst{2}  \and
 Christian Blum\inst{3}  \and 
 Aleksandar Kartelj\inst{4}  \and
 Sašo Džeroski\inst{5}  \and
 Žiga Zebec\inst{6}
 }
-
+ 
 \institute{ $^1$University of Nova Gorica, Nova Gorica, Slovenia \\ 
 $^2$Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, B\&H \\ 
 $^3$Artificial Intelligence Research Institute (IIIA-CSIC), Barcelona, Spain \\ 
@@ -41,13 +41,15 @@ $^4$Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\
 $^5$Jožef Stefan Institute, Ljubljana, Slovenia \ \\
 $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm}
 
-\footnotesize{-- \textcolor{blue}{EUROCAST 2026: 20th International Conference on Computer Aided Systems Theory, February 23-27, 2026,  Las Palmas de Gran Canaria, Spain}--}
+\footnotesize{-- \textcolor{blue}{EUROCAST 2026: 20th International Conference on Computer Aided Systems Theory, February 23-27, 2026,  Las Palmas de Gran Canaria, Spain}--} \\ \vspace{0.5cm}
 \centering
-\includegraphics[width=90pt,height=50pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}~ \hfill
-\includegraphics[width=80pt,height=50pt]{IFEEL\_1.png}~\hfill
-\includegraphics[width=110pt,height=40pt]{CofundedbytheEU\_RGB\_NEG.png}
-}
+\includegraphics[width=80pt, height=40pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}~ \hfill
+\includegraphics[width=80pt,height=40pt]{IFEEL\_1.png}~\hfill
+\includegraphics[width=90pt,height=40pt]{cofunded\_eu.png} ~\hfill
+\includegraphics[width=70pt,height=40pt]{slo\_ministry.png}
+}%slo_ministry.png
 
+\date{}
 \begin{document}
 \begin{frame}[plain]
     \maketitle
@@ -91,7 +93,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \begin{definition}[LCSP]
         \textbf{Input}: Given an arbitrary set of sequences $S=\{s_1, \ldots, s_m\}$ \\
         \textbf{Task}: Find a   subsequence $s$  \textcolor{blue}{common} for all sequences from $S$ with \textcolor{blue}{maximum} possible length ($|s|$). 
-    \end{definition}
+    \end{definition} \vspace{0.5cm}
     \begin{example}
        Input: $S=$\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
        LCS solution: $s=$\textcolor{red}{ATTC}
@@ -107,7 +109,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
   \item When $m=2$: polynomially solvable (in $O(n^2)$):
   \begin{itemize}
   	   \item  \textcolor{blue}{Dynamic programming}, Hunt-Szymanski, Hirschenberg,  ... 
-    \end{itemize}
+    \end{itemize} \vspace{0.3cm}
   \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
    \begin{itemize}
    \item subject of interest within last 30 years -- approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, anytime approaches, DAG-based, ...)
@@ -125,7 +127,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{The gapped LCS problem}
    \begin{definition}[A gap sequence]
        Given is a sequence $s$ and an assigned function 
-       $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. A pair $(s, G_s)$ is called a \textbf{sequence with gaps}.
+       $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. A pair $(s, G_s)$ is called a {gap sequence}.
    \end{definition} \vspace{0.5cm}
    
    \begin{definition}[A gapped subsequence]
@@ -166,7 +168,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Literature \& Motivation for VGLCSP}
    
    \begin{itemize}
-       \item  Peng and Yang (2012, 2014): studied the  $m=2$ (poly)  version by \textbf{three dynamic programming} approaches (basic one, two advanced)
+       \item  Peng and Yang (2012, 2014): studied the  $m=2$ (poly)  version by \textbf{three dynamic programming} (DP) approaches (basic one, two advanced)
        \item  Manea et al. (2024): Complexity bounds,  (parameterised) complexity analysis investigated
        \item \textcolor{red}{NP-hard} under arbitrary large $m$ 
    \end{itemize} \vspace{0.3cm}
@@ -183,7 +185,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \begin{itemize}
         \item Based on the significant extension of the state space graph formulation for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item Many root/source nodes in the state graph, generally separated subgraphs (the leading letter in a common subsequence free)
+        \item Many root/source nodes in the state graph (the position of leading letter in a common subsequence free to choose)
     \end{itemize}
     
 \end{frame}
@@ -204,11 +206,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       \item \textbf{Non-expandable nodes}: complete solutions; 
   \end{itemize} \vspace{0.15cm}
   
-  \fbox{\textcolor{red}{\textbf{Decision: select appropriate (match)\ $p^L$ for start}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}  \\ {Space($p^L$)}: root-based state (sub) graph  induced by node $(p^L, 0)$.
+  \fbox{\textcolor{red}{\textbf{Decision: select appropriate (match)\ $p^L$ for start (empty solution)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}  \\ {Space($p^L$)}: root-based state (sub) graph  induced by root node $(p^L, 0)$.
 \end{frame}
 
-\begin{frame}{Root-based state graph formulation: example with the match $r=(1, 1)$ (obviously a valid root node)}
+\begin{frame}{Root-based state graph formulation: example}
    
+    Space($r=((1, 1), 0)$) for MVGLCSP for  $s_1=$\texttt{\fbox{A}BCA},  $s_2=$\texttt{\fbox{A}CAB}, assuming  $G_1=G_2=1$:
+   	
    % U nekom delu LaTeX dokumenta:
    \begin{figure}[h!]
    \centering
@@ -275,8 +279,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    
    \end{tikzpicture}}
    
-   \caption{State space graph Space($r=((1, 1), 0)$) for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $\textcolor{red}{G_1=G_2=1}$.   % \fxnote{Add VGLCS example}
-   }
+   %\caption{State space graph Space($r=((1, 1), 0)$) for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $\textcolor{red}{G_1=G_2=1}$.   % \fxnote{Add VGLCS example}
+   %}
    
    \label{fig:vgcs-grafstanja}
    \end{figure}
@@ -515,21 +519,20 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 		\end{itemize}
 	\end{itemize} \vspace{0.5cm}
 	
-  \textcolor{red}{\textbf{Grid search used over all (320) instances!}}
+  \textcolor{red}{\textbf{Grid search used to tune; avg. solution quality over all (320) instances!}}
 
 \end{frame}
 
-\begin{frame}{$\textsc{Bs}$: influence of different $\beta$ and heuristic guidances}
+\begin{frame}{The results of tuning}%{$\textsc{Bs}$: influence of different $\beta$ and heuristic guidances}
 	
- TODO: maybe to remove the plot
-	   \begin{figure}[!ht]
-	  	\centering
+	   %\begin{figure}[!ht]
+	  	%\centering
 	  	%\begin{subfigure}[t]{0.48\textwidth}
-	  		\centering
-	  		\scalebox{0.75}{
-	  		\includegraphics[width=\linewidth, height=140pt]{figures/bs_tuning_quality.png}}
-	  		\caption{Avg. quality over all instances from the \textsc{Random} benchmark suite.}
-	  		\label{fig:tune_bs}
+	  		%\centering
+	  		%\scalebox{0.75}{
+	  		%\includegraphics[width=\linewidth, height=140pt]{figures/bs_tuning_quality.png}}
+	  		%\caption{Avg. quality over all instances from the %\textsc{Random} benchmark suite.}
+	      %\label{fig:tune_bs}
 	  	%\end{subfigure}
 	  %	~
 	  %	\begin{subfigure}[t]{0.48\textwidth}
@@ -540,20 +543,24 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	  %	\end{subfigure}
 	  %	\caption{Beam search tuning results on the \textsc{Random} benchmark suite.}
 	  %\label{fig:bs_tuning}
-	  \end{figure}
-	  
-	  $ \text{(Baseline)}\ \textsc{Bs} \Longrightarrow  \textcolor{blue}{\beta = 10,000}$ and $\textcolor{blue}{h = h_{\text{prob}}}$
+	  %\end{figure}
+	\begin{itemize}
+		\item  $ \textbf{\text{(Baseline)}}\ \textsc{Bs} \Longrightarrow  \textcolor{red}{\beta = 10,000}$ and $\textcolor{red}{h = h_{\text{prob}}}$
+	  \vspace{0.3cm}
+	  \item 	$ \textbf{\textsc{Imsbs}} \Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$ and $\textcolor{red}{\beta = 500},$ and $\textcolor{red}{beam\_iter = 100}$.\\ \vspace{0.3cm}
+	  \item \textbf{\textsc{Imsbs-Greedy}}:  $\textcolor{red}{\beta=1}$, $\textcolor{red}{beam\_iter=10,000}$ (comparable or a bit larger avg. runtime to that of \textsc{Imsbs})
+   \end{itemize} 
 \end{frame}
 
-\begin{frame}{Parameter tuning of \textsc{Imsbs}}
+%\begin{frame}{Parameter tuning of \textsc{Imsbs}}
 	
-	 \begin{figure}[!h]
-		\centering
+%	 \begin{figure}[!h]
+%		\centering
 		%\begin{minipage}{0.48\textwidth}
-		\scalebox{0.7}{
-			\includegraphics[width=\linewidth]{figures/imsbs_tuning.png}}
-			\caption*{Avg. quality for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
-			\label{fig:tune_imsbs}
+%		\scalebox{0.7}{
+%			\includegraphics[width=\linewidth]{figures/imsbs_tuning.png}}
+%			\caption*{Avg. quality for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
+%			\label{fig:tune_imsbs}
 		%\end{minipage}
 	%	~
 	%	\begin{minipage}{0.48\textwidth}
@@ -564,10 +571,9 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	%	\end{minipage}
 		%\caption{IMSBS parameter tuning results on the \textsc{Random} benchmark suite.}
 		%\label{fig:imsbs_tuning}
-	\end{figure}
+%	\end{figure}
 	
-	$ \textsc{Imsbs} \Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$ and $\textcolor{red}{\beta = 500},$ and $\textcolor{red}{beam\_iter = 100}$.\\ \vspace{0.3cm}
-	\textsc{Imsbs-Greedy}:  $\beta=1$, $beam\_iter=10,000$ (comparable/slightly larger avg. runtime to that of \textsc{Imsbs})
+
 \end{frame}
 
 \begin{frame}{Numerical results}
@@ -626,15 +632,14 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \end{frame}
 
 \begin{frame}{Numerical results for $m=2$ case}
-	    TODO: make it less verbose!!
 	    
-	    \begin{itemize}
-	 	    \item \textsc{Dp}-1: the basic dynamic programming $(O(n^2m^2))$
-	 	    \item \textsc{Dp}-2: an advanced dynamic programming, uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices for acceleration %the basic DP algorithm
-	 	     $(O(n^2 + mn))$
-	 	    \item \textsc{Dp}-3: an enhanced dynamic programming that handles ISMQ with a \textit{dequeue} data structure %for further speedup 
-	 	    (slightly modified w.r.t.\ the literature)
-	 	    \item \textsc{Ilp}: an integer linear programming, \textbf{proposed in this work}, motivated by the ILP model for LCSP with $m=2$
+	  \begin{itemize}
+	 	  \item \textsc{Dp}-1: the basic DP $(O(n^2m^2))$ \vspace{0.2cm}
+	 	  \item \textsc{Dp}-2: an advanced DP, uses Incremental Suffix Maximum Queries (ISMQ) --- \texttt{Col} and \texttt{All} matrices %the basic DP algorithm
+	 	     $(O(n^2 + mn))$  \vspace{0.2cm}
+	 	    \item \textsc{Dp}-3: an enhanced DP --- ISMQ handled  with a \textit{deque} structure %for further speedup 
+	 	    (slightly modified w.r.t.\ the literature) \vspace{0.2cm}
+	 	    \item \textsc{Ilp}: an integer linear programming, \textbf{proposed in this work}, motivated by the ILP model for LCSP %with $m=2$
 	 \end{itemize} \vspace{0.5cm}
 \textcolor{blue}{\textbf{The first known empirical comparison for the $m=2$} (80 instances).}
 \end{frame}
@@ -691,8 +696,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	%	\hfill
 	%	\begin{minipage}{0.48\textwidth}
 			\centering
-			\includegraphics[width=\linewidth]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
-			\caption*{ Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
+			\includegraphics[width=320pt,height=150pt]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
+			\caption*{ Relative solution quality achieved by the heuristic approaches compared to the optimal solutions (shown in \%).}
 		%\end{minipage}
 		%\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
 		%\label{fig:optimal-vs-heuristic}
