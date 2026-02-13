@@ -45,8 +45,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \centering
 \includegraphics[width=80pt, height=40pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}~ \hfill
 \includegraphics[width=80pt,height=40pt]{IFEEL\_1.png}~\hfill
-\includegraphics[width=90pt,height=40pt]{cofunded\_eu.png} ~\hfill
-\includegraphics[width=70pt,height=40pt]{slo\_ministry.png}
+\includegraphics[width=90pt,height=35pt]{cofunded\_eu.png} ~\hfill
+\includegraphics[width=70pt,height=35pt]{slo\_ministry.png}
 }%slo_ministry.png
 
 \date{}
@@ -124,7 +124,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
   \end{itemize}
 \end{frame}
 
-\begin{frame}{The gapped LCS problem}
+\begin{frame}{The gapped LCS problem (Peng and Yang, 2011)}
    \begin{definition}[A gap sequence]
        Given is a sequence $s$ and an assigned function 
        $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. A pair $(s, G_s)$ is called a {gap sequence}.
@@ -134,7 +134,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
          Sequence $\tilde{s}$ is a \textcolor{red}{gapped subsequence} of $(s, G_s)$ iff 
          \begin{itemize}
              \item $\tilde{s}$ is a subsequence of $s$
-             \item the gap constraint $G_s$ is fulfilled w.r.t.\ \textit{positions of embedding} letters of $\tilde{s}$ in $s$
+             \item the gap constraint $G_s$ is fulfilled w.r.t.\ \textit{positions of embedding} (letters of) $\tilde{s}$ in $s$:
          \begin{itemize}
              \item  suppose $i_1, \ldots, i_{|\tilde{s}|}$ are those \textbf{positions}  
              \item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, i_{j} - i_{j-1} \leq G_{s}(i_{j})+1$  (consecutive positions close enough)
@@ -185,7 +185,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \begin{itemize}
         \item Based on the significant extension of the state space graph formulation for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item Many root/source nodes in the state graph (the position of leading letter in a common subsequence free to choose)
+        \item Many root/source nodes in the state graph (the position of leading letter in a common subsequence free to select)
     \end{itemize}
     
 \end{frame}
@@ -200,13 +200,14 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       
       \item Each \textbf{state} $v=(p^L, l^v)$: one or more feasible partial solutions where
       \begin{itemize}
-      	  \item  a vector of positions $p^L$ refer to the positions of suffixes of input sequences relevant to  further expand these sols \item the  length of current partial solution $l^v$ 
+      	  \item  a vector of positions $p^L$ refer to the positions of suffixes of input sequences relevant to  further expand these sols (subproblem)
+      	  \item the  length of current partial solution $l^v$ 
       \end{itemize}\vspace{0.3cm}
       \item \textbf{Expansion} of $v$: extend (concatenate)  partial solutions feasibly (and non-dominantly) by one letter  in all possible ways,  respecting gap constraints \vspace{0.3cm}
       \item \textbf{Non-expandable nodes}: complete solutions; 
   \end{itemize} \vspace{0.15cm}
   
-  \fbox{\textcolor{red}{\textbf{Decision: select appropriate (match)\ $p^L$ for start (empty solution)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}  \\ {Space($p^L$)}: root-based state (sub) graph  induced by root node $(p^L, 0)$.
+  \fbox{\textcolor{red}{\textbf{Decision: select appropriate (match)\ $p^L$ for start (empty solution)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}  \\ \vspace{0.2cm} {Space($p^L$)}: root-based state (sub) graph  induced by root node $(p^L, 0)$.
 \end{frame}
 
 \begin{frame}{Root-based state graph formulation: example}
@@ -317,7 +318,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       		\item Explicitly enumerating all root states computationally prohibitive ($O(n^m)$ time) \vspace{0.7cm}
       		\item \textcolor{red}{\textbf{IMSBS}} (rough idea):  \vspace{0.2cm}
       		\begin{itemize}
-      		    \item  Exploring \text{Space}($r$): \textbf{beam search} --- limited breadth-first-search (BFS) strategy; \textcolor{blue}{parameter $\beta$} controls the number of nodes to be further pursued \vspace{0.2cm}
+      		    \item  Exploring \text{Space}($r$): \textbf{beam search} --- limited breadth-first-search (BFS) strategy; \textcolor{blue}{parameter $\beta$} controls the number of nodes at each level to be further pursued \vspace{0.2cm}
       		    
       		    \item Dynamically explore multiple promising regions (\text{Space}($\cdot$)) of the state space  \vspace{0.2cm}
       		    \item \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states
@@ -399,7 +400,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		\node[block, below=of backward] (forward) {Forward beam search from $\mathcal{L}$ as initial beam\\
 	 			(Rooted Beam Search)};
 	 		
-	 		\node[block, below=of forward] (updateBest) {Update best solution $s_{\text{best}}$};
+	 		\node[block, below=of forward] (updateBest) {Update best solution $s_{\text{best}}?$};
 	 		
 	 		\node[block, below=of updateBest] (expandNew) {Generate new roots from completed states\\
 	 			(ignoring gaps) and update $\mathcal{R}$};
@@ -469,7 +470,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     	   %	    \min \underbrace{\left( |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)}_{\text{remaining valid suffixes}}
     	   %\end{equation}
     	   \vspace{0.3cm}
-    	   \item \textit{A probability-based heuristic} guidance: $h_{prob}$ ( the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012))) %These probabilities approximate the probability of the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
+    	   \item \textit{A probability-based heuristic} guidance: $h_{prob}$ (the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012))) %These probabilities approximate the probability of the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
     \end{itemize}
 \end{frame}
 
@@ -547,7 +548,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	\begin{itemize}
 		\item  $ \textbf{\text{(Baseline)}}\ \textsc{Bs} \Longrightarrow  \textcolor{red}{\beta = 10,000}$ and $\textcolor{red}{h = h_{\text{prob}}}$
 	  \vspace{0.3cm}
-	  \item 	$ \textbf{\textsc{Imsbs}} \Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$ and $\textcolor{red}{\beta = 500},$ and $\textcolor{red}{beam\_iter = 100}$.\\ \vspace{0.3cm}
+	  \item 	$ \textbf{\textsc{Imsbs}} \Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$,  $\textcolor{red}{\beta = 500},$ and $\textcolor{red}{beam\_iter = 100}$ \\ \vspace{0.3cm}
 	  \item \textbf{\textsc{Imsbs-Greedy}}:  $\textcolor{red}{\beta=1}$, $\textcolor{red}{beam\_iter=10,000}$ (comparable or a bit larger avg. runtime to that of \textsc{Imsbs})
    \end{itemize} 
 \end{frame}
@@ -641,7 +642,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 	    (slightly modified w.r.t.\ the literature) \vspace{0.2cm}
 	 	    \item \textsc{Ilp}: an integer linear programming, \textbf{proposed in this work}, motivated by the ILP model for LCSP %with $m=2$
 	 \end{itemize} \vspace{0.5cm}
-\textcolor{blue}{\textbf{The first known empirical comparison for the $m=2$} (80 instances).}
+\textcolor{blue}{\textbf{The first known empirical study for the $m=2$} (80 instances).}
 \end{frame}
 
 \begin{frame}{Numerical evaluation: $m=2$}
