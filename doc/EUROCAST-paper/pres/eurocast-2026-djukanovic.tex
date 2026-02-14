@@ -114,7 +114,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \end{itemize} \vspace{0.3cm}
   \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
    \begin{itemize}
-   \item subject of interest within last 30 years -- approximation approaches, meta-heuristics (ACO, \textcolor{blue}{Beam search}, ...), but also exact approaches (A$^*$, DAG-based, ...)
+   \item subject of interest over last 30 years -- approximation, meta-heuristic, but also exact approaches   
    \end{itemize}  
   \end{itemize}\vspace{0.5cm}
   
@@ -184,9 +184,9 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Methodology}
     \begin{itemize}
-        \item Based on the significant extension of the state space graph formulation for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
+        \item Based on the significant extension of the \textbf{state space graph formulation} for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item Many root/source nodes in the state graph (the position of leading letter in a common subsequence free to select)
+        \item \textcolor{red}{\textbf{Many root/source nodes}} in the state graph (the position of leading letter in a gapped common subsequence free to select)
     \end{itemize}
     
 \end{frame}
@@ -213,7 +213,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Root-based state graph formulation: example}
    
-    Space($p^L=((1, 1), 0)$) for MVGLCSP for  $s_1=$\texttt{\fbox{A}BCA},  $s_2=$\texttt{\fbox{A}CAB}, assuming  $G_1=G_2=1$:
+    Given $s_1=$\texttt{\fbox{A}BCA},  $s_2=$\texttt{\fbox{A}CAB}, assuming  $G_1=G_2=1$, match $p^L=(1, 1)$; \\ \vspace{0.3cm} \textbf{Space}($p^L=(p^L, 0)$): 
    	
    % U nekom delu LaTeX dokumenta:
    \begin{figure}[h!]
@@ -296,7 +296,10 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    		$
    		S = \{ s_1 = \texttt{ATGG\fbox{A}AA},\; s_2 = \texttt{ATCC\fbox{A}AA} \},
    		$
-   		with gap constraints $G_{s_1} = G_{s_2} = 1$. In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ \textcolor{red}{cannot be reached} from the initial state $((1,1),0)$ by standard direct transitions. 
+   		with $G_{s_1} = G_{s_2} = 1$. 
+   		\begin{itemize}
+   		     	\item Any state with position vector $\mathbf{p}^L = (5,5)$ \textcolor{red}{cannot be reached} from   $\text{Space}((1,1),0)$ by standard direct transitions
+   		  \end{itemize}
 
   \end{example} \vspace{0.5cm}
   
@@ -385,8 +388,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		\node[block, below=of start] (init) {Initialize root queue $\mathcal{R}=\{\}$\\
 	 			$s_{\text{best}} \leftarrow \varepsilon$, $iter \leftarrow 0$};
 	 		
-	 		\node[block, below=of init] (expandR) {Initial generation of sources from $\{(\mathbf{1},0)\} \rightarrow \mathcal{R}$\\
-	 			(using closest matches for each $a \in \Sigma$)};
+	 		\node[block, below=of init] (expandR) {Initial generation of sources from $(\mathbf{1},0) \rightarrow \mathcal{R}$\\
+	 			(detect closest matches for each $a \in \Sigma$)};
 	 		
 	 		\node[decision, below=of expandR] (while) {$\mathcal{R} \neq \emptyset$\\
 	 			$iter < imsbs\_iters$\\
@@ -395,7 +398,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		\node[block, below=of while] (selectL) {Select subset $\mathcal{L} \subseteq \mathcal{R}$\\
 	 			(priority by $h'$)};
 	 		
-	 		\node[block, below=of selectL] (backward) {Backward refinement of $v \in \mathcal{L}$\\
+	 		\node[block, below=of selectL] (backward) {\textbf{Backward refinement} of $v \in \mathcal{L}$\\
 	 			(Rooted Beam Search on reversed sequences)};
 	 		
 	 		\node[block, below=of backward] (forward) {Forward beam search from $\mathcal{L}$ as initial beam\\
@@ -404,7 +407,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		\node[block, below=of forward] (updateBest) {Update best solution $s_{\text{best}}?$};
 	 		
 	 		\node[block, below=of updateBest] (expandNew) {Generate new roots from completed states\\
-	 			(ignoring gaps) and update $\mathcal{R}$};
+	 			(ignoring gaps, closest match detection) \\ update $\mathcal{R}$};
 	 		
 	 		\node[block, below=of expandNew] (iter) {$iter \leftarrow iter + 1$};
 	 		
@@ -454,16 +457,16 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Heuristic guidances in BS}
     
-    Three LCS heuristic guidances used: \vspace{0.2cm}
+    Three LCS heuristic guidances: \vspace{0.2cm}
         \begin{itemize}
-       	    \item  $\textrm{UB}_1(v)$: ``Look-ahead'' for the remaining sequence length
+       	    \item  $\textrm{UB}_1 $: ``Look-ahead'' for the remaining sequence length
     	    %\begin{equation}
     		%    \textrm{UB}_1(\mathbf{v}) = l^v + \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)
         	%\end{equation}
         	\vspace{0.3cm}
     	  	\item   $\textrm{UB}_2$: \textit{Character Frequency Alignment} score
     	  	\begin{itemize}
-    	  		\item sum up the maximum possible occurrences of each  letters in subsequences
+    	  		\item sum up the maximum possible occurrences of each  letters in remaining subsequences
     	  	\end{itemize}
     	   
     	   %\begin{equation}
@@ -471,7 +474,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     	   %	    \min \underbrace{\left( |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)}_{\text{remaining valid suffixes}}
     	   %\end{equation}
     	   \vspace{0.3cm}
-    	   \item $h_{prob}$: \textit{probability-based heuristic} guidance (the pre-processed matrices of probabilities (Mousavi and Tabataba~(2012))) %These probabilities approximate the probability of the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
+    	   \item $h_{prob}$: \textit{probability-based heuristic} guidance (matrices of probabilities (Mousavi and Tabataba, 2012)) %These probabilities approximate the probability of the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
     \end{itemize}
 \end{frame}
 
@@ -501,7 +504,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 
 	 10 random problem instances are generated (sequences uniformly at random). \\ \vspace{0.3cm}
 	 
-	 The gap constraints generated from $G_{s}(\cdot) \in \mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.   \\ \vspace{0.7cm}
+	 Gap constraints generated from $G_{s}(\cdot) \in \mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.   \\ \vspace{0.7cm}
 	 
 	 $\Longrightarrow$ A total of \textcolor{red}{\textbf{320 problem instances}} is generated.
 	 
@@ -748,7 +751,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	
 	\begin{itemize}
 		\item Proposed a \textcolor{red}{\textbf{general heuristic framework}} IMSBS to solve the multiple VGLCS problem  
-		\item Combines consecutive Beam search calls inducing refinement of sources, source node generation for further  iterations
+		\item Combines consecutive Beam search calls which induce refinement of sources, source node generation for further  iterations
 		\begin{itemize}
 			\item  balance between intensification and diversification 
 	    \end{itemize}
