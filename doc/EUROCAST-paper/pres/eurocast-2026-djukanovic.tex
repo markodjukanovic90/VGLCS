@@ -186,7 +186,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     \begin{itemize}
         \item Based on the significant extension of the \textbf{state space graph formulation} for LCS problem  (Djukanovic et al. (2020)) \vspace{0.3cm}
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item \textcolor{red}{\textbf{Many root/source nodes}} in the state graph (the position of leading letter in a gapped common subsequence free to select)
+        \item \textcolor{red}{\textbf{Many root/source nodes}} in the state graph (the position of leading letter in each common gapped subsequence free to select)
     \end{itemize}
     
 \end{frame}
@@ -208,7 +208,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       \item \textbf{Non-expandable nodes}: complete solutions; 
   \end{itemize} \vspace{0.15cm}
   
-  \fbox{\textcolor{red}{\textbf{Decision: select appropriate (match)\ $p^L$ for start (empty solution)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}  \\ \vspace{0.2cm} {Space($p^L$)}: root-based state (sub) graph  induced by root node $(p^L, 0)$.
+  \fbox{\textcolor{red}{\textbf{Decision: select appropriate (matches)\ $p^L$ for start (empty solution)}}} $\Rightarrow$ possibly \textbf{(exponentially) many root nodes}  \\ \vspace{0.2cm} {Space($p^L$)}: root-based state (sub) graph  induced by root node $(p^L, 0)$.
 \end{frame}
 
 \begin{frame}{Root-based state graph formulation: example}
@@ -286,8 +286,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    
    \label{fig:vgcs-grafstanja}
    \end{figure}
-   
-\end{frame}
+   $\textcolor{red}{\text{Space}((1, 1)) \Longrightarrow \texttt{ACA}}$
+   \end{frame}
 
 
 \begin{frame}{An issue with the root-state-space formulation: example}
@@ -303,7 +303,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
   \end{example} \vspace{0.5cm}
   
-   \textbf{Consequence}: $((5, 5), 0) \not \in Space((1, 1))$  $\Rightarrow$  
+   \textbf{Consequence}: $((5, 5), \ast) \not \in Space((1, 1))$  $\Rightarrow$  
    \textcolor{blue}{The optimal common subsequence \texttt{AAA} is unreachable} \\ \vspace{0.5cm}%from the basic root $((1,1),0)$,  therefore missed by traditional search strategies.
 
 \textcolor{red}{\textbf{How to fix it?}}
@@ -321,12 +321,14 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       	%	\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $v=(\mathbf{p}^{L, v}, 0) \in \mathcal{R}$ all root states  
       		\item Explicitly enumerating all root states computationally prohibitive ($O(n^m)$ time) \vspace{0.7cm}
       		\item \textcolor{red}{\textbf{IMSBS}} (rough idea):  \vspace{0.2cm}
-      		\begin{itemize}
-      		    \item  Exploring \text{Space}($r$): given to \textbf{beam search} --- limited breadth-first-search (BFS) strategy; \textcolor{blue}{parameter $\beta$} controls the number of nodes at each level to be further pursued \vspace{0.2cm}
+      		\begin{enumerate}
+      		    \item  \textbf{Exploitation} of  \text{Space}($p^L$): given to \textcolor{blue}{beam search} (BS) --- limited breadth-first-search (BFS) strategy;  {parameter $\beta$} controls the number of nodes at each level to be further pursued \vspace{0.2cm}
       		    
-      		    \item Dynamically explore multiple promising regions (\text{Space}($\cdot$)) of the state space  \vspace{0.2cm}
-      		    \item \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states
-      		\end{itemize}
+      		    \item \textbf{Exploration} of promising regions (\text{Space}($p^L$)) of the state space  
+      		    \begin{itemize}
+      		       \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states during BS
+      		    \end{itemize}
+      		\end{enumerate}
       \end{itemize}  
 \end{frame}
 
@@ -385,7 +387,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		% Nodes
 	 		\node[block] (start) {Start};
 	 		
-	 		\node[block, below=of start] (init) {Initialize root queue $\mathcal{R}=\{\}$\\
+	 		\node[block, below=of start] (init) {Initialize global queue of roots $\mathcal{R}=\{\}$\\
 	 			$s_{\text{best}} \leftarrow \varepsilon$, $iter \leftarrow 0$};
 	 		
 	 		\node[block, below=of init] (expandR) {Initial generation of sources from $(\mathbf{1},0) \rightarrow \mathcal{R}$\\
@@ -399,9 +401,9 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 			(priority by $h'$)};
 	 		
 	 		\node[block, below=of selectL] (backward) {\textbf{Backward refinement} of $v \in \mathcal{L}$\\
-	 			(Rooted Beam Search on reversed sequences)};
+	 			(Rooted BS on reversed subproblem w.r.t.\ $p^{l,v}$)};
 	 		
-	 		\node[block, below=of backward] (forward) {Forward beam search from $\mathcal{L}$ as initial beam\\
+	 		\node[block, below=of backward] (forward) {Forward BS from $\mathcal{L}$ as initial beam\\
 	 			(Rooted Beam Search)};
 	 		
 	 		\node[block, below=of forward] (updateBest) {Update best solution $s_{\text{best}}?$};
@@ -458,7 +460,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Heuristic guidances in BS}
     
     Three LCS heuristic guidances: \vspace{0.2cm}
-        \begin{itemize}
+        \begin{enumerate}
        	    \item  $\textrm{UB}_1 $: ``Look-ahead'' for the remaining sequence length
     	    %\begin{equation}
     		%    \textrm{UB}_1(\mathbf{v}) = l^v + \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)
@@ -473,17 +475,17 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     	   %	    \textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
     	   %	    \min \underbrace{\left( |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)}_{\text{remaining valid suffixes}}
     	   %\end{equation}
-    	   \vspace{0.3cm}
+    	 
     	   \item $h_{prob}$: \textit{probability-based heuristic} guidance (matrices of probabilities (Mousavi and Tabataba, 2012)) %These probabilities approximate the probability of the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ %over an alphabet $\Sigma$.
-    \end{itemize}
+    \end{enumerate}
 \end{frame}
 
 \begin{frame}{Experimental Evaluation: arbitrary large $m$-case}
 	
 	\begin{itemize}
-		\item \textsc{Bs}: a baseline beam search, allowing only \textcolor{blue}{a single iteration} of IMSBS (utilizing a huge $\beta$)
+		\item \textsc{Bs}: a baseline beam search, executes \textcolor{blue}{a single iteration} of IMSBS (utilizing a huge $\beta$)
  		\vspace{0.3cm}
-		\item \textsc{Imsbs-greedy}: fix \textcolor{blue}{beam-width} \( \beta = 1 \) for the forward BS of IMSBS, perform a large number of beam search 
+		\item \textsc{Imsbs-greedy}: fix \textcolor{blue}{beam-width} \( \beta = 1 \) for the forward BS, perform a large number of IMSBS iterations
 		\begin{itemize}
 			\item impact of iterations on the overall performance of \textsc{Imsbs}
 		\end{itemize}
@@ -527,7 +529,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 		\end{itemize}
 	\end{itemize} \vspace{0.5cm}
 	
-  \textcolor{red}{\textbf{Grid search used to tune; avg. solution quality over all (320) instances!}}
+  \textcolor{red}{\textbf{Grid search used for tuning; avg. solution quality over all (320) instances!}}
 
 \end{frame}
 
