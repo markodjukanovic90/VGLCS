@@ -108,19 +108,18 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{LCS: Literature \& Problem Variants }
   \begin{itemize}
-  \item For $m=2$, polynomially solvable:
-  \begin{itemize}
-  	   \item  \textcolor{blue}{Dynamic programming}, Hunt-Szymanski, Hirschenberg,  ... 
-    \end{itemize} \vspace{0.3cm}
+  \item For $m=2$, polynomially solvable: \textcolor{blue}{Dynamic programming}, Hunt-Szymanski, Hirschenberg,  ... 
+ \vspace{0.2cm}
   \item When $m$ arbitrary large -- $\mathcal{NP}$-hard:
    \begin{itemize}
-   \item subject of interest over last 30 years -- approximation, meta-heuristic, but also exact approaches   
+   \item %subject of interest over last 30 years --
+    approximation, meta-heuristic, but also exact approaches   
    \end{itemize}  
   \end{itemize}\vspace{0.5cm}
   
   \textbf{Problem-related practical variants}:
   \begin{itemize}
-  		\item Arc-annotated LCS problem, repetition-free, filled LCS problem, ...
+  		\item   repetition-free, filled LCS problem, ...
   		\item \textcolor{red}{Gapped LCS problem}
   \end{itemize}
 \end{frame}
@@ -290,43 +289,82 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    \end{frame}
 
 
-\begin{frame}{An issue with the root-state-space formulation: example}
 
-   \begin{example}
-   		$
-   		S = \{ s_1 = \texttt{ATGG\fbox{A}AA},\; s_2 = \texttt{ATCC\fbox{A}AA} \},
-   		$
-   		with $G_{s_1} = G_{s_2} = 1$. 
-   		\begin{itemize}
-   		     	\item Any state with position vector $\mathbf{p}^L = (5,5)$ \textcolor{red}{cannot be reached} from   $\text{Space}((1,1))$ by standard direct transitions
-   		  \end{itemize}
-
-  \end{example} \vspace{0.5cm}
-  
-   \textbf{Consequence}: $((5, 5), \ast) \not \in Space((1, 1))$  $\Rightarrow$  
-   \textcolor{blue}{The optimal common subsequence \texttt{AAA} is unreachable} \\ \vspace{0.5cm}%from the basic root $((1,1),0)$,  therefore missed by traditional search strategies.
-
-\textcolor{red}{\textbf{How to fix it?}}
-%\vspace{0.5cm}
-%   \begin{itemize}
-%	    \item The VGLCSP may exhibit multiple, -- potentially exponentially many-- \emph{disconnected root components} 
-	   % \item  \textcolor{red}{If started from $(1, 1)$}, it fails to reach    optimal solutions.    
-%\end{itemize}
-   
+\begin{frame}{An issue with the root-state-space formulation: disconnected components}
+	
+	\begin{example}
+		$
+		S = \{ s_1 = \texttt{ATGG\fbox{A}AA},\; s_2 = \texttt{ATCC\fbox{A}AA} \},
+		$
+		with $G_{s_1} = G_{s_2} = 1$. 
+	\end{example}
+	
+	\centering
+	\scalebox{0.35}{
+		\begin{tikzpicture}[
+			state/.style={circle, draw=blue!50, fill=blue!10, thick, minimum size=8mm},
+			edge/.style={-Latex, thick},
+			invalid/.style={-Latex, thick, dashed, red},
+			node distance=1.8cm
+			]
+			
+			% ---------------- LEFT COMPONENT ----------------
+			\node[state, fill=blue] (r1) at (0,0) {((1,1),0)};
+			\node[state, below=of r1] (a1) {((2,2),1)};
+			\node[state, below=of a1] (a2) {((3,3),2)};
+			
+			\draw[edge] (r1) -- node[right] {\small A} (a1);
+			\draw[edge] (a1) -- node[right] {\small T} (a2);
+			
+			\node[above=0.3cm of r1] {\textbf{$Space((1,1))$}};
+			\node[below=0.3cm of a2, align=center] {\small Stops before reaching \\ $(5,5)$};
+			
+			% ---------------- RIGHT COMPONENT ----------------
+			\node[state, fill=green!40!black!30, right=5cm of r1] (r2) {((5,5),0)};
+			\node[state, below=of r2] (b1) {((6,6),1)};
+			\node[state, below=of b1] (b2) {((7,7),2)};
+			\node[state, below=of b2] (b3) {((8,8),2)};		
+			\draw[edge] (r2) -- node[right] {\small A} (b1);
+			\draw[edge] (b1) -- node[right] {\small A} (b2);
+			\draw[edge] (b2) -- node[right] {\small A} (b3);
+						
+			\node[above=0.3cm of r2] {\textbf{$Space((5,5))$}};
+			\node[below=0.3cm of b3] {\small \textcolor{blue}{Optimal subsequence: \texttt{AAA}}};
+			
+			% ---------------- DISCONNECTION INDICATOR ----------------
+			\draw[invalid] (a2.east) .. controls +(1.5,0) and +(-1.5,0) .. 
+			node[above] {\small \textbf{No valid transition}} (r2.west);
+			
+		\end{tikzpicture}
+	}
+	
+	
+	\textbf{Observation:}$
+	((5,5),\ast) \notin Space((1,1)	$
+	
+	\textcolor{red}{The optimal common subsequence \texttt{AAA} lies in a different root component.}
+	
+	\vspace{0.1cm}
+	
+	\textcolor{blue}{\textbf{Fix:}} Use a multi-root formulation (e.g., multi-source beam search).
+	
 \end{frame}
+
+
 
 \begin{frame}{Iterative multi-source beam search (IMSBS) strategy}
       
       \begin{itemize}
       	%	\item \textbf{Full state space} of a VGLCSP instance: $\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{p}^{L, v})$, with $v=(\mathbf{p}^{L, v}, 0) \in \mathcal{R}$ all root states  
       		\item Explicitly enumerating all root states computationally prohibitive ($O(n^m)$ time) \vspace{0.7cm}
-      		\item \textcolor{red}{\textbf{IMSBS}} (rough idea):  \vspace{0.2cm}
+      		\item \textcolor{red}{\textbf{IMSBS}} (rough idea of exploring space of root nodes):  \vspace{0.2cm}
       		\begin{enumerate}
       		    \item  \textbf{Exploitation} of  \text{Space}($p^L$): given to \textcolor{blue}{beam search} (BS) --- limited breadth-first-search (BFS) strategy;  {parameter $\beta$} controls the number of nodes at each level to be further pursued \vspace{0.2cm}
       		    
       		    \item \textbf{Exploration} of promising regions (\text{Space}($p^L$)) of the state space  
       		    \begin{itemize}
-      		       \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states during BS
+      		       \item  \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states during BS
+      		       \item Even when not root node: \textit{refinement} (find distant root node to reach that node out)
       		    \end{itemize}
       		\end{enumerate}
       \end{itemize}  
@@ -400,7 +438,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		\node[block, below=of while] (selectL) {Select subset $\mathcal{L} \subseteq \mathcal{R}$\\
 	 			(priority by $h'$)};
 	 		
-	 		\node[block, below=of selectL] (backward) {\textbf{Backward refinement} of $v \in \mathcal{L}$\\
+	 		\node[block, below=of selectL] (backward) {\textbf{Refinement} of $v \in \mathcal{L}$\\
 	 			(Rooted BS on reversed subproblem w.r.t.\ $p^{l,v}$)};
 	 		
 	 		\node[block, below=of backward] (forward) {Forward BS from $\mathcal{L}$ as initial beam\\
@@ -513,12 +551,12 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \end{frame}
 
 \begin{frame}{Parameter tuning of IMSBS}
-	We fixed less sensible params (preliminary tests):
-	\begin{itemize}
-		\item \textsc{Bs} (backward): $\beta'=10$, and $\textrm{UB}_2$  (efficient)
-		\item Candidate root nodes from $\mathcal{R}$ ordered by $\textrm{UB}_2$ (decreasingly)
-		\item At each iteration, \textbf{10 best nodes} taken from $\mathcal{R}$ as the initial beam
-	\end{itemize} \vspace{0.3cm}
+	We fixed less sensible params (preliminary tests): beam width in backward BS, $|\mathcal{L}|$, $h'$ \\ \vspace{0.5cm}
+	%\begin{itemize}
+	%	\item \textsc{Bs} (backward): $\beta'=10$, and $\textrm{UB}_2$  (efficient)
+	%	\item Candidate root nodes from $\mathcal{R}$ ordered by $\textrm{UB}_2$ (decreasingly)
+	%	\item At each iteration, \textbf{10 best nodes} taken from $\mathcal{R}$ as the initial beam
+	%\end{itemize} \vspace{0.3cm}
 	
 \textbf{Tuned parameters:}
 	\begin{itemize}
