@@ -311,7 +311,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 			% ---------------- LEFT COMPONENT ----------------
 			\node[state, fill=blue] (r1) at (0,0) {((1,1),0)};
 			\node[state, below=of r1] (a1) {((2,2),1)};
-			\node[state, below=of a1] (a2) {((3,3),2)};
+			\node[state, below=of a1, fill=gray] (a2) {((3,3),2)};
 			
 			\draw[edge] (r1) -- node[right] {\small A} (a1);
 			\draw[edge] (a1) -- node[right] {\small T} (a2);
@@ -323,7 +323,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 			\node[state, fill=green!40!black!30, right=5cm of r1] (r2) {((5,5),0)};
 			\node[state, below=of r2] (b1) {((6,6),1)};
 			\node[state, below=of b1] (b2) {((7,7),2)};
-			\node[state, below=of b2] (b3) {((8,8),2)};		
+			\node[state, below=of b2, fill=gray] (b3) {((8,8),2)};		
 			\draw[edge] (r2) -- node[right] {\small A} (b1);
 			\draw[edge] (b1) -- node[right] {\small A} (b2);
 			\draw[edge] (b2) -- node[right] {\small A} (b3);
@@ -364,7 +364,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       		    \item \textbf{Exploration} of promising regions (\text{Space}($p^L$)) of the state space  
       		    \begin{itemize}
       		       \item  \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states during BS
-      		       \item Even when not root node: \textit{refinement} (find distant root node to reach that node out)
+      		       \item allow some (non-) root node: effective \textit{refinement} (find distant root predecessors to reach that node)
       		    \end{itemize}
       		\end{enumerate}
       \end{itemize}  
@@ -441,12 +441,12 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		\node[block, below=of selectL] (backward) {\textbf{Refinement} of $v \in \mathcal{L}$\\
 	 			(Rooted BS on reversed subproblem w.r.t.\ $p^{l,v}$)};
 	 		
-	 		\node[block, below=of backward] (forward) {Forward BS from $\mathcal{L}$ as initial beam\\
+	 		\node[block, below=of backward] (forward) {\textbf{Forward} BS from $\mathcal{L}$ as initial beam\\
 	 			(Rooted Beam Search)};
 	 		
 	 		\node[block, below=of forward] (updateBest) {Update best solution $s_{\text{best}}?$};
 	 		
-	 		\node[block, below=of updateBest] (expandNew) {Generate new roots from completed states\\
+	 		\node[block, below=of updateBest] (expandNew) {Generate new candidate roots from comple states\\
 	 			(ignoring gaps, closest match detection) \\ update $\mathcal{R}$};
 	 		
 	 		\node[block, below=of expandNew] (iter) {$iter \leftarrow iter + 1$};
@@ -467,7 +467,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		
 	 		% Explicit loop-back arrow (FIXED)
 	 		\draw[arrow]
-	 		(iter.east) -- ++(2.5,0)
+	 		(iter.east) -- ++(2.7,0)
 	 		|- (while.east);
 	 		
 	 		% Exit arrow
