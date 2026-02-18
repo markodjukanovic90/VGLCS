@@ -24,6 +24,34 @@ fill=green!15
 }
 }
 
+\setbeamertemplate{footline}
+{
+	\leavevmode%
+	\hbox{%
+		
+		% Left: author
+		\begin{beamercolorbox}[wd=.3\paperwidth,ht=4ex,dp=1ex,left]{author in head/foot}%
+			\hspace{1em}\insertshortauthor
+		\end{beamercolorbox}%
+		
+		% Middle: title
+		\begin{beamercolorbox}[wd=.3\paperwidth,ht=4ex,dp=1ex,center]{title in head/foot}%
+			\insertshorttitle
+		\end{beamercolorbox}%
+		
+		% Right: logos + slide number
+		\begin{beamercolorbox}[wd=.4\paperwidth,ht=4ex,dp=1ex,right]{date in head/foot}%
+			\includegraphics[height=2.7ex]{IFEEL_1.png}\hspace{0.1em}
+			\includegraphics[height=2.7ex]{cofunded_eu.png}\hspace{0.1em}
+			\includegraphics[height=2.7ex]{slo_ministry.png}\hspace{0.1em}
+			\includegraphics[height=3.8ex]{SMASH_CMYK-ENG-horizontal_on_white.pdf}
+			\hspace{3.5em}
+			\insertframenumber{} / \inserttotalframenumber
+			\hspace{1em}
+		\end{beamercolorbox}%
+	}
+}
+
 
 
 \title[On solving the VGLCSP]{On Solving the Multiple Variable Gapped Longest Common Subsequence Problem}
@@ -42,12 +70,13 @@ $^4$Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\
 $^5$Jožef Stefan Institute, Ljubljana, Slovenia \ \\
 $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm}
 
-\footnotesize{-- \textcolor{blue}{EUROCAST 2026: 20th International Conference on Computer Aided Systems Theory, February 23-27, 2026,  Las Palmas de Gran Canaria, Spain}--} \\ \vspace{0.5cm}
+\footnotesize{-- \textcolor{blue}{EUROCAST 2026: 20th International Conference on Computer Aided Systems Theory, February 23-27, 2026,  Las Palmas de Gran Canaria, Spain} --} \\  \vspace{0.5cm}
 \centering
-\includegraphics[width=80pt, height=40pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}~ \hfill
+
 \includegraphics[width=80pt,height=40pt]{IFEEL\_1.png}~\hfill
 \includegraphics[width=90pt,height=35pt]{cofunded\_eu.png} ~\hfill
-\includegraphics[width=70pt,height=35pt]{slo\_ministry.png}
+\includegraphics[width=70pt,height=35pt]{slo\_ministry.png}  ~ \hfill
+\includegraphics[width=80pt, height=40pt]{SMASH_CMYK-ENG-horizontal_on_white.pdf}
 }%slo_ministry.png
 
 \date{}
@@ -391,7 +420,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 
 	 %\begin{figure}[!ht]
 	 \centering
-	 \scalebox{0.40}{
+	 \scalebox{0.38}{
 	 	\begin{tikzpicture}[
 	 		node distance=0.7cm and 1.2cm,
 	 		every node/.style={font=\small},
@@ -681,20 +710,20 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    	\begin{column}{0.5\textwidth}
    		\centering
    		\textbf{$\footnotesize{m=2}$}\\ 
-   		\includegraphics[width=150pt,height=90pt]{figures/res_general\_m2.png}
+   		\includegraphics[width=150pt,height=85pt]{figures/res_general\_m2.png}
    		
    		
    		\textbf{$m=5$}\\ 
-   		\includegraphics[width=150pt,height=90pt]{figures/res_general\_m5.png}
+   		\includegraphics[width=150pt,height=85pt]{figures/res_general\_m5.png}
    	\end{column}
    	
    	\begin{column}{0.5\textwidth}
    		\centering
    		\textbf{$\footnotesize{m=3}$}\\ 
-   		\includegraphics[width=150pt,height=90pt]{figures/res_general\_m3.png}
+   		\includegraphics[width=150pt,height=85pt]{figures/res_general\_m3.png}
    		
    		\textbf{$\footnotesize{m=10}$}\\ 
-   		\includegraphics[width=150pt,height=90pt]{figures/res_general\_m10.png}
+   		\includegraphics[width=150pt,height=85pt]{figures/res_general\_m10.png}
    	\end{column}
    \end{columns}
  
@@ -806,9 +835,10 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}
 	
-	\centering
-	\Large{\textcolor{blue}{\textbf{Thank you for your attention!}}}
+	\centering{  
+	\Large{\textcolor{blue}{\textbf{Thank you for your attention!}}}}
 	
+ 
 \end{frame}
 
 
