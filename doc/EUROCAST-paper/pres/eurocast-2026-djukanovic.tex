@@ -166,7 +166,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
              \item the gap constraint $G_s$ fulfilled w.r.t.\ \textit{positions of embedding} (letters of) $\tilde{s}$ in $s$:
          \begin{itemize}
              \item  suppose $i_1< \ldots <i_{|\tilde{s}|}$ are those \textbf{positions}  
-             \item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, i_{j} - i_{j-1} \leq G_{s}(i_{j})+1$  (consecutive positions respect gap distances = allowed \textit{num. letters inbetween})
+             \item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, i_{j} - i_{j-1} \leq G_{s}(i_{j})+1$  (consecutive positions respect gap distances = allowed \textit{number of letters inbetween})
          \end{itemize}
        \end{itemize}
    \end{definition}
@@ -241,12 +241,12 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Root-based state graph formulation: example}
    
-    Given $s_1=$\texttt{\fbox{A}BCA},  $s_2=$\texttt{\fbox{A}CAB}, assuming  $G_1=G_2=1$, match $p^L=(1, 1)$; \\ \vspace{0.3cm} \textbf{Space}($(1, 1)$): 
+    Given $s_1=$\texttt{\fbox{A}BCA},  $s_2=$\texttt{\fbox{A}CAB}, assuming  $G_1=G_2=1$, match $p^L=(1, 1)$; \\ \vspace{0.3cm} \textbf{Space}($(1, 1)$): partial solutions start with \texttt{A} at $(1, 1)$
    	
    % U nekom delu LaTeX dokumenta:
    \begin{figure}[h!]
    \centering
-   \scalebox{0.55}{
+   \scalebox{0.52}{
    
    
    \begin{tikzpicture}[
@@ -265,22 +265,22 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    
    % Right of root ((1,1),0)
    \node[box, right=12mm of s0] (b0) {
-   $s_1=\text{{A}BCA}$\\
-   $s_2=\text{{A}CAB}$\\
+   $s_1=\text{\underline{A}BCA}$\\
+   $s_2=\text{\underline{A}CAB}$\\
    $s^v=\varepsilon$
    };
    
    % Left of ((2,2),1)
    \node[box, left=14mm of s1] (b1) {
-   $s_1=\text{\textcolor{gray}{A}BCA}$\\
-   $s_2=\text{\textcolor{gray}{A}CAB}$\\
+   $s_1=\text{\textcolor{gray}{A}\underline{B}CA}$\\
+   $s_2=\text{\textcolor{gray}{A}\underline{C}AB}$\\
    $s^v=\text{A}$
    };
    
    % Right of ((4,3),2)
    \node[box, right=12mm of s2] (b2) {
-   $s_1=\text{\textcolor{gray}{ABC}A}$\\
-   $s_2=\text{\textcolor{gray}{AC}AB}$\\
+   $s_1=\text{\textcolor{gray}{ABC}\underline{A}}$\\
+   $s_2=\text{\textcolor{gray}{AC}\underline{A}B}$\\
    $s^v=\text{AC}$
    };
    
@@ -368,8 +368,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	}
 	
 	
-	\textbf{Observation:}$
-	((5,5),\ast) \notin Space((1,1))	$, \textcolor{red}{The optimal solution: \texttt{AAA}.}
+	\footnotesize{\textbf{Observation:}$
+	((5,5),\ast) \notin Space((1,1))	$, \textcolor{red}{The optimal solution: \texttt{AAA}.}}
 	
 	%\vspace{0.1cm}
 	
@@ -391,7 +391,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       		    \item \textbf{Exploration} of promising regions (\text{Space}($p^L$)) of the state space  
       		    \begin{itemize}
       		       \item  \textbf{Iteratively identify} a set of \textcolor{red}{promising} candidate root states during BS
-      		       \item allow some (non-) root node: effective \textit{refinement} (find \textcolor{red}{distant root ancestors} to reach that node)
+      		       \item allow some (non-) root nodes: effective \textit{refinement} (find \textcolor{red}{distant root ancestors} to reach that node)
       		    \end{itemize}
       		\end{enumerate}
       \end{itemize}  
@@ -524,7 +524,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Heuristic guidances in BS}
     
-    Three LCS heuristic guidances: \vspace{0.2cm}
+    Three LCS heuristic guidances (from literature): \vspace{0.2cm}
         \begin{enumerate}
        	    \item  $\textrm{UB}_1 $: ``Look-ahead'' for the remaining sequence length
     	    %\begin{equation}
@@ -805,7 +805,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	%	\hfill
 	%	\begin{minipage}{0.48\textwidth}
 			\centering
-			\includegraphics[width=320pt,height=160pt]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
+			\includegraphics[width=300pt,height=160pt]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
 			\caption*{ Relative solution quality achieved by the heuristic approaches compared to the optimal solutions (shown in \%).}
 		%\end{minipage}
 		%\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
@@ -819,7 +819,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	
 	\begin{itemize}
 		\item Proposed a \textcolor{red}{\textbf{general heuristic framework}} IMSBS to solve the multiple VGLCS problem  
-		\item Combines consecutive Beam search calls which induce refinement of sources, source node generation for further  iterations
+		\item Combines consecutive Beam search calls inducing source node generation and  refinement of sources for further  iterations
 		\begin{itemize}
 			\item  balance between intensification and diversification 
 	    \end{itemize}
