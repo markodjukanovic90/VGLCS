@@ -113,26 +113,24 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
 	The number of occurrences of a character $a \in \Sigma$ in a sequence $s$ is denoted by $|s|_a$. For a subset of characters $\Sigma' \subseteq \Sigma$, the number of occurrences of characters from $\Sigma'$ in $s$ is defined as $
 	|s|_{\Sigma'} = \sum_{\sigma \in \Sigma'} |s|_{\sigma}.$
 	
-	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, and by $S^{rev} = \{s_1^{rev}, \ldots, s_m^{rev}\}$.  Unless stated otherwise, $m \in \mathbb{N}$ represents the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$. Last but not least, for a gap constraint $G_i$, its reverse constraint is denoted by  $G_i^{rev}$, and is given as $G_i^{rev}(j):=G_i(|s_i|-j+1)$, for each $j=1, \ldots, |s_i|$. 
+	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, and by $S^{rev} = \{s_1^{rev}, \ldots, s_m^{rev}\}$. 
+	 Unless stated otherwise, $m \in \mathbb{N}$ represents the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$.  Given is a positional vector $\mathbf{p}^L \in \mathbb{N}^m$,  subproblem related to these positions is given by $S[\mathbf{p}^L]=\{ s_i[\mathbf{p}^L_i] \mid i=1, \ldots, m\}$.  Last but not least, for a gap constraint $G_i$, its reverse constraint is denoted by  $G_i^{rev}$, and is given as $G_i^{rev}(j):=G_i(|s_i|-j+1)$, for each $j=1, \ldots, |s_i|$.  \\ 
 	
 	
 	The remainder of the paper is organized as follows. Section~\ref{sec: state_graph} introduces the rooted state graph representation of the problem. In Section~\ref{sec: imsbs}, we  design of our main methodological contribution, the iterative multi-source beam search approach. Section~\ref{sec: experiments} reports the computational results, comparing the proposed method with a baseline beam search and an iterative greedy heuristic, but also with several specially designed  approaches for two input sequences. Finally, Section~\ref{sec: conclusions} concludes the paper and outlines directions for future research.
 	
 	
-	\section{  Root-based State Space Formulation}\label{sec: state_graph}
-	\fxnote{TODO: came up to here!!}
-     Building on the state-space representation for the LCSP introduced in~\cite{DJUKANOVIC2020106499}, we develop a \emph{root-based state graph} model for the VGLCSP. Each state represents one or more feasible partial solutions characterized by a vector of positions induced by the input sequences and by the current subsequence length.
+	\section{Rooted State Space Formulation}\label{sec: state_graph}
+
+
+     Building on the state-space representation for the LCSP introduced in~\cite{DJUKANOVIC2020106499}, we develop a \emph{rooted state graph} model for the VGLCSP. Each state represents one or more feasible partial solutions characterized by a vector of positions induced by the input sequences and by the current subsequence length. 
      
-     Formally, a partial subsequence $s^v$ induces a state node
-     \[
-     v = (\mathbf{p}^{L,v},\, l^v),
-     \]
+     Formally, a partial subsequence $s^v$ induces a state node $
+     v = (\mathbf{p}^{L,v},\, l^v),$ 
      where $\mathbf{p}^{L,v} = (p^{L,v}_1,\ldots,p^{L,v}_m)$ and the following conditions hold:
      (i) for each sequence $s_i \in S$, the index $p^{L,v}_i - 1$ is the smallest position such that $s^v$ is a subsequence of $s_i[1,\, p^{L,v}_i - 1]$;
      (ii) $l^v = |s^v|$ denotes the length of the partial subsequence; and
-     (iii) all gap constraints $G_i$ are \textit{satisfied} by $s^v$ with respect to every input sequence $s_i$.
-     
-     A direct arc $\alpha = (v_1, v_2)$, labeled with $lett(\alpha) = a \in \Sigma$, exists if
+     (iii) all gap constraints $G_i$ are \textit{satisfied} by $s^v$ with respect to each input sequence $s_i$. A direct arc $\alpha = (v_1, v_2)$, labeled with $\texttt{let}(\alpha) = a \in \Sigma$, exists if
      \[
      l^{v_2} = l^{v_1} + 1
      \quad \text{and} \quad
@@ -140,7 +138,7 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
      \]
      that is, state $v_2$ corresponds to extending a partial solution of $v_1$ by appending the character $a$.
      
-     To expand a state $v$, only those characters $a \in \Sigma$ that occur in the suffix of each sequence $s_i$ starting at position $p^{L,v}_i$, for $i = 1,\ldots,m$, are considered. For each such character $a$, we identify the smallest feasible positions $p^{L,a}_i \ge p^{L,v}_i$ such that
+     To expand a state $v$, only those characters $a \in \Sigma$ that occur in the suffix of each sequence $s_i$ starting at position $p^{L,v}_i$, for $i = 1,\ldots,m$, are first detected. For each such character $a \in \Sigma$, we identify the smallest feasible positions $p^{L,a}_i \ge p^{L,v}_i$ such that
      \[
      s_i[p^{L,a}_i] = a
      \quad \text{and} \quad
@@ -149,16 +147,14 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
      \]
      In that way, a child state
      $w = (\mathbf{p}^{L,a} + \mathbf{1},\, l^v + 1)$
-     is generated, unless it is dominated by another child state according to the dominance criteria defined later in this section.  To efficiently compute children and their associated position vectors, we employ a preprocessing data structure denoted by \texttt{Succ}. This structure is represented by a three-dimensional integer array indexed by $(i,j,a)$, where $i$ refers to the input sequence $s_i$, $1 \le j \le |s_i|$ denotes a position within that sequence, and $a \in \Sigma$ is a character. The value
-     \[
-     q = \texttt{Succ}[i,j,a]
-     \]
-     stores the smallest index $q \ge j$ such that $s_i[q] = a$ and the gap constraint is satisfied at position $q$, that is, $q - j \le G_i(q).$ 
-     If no such position exists, the value $-1$ is assigned.
+     is created, unless it is dominated by another child state according to the dominance criteria defined later in this section. To efficiently compute children and their associated position vectors, we employ a preprocessing data structure denoted by \texttt{Succ}. This structure is  a three-dimensional integer array indexed by $(i,j,a)$, where $i$ refers to the input sequence $s_i$, $1 \le j \le |s_i|$ denotes a position within that sequence, and $a \in \Sigma$ is a character. As already pointed out, the value $q = \texttt{Succ}[i,j,a]$
+     stores the smallest index $q \ge j$ such that $s_i[q] = a$ so that the gap constraint is satisfied at position $q$, that is, $q - j \le G_i(q).$ 
+     If no such position exists, the value $-1$ is returned.
      
-     The trivial root state is defined as $
-     r = ((1,\ldots,1),\, 0)$.. Goal states are feasible ones that cannot be further expanded. The search space rooted with the match $u$ is denoted by $\mathrm{Space}(u)$, consisting of all nodes (and corresponding transitions) that can be reached via root node $(u, 0)$.  As will be discussed in the following section, the structure of this space heavily depends on the choice of the root state from which the search is initiated. As an example, we illustrate  the state space of \emph{Space(u=(1, 1), 0)},  depicted in Fig.~\ref{fig:vgcs-grafstanja}. Note that here the position $(1,1)$ correspond to the match of letter \texttt{A} at positions 1 in $s_1$ and $s_2$, and indeed $u=(1, 1), 0)$ represents a root node. 
-     
+   Goal states are those that cannot be further expanded.    The trivial root state is given by $ r = ((1,\ldots,1),\, 0)$ as in-going edges to this node are not possible,   representing an empty partial solution as in the case of LCS problem. However, it is not the only existing root node, in general. The problem can have many (possibly exponentially) root nodes due to the definition of the problem itself allowing a freedom to choose  leading letter of partial solutions,  induced from a position $u=(i^1_1, \ldots, i^1_m)$ matching the letter, as gap constraints do not apply to the starting letter of each solution. 
+   
+   This motivate us to introduce the state space subgraph rooted with the match $u$, denoted by $\textsc{RootedSubgraph}(u)$, induced by empty partial solution, which consists of all nodes (and corresponding transitions) that can be feasibly reached via node $(u+\textbf{1}, 1)$, which is constructed from the root node $(u, 0)$ through its extension by the letter at the positions $u$. 
+    In terms of feasible partial solutions, $\textsc{RootedSubgraph}(u)$ will generate  solutions whose leading letter is the letter induced by the match $u$, recursively repeating the procedure of expansion of solutions by one letter in all possible ways, until no more expansions are possible.  As discussed in the following section, the structure of this subspace heavily depends on the choice of the root state from which the search is initiated. As an example, we illustrate  the state space of \textsc{RootedSubgraph}($u=(1, 1), 0$),  depicted in Fig.~\ref{fig:vgcs-grafstanja}. Note that here the position $(1,1)$ correspond to the match of letter \texttt{A}, where $u=(1, 1), 0)$ indeed represents a root node. 
      
    % U nekom delu LaTeX dokumenta:
 \begin{figure}[h!]
@@ -220,36 +216,83 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
 			
 			\draw[edge,  scale=2.2, dashed, red] (s1) -- node[right, fill=lightgray] {$\cancel{\texttt{A}}$} (s4);
 			% Oznake
-			\node[above=0.3cm of s0] {\textbf{Root state}};
+			\node[above=0.3cm of s0] {\textbf{Root node}};
 			%\node[below=1.5cm of s3] {\small \textbf{Krajnje stanje}};
 			\draw[edge] (s2) -- node[right] {\texttt{A}} (s4);
 			
 	\end{tikzpicture}}
 	
-	\caption{State space graph $Space(u=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{ABCA} and  \texttt{ACAB}, assuming $G_1=G_2=1$. A final/terminal state is displayed in gray. The white-filled node is a valid LCS node, but the second gap has been  violated. % \fxnote{Add VGLCS example}
+	\caption{State space graph $\textsc{RootedSubspace}(u=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=1$. A final/terminal state is displayed in gray. The white-filled node represents a valid LCS node, but not a feasible VGLCS node, as the second gap constraint has been violated. % \fxnote{Add VGLCS example}
 	}
 	
 	\label{fig:vgcs-grafstanja}
 \end{figure}
 
-\paragraph{Motivation for Multi-Source Beam Search.}
-Unlike the classical LCSP, the VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space. Consequently, a search strategy that expands states from a single initial root may fail to reach the optimal solution. As an illustrative example, consider the sequence set
-\[
-S = \{ s_1 = \texttt{ATGGAAA},\; s_2 = \texttt{ATCCAAA} \},
-\]
-with gap constraints $G_{s_1} = G_{s_2} = 1$. In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by standard directed transitions. As a result, the optimal common subsequence \texttt{AAA} is unreachable when the search is initiated exclusively from the root $((1,1),0)$, and is therefore missed by traditional search strategies.
+\paragraph{Motivation for Multi-Source Beam Search.}  
+Unlike the classical LCSP, the VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space.  Consequently, a search strategy that expands states from a single initial root may fail to reach the optimal solution. As an illustrative example given in Fig.~\ref{fig:disconected-components}, consider the sequence set $
+S = \{ s_1 = \texttt{ATGGAAA},\; s_2 = \texttt{ATCCAAA} \},$
+with gap constraints $G_{s_1} = G_{s_2} = 1$. 
 
-To address this issue, we define the full state space of a VGLCSP instance naturally by
-\[
-\bigcup_{v \in \mathcal{R}} \mathrm{Space}(\mathbf{q}^{L, v}),
-\]
-where $\mathcal{R}$ denotes the set of all root states, i.e., states defined by position vectors (matches) $\mathbf{p}^{L,v}$ that cannot be reached from any other state by a series of direct transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time in the worst case, and is thus infeasible for instances with large $m$ or $n$.
+\begin{figure}[!ht]
+	\centering
+	\scalebox{0.45}{
+		\begin{tikzpicture}[
+			rotate=90,
+			transform shape,
+			state/.style={circle, draw=blue!50, fill=blue!10, thick, minimum size=8mm},
+			edge/.style={-Latex, thick},
+			invalid/.style={-Latex, thick, dashed, red},
+			node distance=1.8cm
+			]
+			
+			% ---------------- LEFT COMPONENT ----------------
+			\node[state, fill=blue] (r1) at (0,0) {((1,1),0)};
+			\node[state, below=of r1] (a1) {((2,2),1)};
+			\node[state, below=of a1, fill=gray] (a2) {((3,3),2)};
+			
+			\draw[edge] (r1) -- node[right] {\small A} (a1);
+			\draw[edge] (a1) -- node[right] {\small T} (a2);
+			
+			\node[above=0.3cm of r1] {\textsc{RootedSubspace}((1,1))};
+			\node[below=0.3cm of a2, align=center] {\small Stops before reaching \\ $(5,5)$};
+			
+			% ---------------- RIGHT COMPONENT ----------------
+			\node[state, fill=green!40!black!30, right=5cm of r1] (r2) {((5,5),0)};
+			\node[state, below=of r2] (b1) {((6,6),1)};
+			\node[state, below=of b1] (b2) {((7,7),2)};
+			\node[state, below=of b2, fill=gray] (b3) {((8,8),2)};        
+			\draw[edge] (r2) -- node[right] {\small A} (b1);
+			\draw[edge] (b1) -- node[right] {\small A} (b2);
+			\draw[edge] (b2) -- node[right] {\small A} (b3);
+			
+			\node[above=0.3cm of r2] {{$\textsc{RootedSubspace}((5,5))$}};
+			\node[below=0.3cm of b3] {\small \textcolor{blue}{Optimal subsequence: \texttt{AAA}}};
+			
+			% ---------------- DISCONNECTION INDICATOR ----------------
+			\draw[invalid] (a2.east) .. controls +(1.5,0) and +(-1.5,0) .. 
+			node[above] {\small \textbf{No valid transition}} (r2.west);
+			
+		\end{tikzpicture}
+	}
+	\caption{Root state space subgraphs: disconnected components.}
+	\label{fig:disconected-components}
+\end{figure}
 
-This structural characteristic of the VGLCSP motivates the proposed methodology titled \textit{Iterative Multi-Source Beam Search} (IMSBS) approach, which is specifically designed to dynamically explore multiple promising regions of the state space moving from one rooted subgraph to another one. By iteratively identifying and expanding a set of candidate root states, IMSBS effectively mitigates the disconnection effects induced by gap constraints and enables the discovery of high-quality solutions that would otherwise remain inaccessible to single-source search methods.
+%\footnotesize{\textbf{Observation:}$
+%	((5,5),\ast) \notin Space((1,1))	$, \textcolor{red}{The optimal solution: \texttt{AAA}.}}
+
+
+In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by standard directed transitions. As a result, the optimal common subsequence \texttt{AAA} is unreachable when the search is initiated exclusively from the root $((1,1),0)$, and this subgraph is completely explored. 
+
+To address this issue, we define the complete state space of an VGLCSP instance naturally as $
+\bigcup_{v \in \mathcal{R}} \textsc{RootedSubspace}(\mathbf{q}^{L, v}),$ 
+where $\mathcal{R}$ denotes the set of all root states, i.e., states defined by position vectors (matches) $\mathbf{p}^{L,v}$ that cannot be reached from any other state by a series of direct transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time, and thus infeasible for instances with large $m$ or $n$.
+
+This structural characteristic of the VGLCSP motivates the proposed methodology titled \textit{Iterative Multi-Source Beam Search} (IMSBS) approach, which is specifically designed to dynamically explore multiple promising rooted subregions of the state space systematically moving from one rooted subgraph to another one. By iteratively identifying and expanding a set of candidate root states, IMSBS effectively mitigates the disconnection effects induced by gap constraints and enables the discovery of high-quality solutions that would otherwise remain inaccessible to single-source search methods.
 
 
 	
-\section{Iterative Multi-source Beam Search Framework}\label{sec: imsbs}
+\section{Iterative Multi-source Beam Search Framework}\label{sec: imsbs} \fxnote{Came up to here!!}
 	
 	\textit{Beam search} (BS) is a well-established tree-search metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each level, and by a heuristic function $h$, which guides the selection of the most promising candidates for further expansion. The BS algorithm which starts with a set of root nodes $R$ as its initial beam,  is pseudo-coded in~Algorithm~\ref{alg:bs} and the procedure labelled \textsc{RootedBeamSearch}.  
 
