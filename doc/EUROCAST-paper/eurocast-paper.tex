@@ -310,63 +310,34 @@ The overall IMSBS framework is summarized as follows. % in Algorithm~\ref{alg:im
  Initially, the global pool of candidate root nodes is  initialized to an empty set $\mathcal{R}=\{\}$ and the current best solution to $s_{\mathrm{best}} = \varepsilon$. First, for each $a \in \Sigma$ the closest matches $\mathbf{p}^{L, a}$ from the leading positions of each input sequences are detected. Each such (non-dominated) match generates one root node $(\mathbf{p}^{L, a}, 0)$, which has been subsequently added to $\mathcal{R}$.  The core iterations of the IMSBS are then executed until either  $\mathcal{R}$ becomes empty, a predefined maximum number of iterations is reached, or allowed time limit is exceeded.   
 
 At each IMSBS iteration, a fixed number (\emph{sources\_from\_R}) of most promising candidate root nodes according to a heuristic criterion $h'$ are taken    from $\mathcal{R}$, subsequently stored in a temporary beam $\mathcal{L}$.  These nodes are further refined, executing a single effective backward beam search procedure for each $w \in \mathcal{L}$ with a root node $(\mathbf{p}^w, 0)$. The procedure works similarly as the baseline BS,  expanding nodes with accordance to the gap constraints but in the reversed manner, starting from the root positions at each sequence and moving the search (pointers) towards their leading positions (1s). In essence, for each $w \in \mathcal{L}$, the same \textsc{RootedBeamSearch} is executed on the reversed input sequences $S^{rev}$ and the reversed gap constraints $(G_i^{rev})_{i=1}^m$ with the respective initial beam width $B=\{   ((|s_i|-p^w)_{i=1}^m, 0) \}$.  %an initial beam consisting of the node $((|s_i|-p^w - 1)_{i=1}^m, 0)$. 
- 
- 
 %In details, a letter $a \in \Sigma$ is a feasible extension of partial solution associated with node $v =(p^v, l^v)$ iff it appears in all $s_i[1, p^v_i], i=1, \ldots, m$ and for the largest indices $p^w_i <  p^u_i$  such that $s_i[p^w_i]=a$, it holds $ p^v_i - p^w_i  \leq G_i[p^v_i] + 1 $, for each $i=1, \ldots, m$. The child node is given by $w = (p^w - \textbf{1}, l^u +1 )$.
-
- Assume the procedure has completed, returning the  solution $s^w_{bwrd}$. In this way, the reverse sequence $s_{bwrd}^{rev}$  is a feasible VGLCS solution. The partial solution without the last letter---which correspond to the match $\textbf{p}^w$---is assigned to the refined node $ w \in \mathcal{L}$, while the updated $w=(p^w, |(s^w_{bwrd})^{rev}|-1)$ is passed to the forward beam search procedure to another round of extensions. 
- 
- After the refinement phase, the set $\mathcal{L}$ enters in as the initial beam, initiating the execution of beam search with the beam width $\beta$ and the heuristic guidance  $h(v)$.  During this phase, all completed (i.e., non-expandable) nodes are collected in a list $V_{complete}$, being returned along with the found solution $s_{b}$ after its completion.   Further, if a complete node from $V_{complete}$ corresponds to a solution that improves upon the current best, the solution becomes a new incumbent. 
- 
- Each such node is then independently expanded---ignoring the gap constraints--- generating a set of candidate root nodes. In details, for each complete node $v =(\mathbf{p}^v, l^v)$, 
- candidate root nodes  $r^{w, a} = (\mathbf{p}^{w, a}, 0)$ are generated for each letter $a \in \Sigma$ consisting of positions $p^{w, a}_i$  that matches letter $a$ in $s_i$ and which are the closest (but not equal) to the position $\textbf{p}^v_i$. Each such candidate node $(r^{w, a}, 0)$ is added in the pool $\mathcal{R}$, provided that it has not already been part during the previous iterations.  Once the beam search procedure is terminated, a new \textsc{Imsbs} iteration is initiated with a newly selected set of most promising root nodes from $\mathcal{R}$, until one of the termination condition has met. The pool $\mathcal{R}$ may be maintained as a priority queue implemented via a binary heap, to ensure efficient extraction of the most promising candidate root nodes. 
- 
- The core advantages of the IMSBS approach over the baseline BS are: (i)  A provision of  balance between complete beam search execution (local exploration of promising paths) and the generation of new sources (global coverage of the search space); (ii) Prevention from  suboptimal candidate root nodes reduced by executing backward beam search procedure.
-  
-  \paragraph{Heuristic guidances. } \fxnote{Came up to here}
-    
-    Several heuristics to guide search are utilized within the IMSBS (as the candidate for $h$ and $h'$). 
-    \begin{itemize}
-    	\item  \textit{``Look-ahead'' for the remaining length:}
-    	\begin{equation}
-    		\textrm{UB}_1(\mathbf{v}) = l^v + \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)
-    	\end{equation}
-    	This is an estimate of the potential extension of the sequence up to the end of the shortest remaining sequence.
-    	
-    	\item  \textit{Character Frequency Alignment:}
-    \begin{equation}
-    	\textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
-    	\min\left(  |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)
-    \end{equation}
-    In essence, this heuristic counts the maximum number of characters that can still match in the (optimal) solution based on the frequency of each character. This score can be computed efficiently in \(O(m)\) time using preprocessing (i.e., constructing suitable data structures), see the details in~\cite{DJUKANOVIC2020106499}. 
-     \item \textit{A probability-based heuristic} guidance by the Mousavi and Tabataba's matrices from~\cite{mousavi2012improved} in the context of the LCS problem. These probabilities are based on the idea of determining a probability for the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ over an alphabet $\Sigma$.  The probabilities for each  $i=1,\ldots, k$ and  $j=1, \ldots, n$, are pre-processed by a matrix $\mathcal{P}$ of probabilities with dimension $k\times n$ effectively generated by a dynamic programming. Assuming independence between input sequences,  the nodes/partial solutions within the same level of beam search are evaluated by determining the associated probabilities of their expansions by $\overline{k}$ letters (this value is heuristically evaluated, as proposed in~\cite{mousavi2012improved}). Denote that heuristic guidance   by $h_{\textrm{prob}}$. 
+Assume the procedure has completed, returning the  solution $s^w_{bwrd}$. In this way, the reverse sequence $s_{bwrd}^{rev}$  is a feasible VGLCS solution. The partial solution without the last letter---which correspond to the match $\textbf{p}^w$---is assigned to the refined node $ w \in \mathcal{L}$, while the updated $w=(p^w, |(s^w_{bwrd})^{rev}|-1)$ is passed to the forward beam search procedure to another round of extensions.   After the refinement phase, the set $\mathcal{L}$ enters in as the initial beam, initiating the execution of beam search with the beam width $\beta$ and the heuristic guidance  $h(v)$.  During this phase, all completed (i.e., non-expandable) nodes are collected in a list $V_{complete}$, being returned along with the found solution $s_{b}$ after its completion.   Further, if a complete node from $V_{complete}$ corresponds to a solution that improves upon the current best, the solution becomes a new incumbent.   Each such node is then independently expanded---ignoring the gap constraints--- generating a set of candidate root nodes. In details, for each complete node $v =(\mathbf{p}^v, l^v)$, 
+ candidate root nodes  $r^{w, a} = (\mathbf{p}^{w, a}, 0)$ are generated for each letter $a \in \Sigma$ consisting of positions $p^{w, a}_i$  that matches letter $a$ in $s_i$ and which are the closest (but not equal) to the position $\textbf{p}^v_i$. Each such candidate node $(r^{w, a}, 0)$ is added in the pool $\mathcal{R}$, provided that it has not already been part during the previous iterations.  Once the beam search procedure is terminated, a new \textsc{Imsbs} iteration is initiated with a newly selected set of most promising root nodes from $\mathcal{R}$, until one of the termination condition has met. The pool $\mathcal{R}$ may be maintained as a priority queue implemented via a binary heap, to ensure efficient extraction of the most promising candidate root nodes. \\
+  The core advantages of the IMSBS approach over the baseline BS are: (i)  A provision of  balance between complete beam search execution (local exploration of promising subgraphs) and the generation of new candidate root nodes (global coverage of the search space); (ii) Prevention from  suboptimal candidate root nodes reduced by executing backward beam search procedure.\\
+  \textit{Heuristic guidances.}  Several heuristic guidances to guide search are utilized within the IMSBS---as the candidates to guide froward and backward BS,  $h$ and $h'$ respectively. These are known from the LCS literature: (i)  \textit{``Look-ahead'' for the remaining length:} $\textrm{UB}_1(\mathbf{v}) = l^v + \min_{i = 1, \ldots, m} \left( |s_i| - p_i^v + 1 \right)$;
+    %	This is an estimate of the potential extension of the sequence up to the end of the shortest remaining sequence.
+     (ii)  \textit{Character Frequency Alignment:}
+    	$\textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
+    	\min\left(  |s_1[p_1^v, |s_1|]|_{\sigma}, \ldots, |s_m[p_m^v, |s_m|]|_{\sigma} \right)$,  counting the maximum number of characters that can still match in the (optimal) solution based on the frequency of each character; %This score can be computed efficiently in \(O(m)\) time using preprocessing (i.e., constructing suitable data structures), see the details in~\cite{DJUKANOVIC2020106499}. 
+     (iii) \textit{A probability-based heuristic} guidance $h_{prob}$ by the Mousavi and Tabataba's matrices~\cite{mousavi2012improved}:  These probabilities are based on the idea of determining a probability for the event that a sequence $s$ of length $k$ is a subsequence of a (random) sequence of length $n$ over an alphabet $\Sigma$.  %The probabilities for each  $i=1,\ldots, k$ and  $j=1, \ldots, n$, are pre-processed by a matrix $\mathcal{P}$ of probabilities with dimension $k\times n$ effectively generated by a dynamic programming. Assuming independence between input sequences,  the nodes/partial solutions within the same level of beam search are evaluated by determining the associated probabilities of their expansions by $\overline{k}$ letters (this value is heuristically evaluated, as proposed in~\cite{mousavi2012improved}). Denote that heuristic guidance   by $h_{\textrm{prob}}$. 
+     More about these heuristics and the way they are implemented interested readers can found at~\cite{DJUKANOVIC2020106499,mousavi2012improved}. 
      %\item TODO: \fxnote{TODO: if we come up with some learning heuristic -- should left for the extended version -- journal-extendable.}
-   \end{itemize}
+   %\end{itemize}
      
 	
 \section{Experimental Evaluation}\label{sec: experiments}
    
-In this section, we compare the performance of heuristic approaches explicitly designed for the  VGLCSP with an arbitrary number of sequences \( m \geq 2 \). Specifically, the following methods are included:
+In this section, we compare the performance of heuristic approaches explicitly designed for the  VGLCSP with an arbitrary number of sequences \( m \geq 2 \). Specifically, the following methods are included: (i) \textsc{Bs}: a baseline beam search approach that starts from the root node \( r \) as the initial beam and performs a single iteration of IMSBS while employing a huge beam width; (ii) \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed parameter \( \beta = 1 \) %, as given in Algorithm~\ref{alg:imbs}.  
+   employing a huge number of IMSBS iterations; (iii) \textsc{Imsbs}: a tuned iterative multi-source beam search configured to employ an average runtime comparable to that of \textsc{Bs}.	 
+%\end{itemize}
 
-\begin{itemize}
-	\item \textsc{Bs}: a baseline beam search approach that starts from the root node \( r \) as the initial beam and performs a single iteration of IMSBS.
-	
-	\item \textsc{Imsbs}: a tuned iterative multi-source beam search, described in Algorithm~\ref{alg:imbs}; it is configured to use an average runtime comparable to that of \textsc{Bs}.
-	
-	\item \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed parameter \( \beta = 1 \), as given in Algorithm~\ref{alg:imbs}. This configuration highlights the impact of performing a larger number of beam search iterations on the overall performance of \textsc{Imsbs}.
-\end{itemize}
-
-The \textsc{Imsbs} algorithm is implemented in Python~3.11 and evaluated on the VEGA high-performance computing system hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped with AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.
-
-   
- \subsection{Instance generation}
- 
- For each combination of instance parameters $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are generated. First, $m$ sequences of equal length are generated uniformly at random. Then, the gap constraints for each instance (i.e., positions within sequences) are generated such that for each $G_i(j), j=1, \ldots, |s_i|, i=1, \ldots, m$, a value 
- $G_{s_i}(j) \in \mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$ is assigned.  Therefore, a total of 320 problem instances are generated. The benchmark set is denoted as \textsc{Random}. All instances from the \textsc{Random} dataset can be found at   
+The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-performance computing system hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped with AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting. \\
+ For each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are generated. First, $m$ sequences of equal length are generated uniformly at random. Then, the gap constraints for each instance are generated such that each value $G_i(j), j=1, \ldots, |s_i|, i=1, \ldots, m$ is uniformly assigned from the discrete distribution
+ $\mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.  Therefore, a total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}, freely available at   
  \url{https://github.com/markodjukanovic90/NikolaBalabanDiplomski/tree/main/src/instance_i_generator}.
  
  \subsection{Parameter tuning}
- 
+ \fxnote{Came up to here!!}
  For the \textsc{Bs} approach, a high beam width $\beta = 10,000$ and $h = h_{\text{prob}}$ are used, as further increasing the beam size does not significantly improve solution quality. The heuristic $h_{\text{prob}}$ provides slightly better guidance than $\textrm{UB}_2$ and significantly better than $\textrm{UB}_1$; see Fig.~\ref{fig:bs_tuning}.
  
  \begin{figure}[!ht]
