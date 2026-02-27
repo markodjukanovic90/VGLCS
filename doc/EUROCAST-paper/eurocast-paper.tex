@@ -292,50 +292,18 @@ This structural characteristic of the VGLCSP motivates the proposed methodology 
 
 
 	
-\section{Iterative Multi-source Beam Search Framework}\label{sec: imsbs} \fxnote{Came up to here!!}
+\section{Iterative Multi-source Beam Search Framework}\label{sec: imsbs}
+	Before the main details on the Iterative Multi-source Beam Search (IMSBS) approach are presented, we give a brief overview over a general beam search metaheuristic approach. 
 	
-	\textit{Beam search} (BS) is a well-established tree-search metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each level, and by a heuristic function $h$, which guides the selection of the most promising candidates for further expansion. The BS algorithm which starts with a set of root nodes $R$ as its initial beam,  is pseudo-coded in~Algorithm~\ref{alg:bs} and the procedure labelled \textsc{RootedBeamSearch}.  
-
-\begin{algorithm}
-	\caption{Rooted Beam Search}
-	\label{alg:bs}
-	\begin{algorithmic}[1]
-		
-		\Function{RootedBeamSearch}{$R, S, \{G_i\}_{i=1}^m, \beta, h$}
-		\Comment{$r$: root node, $S=\{s_1,\dots,s_m\}$, gap constraints $G_i$, beam width $\beta$, heuristic $h$}
-		
-		\State $s_{\text{best}} \gets \varepsilon$
-		\State $B \gets R$ \Comment{Starting beam}
-		\State $V_{\text{complete}} \gets \emptyset$
-		
-		\While{$B \neq \emptyset$}
-		\State $Children \gets \emptyset$
-		
-		\ForAll{$v \in B$}
-		\If{$v$ is complete}
-		\State $V_{\text{complete}} \gets V_{\text{complete}} \cup \{v\}$
-		
-		\If{$v.l^v > |s_{\text{best}}|$}
-		\State $s^v \gets$ Extract partial solution associated with $v$
-		\State $s_{\text{best}} \gets s^v$
-		\EndIf
-		
-		\State \textbf{continue}
-		\EndIf
-		
-		\State $C_v \gets$ \Call{Expand}{$v, S, \{G_i\}_{i=1}^m$}
-		\State $Children \gets Children \cup C_v$
-		\EndFor
-		
-		\State \Call{Sort}{$Children, h$} \Comment{decreasing order}
-		\State $B \gets Children[ \colon \beta]$
-		\EndWhile
-		
-		\State \Return $s_{\text{best}}, V_{\text{complete}}$
-		\EndFunction
-	\end{algorithmic}
-\end{algorithm}
-
+	\textit{Beam search} (BS) is a well-established tree-search-based metaheuristic that operates in a breadth-first-search manner. The search is controlled by a beam width parameter $\beta$, which specifies the maximum number of nodes retained for expansion at each levels, and by a heuristic guidance $h$, which guides the selection of most promising candidates for further expansion. Initially, the procedure receives a set of nodes as the initial beam, which are all expanded, generating a set of candidate nodes for the subsequence level. After being evaluated, up to $\beta$ most promising nodes are kept for in the beam of this level. The procedure keeps with it until beam is empty, returning a node with th longest partial solution. 
+	
+	
+	In the IMSBS, BS component is served to intensify the search process. As the search space of an VGLCSP instance is given by the set of root nodes $\mathcal{R}$, BS procedure is given to explore the search space of \textsc{RootedSubspace}() of each match $\mathbf{p}^L$ and corresponding root node ($\mathbf{p}^L, 0$). Note that one could employ here an exact technique (such as $A^*$ or BFS). However, solving a subproblem itself could be a challenge task, even the same (time) complexity as the original problem itself. Thus, we have decided here for a more robust BS technique.  \\
+	
+	 %a set of root nodes $R$ as its initial beam,  is pseudo-coded in~Algorithm~\ref{alg:bs} and the procedure labelled \textsc{RootedBeamSearch}.   
+	 
+	 \fxnote{Came up to here!!}
+ 
 
 
 
@@ -738,5 +706,48 @@ x_{i,j},\ s_{i,j} \in \{0,1\}, \quad \forall (i,j) \in M.
 The model is formulated to maximize the number of valid matches forming a common subsequence,
 while respecting the ordering of elements and the maximum allowed gaps between consecutive
 elements in both sequences.
+
+\section{Pseudocodes}
+
+\begin{algorithm}
+	\caption{Rooted Beam Search}
+	\label{alg:bs}
+	\begin{algorithmic}[1]
+		
+		\Function{RootedBeamSearch}{$R, S, \{G_i\}_{i=1}^m, \beta, h$}
+		\Comment{$r$: root node, $S=\{s_1,\dots,s_m\}$, gap constraints $G_i$, beam width $\beta$, heuristic $h$}
+		
+		\State $s_{\text{best}} \gets \varepsilon$
+		\State $B \gets R$ \Comment{Starting beam}
+		\State $V_{\text{complete}} \gets \emptyset$
+		
+		\While{$B \neq \emptyset$}
+		\State $Children \gets \emptyset$
+		
+		\ForAll{$v \in B$}
+		\If{$v$ is complete}
+		\State $V_{\text{complete}} \gets V_{\text{complete}} \cup \{v\}$
+		
+		\If{$v.l^v > |s_{\text{best}}|$}
+		\State $s^v \gets$ Extract partial solution associated with $v$
+		\State $s_{\text{best}} \gets s^v$
+		\EndIf
+		
+		\State \textbf{continue}
+		\EndIf
+		
+		\State $C_v \gets$ \Call{Expand}{$v, S, \{G_i\}_{i=1}^m$}
+		\State $Children \gets Children \cup C_v$
+		\EndFor
+		
+		\State \Call{Sort}{$Children, h$} \Comment{decreasing order}
+		\State $B \gets Children[ \colon \beta]$
+		\EndWhile
+		
+		\State \Return $s_{\text{best}}, V_{\text{complete}}$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
 
 \end{document}
