@@ -161,7 +161,7 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
    % U nekom delu LaTeX dokumenta:
 \begin{figure}[h!]
 	\centering
-	\scalebox{0.4}{
+	\scalebox{0.35}{
 		
 		
 		\begin{tikzpicture}[
@@ -224,7 +224,7 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
 			
 	\end{tikzpicture}}
 	
-	\caption{State space graph $\textsc{RootedSubspace}(u=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=1$. A final/terminal state is displayed in gray. The white-filled node represents a valid LCS node, but not a feasible VGLCS node, as the second gap constraint has been violated. The longest solution generated from this subspsce is \texttt{AAA}. % \fxnote{Add VGLCS example}
+	\caption{State space graph $\textsc{RootedSubspace}(u=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=1$. A final/terminal state is displayed in gray. The white-filled node represents a valid LCS node, but not a feasible VGLCS node, as the second gap constraint has been violated. The longest solution generated is \texttt{ACA}. % \fxnote{Add VGLCS example}
 	}
 	
 	\label{fig:vgcs-grafstanja}
@@ -259,7 +259,7 @@ with gap constraints $G_{s_1} = G_{s_2} = 1$.
 			\node[below=0.3cm of a2, align=center] {\small Stops before reaching \\ $(5,5)$};
 			
 			% ---------------- RIGHT COMPONENT ----------------
-			\node[state, fill=green!40!black!30, right=5cm of r1] (r2) {((5,5),0)};
+			\node[state, fill=green!40!black!30, right=3cm of r1] (r2) {((5,5),0)};
 			\node[state, below=of r2] (b1) {((6,6),1)};
 			\node[state, below=of b1] (b2) {((7,7),2)};
 			\node[state, below=of b2, fill=gray] (b3) {((8,8),2)};        
@@ -268,11 +268,11 @@ with gap constraints $G_{s_1} = G_{s_2} = 1$.
 			\draw[edge] (b2) -- node[right] {\small A} (b3);
 			
 			\node[above=0.3cm of r2] {{$\textsc{RootedSubspace}((5,5))$}};
-			\node[below=0.3cm of b3] {\small \textcolor{blue}{Optimal subsequence: \texttt{AAA}}};
+			\node[below=2.2cm of b3, rotate=-90] {\small \textcolor{blue}{Optimal subsequence: \texttt{AAA}}};
 			
 			% ---------------- DISCONNECTION INDICATOR ----------------
-			\draw[invalid] (a2.east) .. controls +(1.5,0) and +(-1.5,0) .. 
-			node[above] {\small \textbf{No valid transition}} (r2.west);
+			\draw[invalid] (a2.east) .. controls +(1.2,0) and +(-1.2,0) .. 
+            node[above, rotate=-90] {\small \textbf{No valid transition}} (r2.west);
 			
 		\end{tikzpicture}
 	}
@@ -343,11 +343,11 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
  we employed a basic grid search to more sensible parameters: beam width in the beam search forward pass ($\beta$), and heuristic guidance  $h \in \{\text{UB}_1, \text{UB}_2, h_{prob}\}$, comparing the average solution quality over all (320) problem instances.  Less sensible parameters are chosen after several preliminary runs of our algorithms are conducted. For the baseline \textsc{Bs} approach, a high beam width $\beta = 10,000$ and $h = h_{\text{prob}}$ are utilized. %as further increasing the beam size does not significantly improve solution quality. The heuristic $h_{\text{prob}}$ provides slightly better guidance than $\textrm{UB}_2$ and significantly better than $\textrm{UB}_1$; see Fig.~\ref{fig:bs_tuning}.
  According to preliminary experiments, we fix ${{sources\_from\_R}} = 10$ and $\emph{beam\_iters} = 100$, %as good results were already achieved employing these numbers. Root nodes kept in the global set are prioritized according to 
   $h' = \textrm{UB}_2$.  %, which consistently improves IMSBS performance compared to using $\textrm{UB}_1$.  
-  Remaining parameters of the IMSBS approach received the following values:$ h=\text{UB}_2$ and $\beta=500$ to keep comparable average runtime between IMSBS and the baseline \textsc{Bs} approach. These values balance runtime relative to \textsc{Bs} while maintaining reasonable solution quality.  Similarly, for the \textsc{Imsbs-greedy} approach with fixed $\beta = 1$, while all other parameters hold as in the tuned \textsc{Imsbs}.
+  Remaining parameters of the IMSBS approach received the following values: $h=\text{UB}_2$ and $\beta=500$ to keep comparable average runtime between IMSBS and the baseline \textsc{Bs} approach. These values balance runtime relative to \textsc{Bs} while maintaining reasonable solution quality.  Similarly, for the \textsc{Imsbs-greedy} approach with fixed $\beta = 1$, while all other parameters hold as in the tuned \textsc{Imsbs}.
  
  %\subsection{Comparison between the heuristic approaches }
-  Numerical results for all three heuristic approaches are reported in Fig.~\ref{fig:results_per_m} where the average solution quality per instance group are reported for each approach. Four plots are provided, one per each value of $m$. 
-  
+  Numerical results for all three heuristic approaches are displayed in Fig.~\ref{fig:results_per_m}, reporting the average solution quality per instance group for each approach. Four plots are provided, one per each value of $m$. Based on the numerical results, %presented in Table~\ref{tab:numerical_results_general_m}, 
+  the following conclusions are drawn.
   %in Table~\ref{tab:numerical_results_general_m}, which is organized into two main parts. 
   %The first three columns describe the instance characteristics: the number of sequences ($m$), the sequence length ($n$), and the alphabet size ($|\Sigma|$). 
   %The remaining columns report the performance of the three heuristic approaches: \textsc{Bs}, \textsc{Imsbs-greedy}, and \textsc{Imsbs}, each in its own block. For each algorithm, two performance indicators are provided: the average objective value $\overline{obj}$ and the average running time in seconds $\overline{t}$, computed over 10 instances per group.  
@@ -355,14 +355,14 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
   \begin{figure}[!ht]
   	  	\begin{subfigure}[t]{0.48\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth, height=120pt]{figures/res\_general\_m2.png}
+  		\includegraphics[width=\linewidth, height=100pt]{figures/res\_general\_m2.png}
   		\caption{$m=2$}
   		\label{fig:results_per_m2}
   	\end{subfigure}
   	~
   	\begin{subfigure}[t]{0.48\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth, height=120pt]{figures/res\_general\_m3.png}
+  		\includegraphics[width=\linewidth, height=100pt]{figures/res\_general\_m3.png}
   		\caption{$m=3$}
   		\label{fig:results_per_m3}
   	\end{subfigure}
@@ -371,14 +371,14 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
   	\centering
   	\begin{subfigure}[t]{0.48\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth, height=120pt]{figures/res\_general\_m5.png}
+  		\includegraphics[width=\linewidth, height=100pt]{figures/res\_general\_m5.png}
   		\caption{$m=5$}
   		\label{fig:results_per_m5}
   	\end{subfigure}
   	~
   	\begin{subfigure}[t]{0.48\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth, height=120pt]{figures/res\_general\_m10.png}
+  		\includegraphics[width=\linewidth, height=100pt]{figures/res\_general\_m10.png}
   		\caption{$m=10$}
   		\label{fig:results_per_m10}
   	\end{subfigure}
@@ -386,96 +386,19 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
   	\label{fig:results_per_m}
   \end{figure}
   
-  
- 
-  Based on the numerical results, %presented in Table~\ref{tab:numerical_results_general_m}, 
-  the following conclusions are drawn.  \fxnote{Came up to here!!}
-  
+   \fxnote{Came up to here!!}
   \begin{itemize}
-  	\item \textit{Solution quality comparison.} The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating that selecting a right root node is essential in  achieving high-quality solutions for this problem. 
-  	 The baseline \textsc{Bs} performs equally well or better in just one specific case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches in 10 (out of 32) cases, mostly for the instances with larger $m=10$, having shorter final solutions where it turns out that  frequently jumping from one to another part of the search space is strategically better  than strengthening intensification around a solution.  Exploring additional root nodes serves to improve the diversity of the search process. This is exactly where  \textsc{Imsbs-greedy} fits well. 
+  	    \item \textit{Solution quality comparison.} The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating that selecting a right root node is essential in  achieving high-quality solutions for this problem. 
+  	 The baseline \textsc{Bs} performs equally well or better in just one specific case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches in 10 (out of 32) cases, mostly for the instances with larger $m=10$, having shorter final solutions where it turns out that  frequently moving from one to another root and exploring respective subgraphs of the search space is strategically better  than  just strengthening intensification around a solution with a high beam width.  Exploring additional root nodes serves to improve the diversity of the search process, which appears necessary in the case when expected solutions are short. This is exactly where  \textsc{Imsbs-greedy} fits well. 
   	
-  	\item \textit{Runtime comparison.} The \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes.  \textsc{Imsbs-greedy} has a significantly larger average runtime due to a higher number of executed iterations ($beam\_iters = 10,000$), in contrast to more computationally intensive iterations used by the other two approaches (limited to $beam\_iters = 100$).
+  	\item \textit{Runtime comparison.} The \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes.  \textsc{Imsbs-greedy} has a significantly larger average runtime due to a higher number of executed iterations ($beam\_iters = 10,000$) for the instances with larger $m$, in contrast to by iterations less intensive approaches.  % in the other two approaches.  %(limited to $beam\_iters = 100$).
   	
-  	\item \textit{Other conclusions.}  Overall, \textsc{Imsbs} demonstrates greater robustness and stability as the number of input sequences increases in comparison to the baseline \textsc{Bs} approach which performance is gradually deteriorated. 
+  %	\item \textit{Other conclusions.}  Overall, \textsc{Imsbs} demonstrates greater robustness and stability as the number of input sequences increases in comparison to the baseline \textsc{Bs} approach which performance is gradually deteriorated. 
   	
   	%As illustrated in Figure~XX, both BS and IMSBS frequently attain near-optimal or optimal solutions for smaller $n$ and larger alphabets. The BS approach reaches at least 65\% of the optimum for the majority of instances, whereas IMSBS achieves 80\% or more. For approximately 50 out of the 60 instances, both methods achieve at least 90\% of the optimal solution length, as shown in Figure~XX.
   \end{itemize}
   
-   \subsection{Numerical results for the special case $m=2$}
-   
-   In this section, we compare the results of approaches from the literature that are specialized for the case $m=2$. The competitors are listed below and are described in detail in~\cite{penga2011longest}.
-   
-   \begin{itemize}
-   	\item \textsc{Dp}: the basic dynamic programming algorithm;
-   	\item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm;
-   	\item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup. All three DP approaches are from~\cite{penga2011longest}. Note that the original paper proposes answering ISMQ using Union-Find operations; however, due to lack of implementation details, we decided to employ a dequeue-based approach in our implementation.
-   	\item \textsc{Ilp}: an integer linear programming method proposed in this work (see Appendix~\ref{app:ilp}), motivated by the ILP model for LCS problem~\cite{blum2016metaheuristics}.
-   \end{itemize}
-   
-   Each algorithm was allocated 30 minutes of execution time. The \textsc{Ilp} model was solved using the general-purpose solver \textsc{Cplex} version 22.1.
-   
-   The results are reported in Table~\ref{tab:results-2d-literature}, which is organized as follows. The first three columns describe the characteristics of the instance groups, over which the results are averaged (10 instances per group). The remaining columns report the performance of the four algorithms: \textsc{Dp}, \textsc{Dp}-1, \textsc{Dp}-2, and \textsc{Ilp}. For each approach, both the average solution quality and the average execution time are provided across the 10 instances.
-   
-     
-     \begin{table}[H]
-     	\caption{Results on the \textsc{Random} benchmark set for $m=2$: the exact approaches from the literature.}\label{tab:results-2d-literature}
-     	\centering
-     	\scalebox{0.7}{
-     	\begin{tabular}{lll|lr|rr|rr|rr}
-     		\hline
-     		\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Dp}}  &
-     		\multicolumn{2}{c}{\textsc{Dp-1}} & \multicolumn{2}{c}{\textsc{Dp-2}} & 
-     		\multicolumn{2}{c}{\textsc{Ilp}}  \\
-     		\cmidrule(lrr){1-3} \cmidrule(lr){4-5}
-     		\cmidrule(lr){6-7} \cmidrule(lr){8-9}
-     		\cmidrule(lr){10-11} 	\\ 
-     		$m$ & $n$ & $|\Sigma|$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ &$\overline{obj}$  & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ \\
-     		\hline
-   2 &   50 &         2 &              38.1 &          0.01 & 38.1 &          \textbf{0.01} &              38.1 &          0.01  & 38.1 & 168.3 \\
-  2 &   50 &         4 &              30.3 &          \textbf{0.01} &              30.3 &          0.02 &              30.3 &          0.02 & 30.3  & 28.0 \\ \hline
-  2 &  100 &         2 &              77.4 &          0.1 &              77.4 &          \textbf{0.03} &              77.4 &          0.05 & -- & -- \\
-  2 &  100 &         4 &              62.3 &          0.07 &              62.3 &         \textbf{0.06} &              62.3 &          0.09 & 0.00 & 1800.0 \\ \hline
-  
-  2 &  200 &         2 &             156.4 &          0.75 &             156.4 &          \textbf{0.13} &             156.4 &          0.16  & -- & -- \\
-  2 &  200 &         4 &             127.2 &          0.59 &             127.2 &          \textbf{0.25} &             127.2 &          0.32  & -- & -- \\ \hline
-  
-  2 &  500 &         2 &             395.9 &         13.57 &             395.9 &          \textbf{0.84}  &             395.9 &          1.05 & -- & -- \\
-  2 &  500 &         4 &             317.2 &         10.18 &             317.2 &          \textbf{1.70} & 317.2 &  2.1 & -- &-- \\    
-     		\hline \hline
-     	\end{tabular}}
-     	
-     \end{table} 
-     
-  
-  Based on the numerical results presented in Table~\ref{tab:results-2d-literature}, the following conclusions can be drawn:
-  
-  \begin{itemize}
-  	\item All three dynamic programming approaches are highly efficient, solving all 80 problem instances.
-  	\item The runtimes of DPs required to obtain optimal solutions are relatively short, mostly remaining below 10 seconds.
-  	\item The \textsc{Ilp} approach is able to solve only the smallest instances with $n=50$; its execution times are roughly two orders of magnitude higher than those of the DP approaches. For larger instances, especially those with $n=200$, the ILP approach is unable to solve even the initial (root) relaxations.
-  \end{itemize}
-  
-  \begin{figure}[htbp]
-  	\centering
-  	\begin{minipage}{0.48\textwidth}
-  		\includegraphics[width=\linewidth]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
-  		\caption*{(a) Relative solution quality percentage distribution for each heuristic approach with respect to the optimal solutions.} 
-  	\end{minipage}
-  	\hfill
-  	\begin{minipage}{0.48\textwidth}
-  		\centering
-  		\includegraphics[width=\linewidth]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
-  		\caption*{(b) Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
-  	\end{minipage}
-  	\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
-  	\label{fig:optimal-vs-heuristic}
-  \end{figure}
 
-  Concerning efficiency of \textsc{Bs}, \textsc{Imsbs-Greedy}, and \textsc{Imsbs} on the instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution in 63 out of 80 instances. These numbers are significantly lower in the case of other two heuristic approaches.   While in the case of instances with $|\Sigma|=4$ (and $m=2$), difference in the solution qualities between these two approaches is slightly in favor of \textsc{Imsbs}, in the case of instance with  small-sized alphabet ($|\Sigma|=2$) the  \textsc{Imsbs} approach clearly outperforms the other two approaches. Obviously, for the group of instances with $n=500$ and $|\Sigma|=2$ there is a room for further improvement. This is due to the fact that the LCS heuristics perform weakly on the instances with smaller alphabet size and larger sequence length~\cite{DJUKANOVIC2020106499} thus one has to look for other alternatives, as discussed in the future work section.
-  %Shortly, there remains room for improvement in designing a more robust guiding function especially for small alphabet size, as discussed in the future work section.
-  
-    
 \section{Conclusions and Future Work}
 \label{sec: conclusions}
 
@@ -483,8 +406,8 @@ In this work, we studied a generalized version of the Longest Common Subsequence
 
 We proposed a beam-search-based solution framework, starting with a baseline beam search over a formally defined state-space graph. It is further extended to an enhanced Iterative Multi-Source Beam Search (IMSBS) approach. IMSBS combines local exploration from promising root nodes with a global strategy of selecting candidates for root nodes based on previously collected search information. Experimental results indicate the IMSBS approach consistently produces highest-quality solutions over the baseline beam search strategy. In the case of instances with shorter feasible sequences, the strategy of frequently jumping from one feasible region to another one in the search space appears efficient, which is done by setting the beam width to one in IMSBS approach.  Concerning exact solving, we  compared three dynamic programming approaches from the literature with a newly designed ILP model. The results confirmed the DP variants solved all instances in the shortest amount of time, while the ILP approach was limited to smaller instances.  Additionally, IMSBS approach has frequently achieved close-to-optimum results for the two-input-sequence problem case, while requiring comparable or less computation time than the baseline beam search.
 
-Future research directions include designing more sophisticated heuristics that directly incorporate gap constraints into scoring functions, optimizing IMSBS to efficiently reuse previously explored regions of the state space, testing designed approaches on real-world biological instances, and scaling experiments up to longer sequences.
- \paragraph{\textbf{Acknowledgments.}} This publication is co-funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme (grant agreement No.~101081355 -- SMASH), and by the Republic of Slovenia and the European Union through the European Regional Development Fund. Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.
+Future research directions include designing more sophisticated heuristics that directly incorporate gap constraints into scoring functions, optimizing IMSBS to efficiently reuse previously explored regions of the state space, testing designed approaches on real-world biological instances, and scaling experiments up to longer sequences. \\
+ \textit{\textbf{Acknowledgments.}} This publication is co-funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme (grant agreement No.~101081355 -- SMASH), and by the Republic of Slovenia and the European Union through the European Regional Development Fund. Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.
 
 	\bibliographystyle{splncs04}
 	\bibliography{bib}
@@ -833,6 +756,81 @@ elements in both sequences.
 			\textbf{Avg.} &  &  &  32.38 & 10.97 & 46.82 & 394.14 &  \textbf{59.73} & 24.63  \\ \hline \hline
 	\end{tabular}}
 \end{table}
+
+
+ \section{Numerical results for the special case $m=2$}
+
+In this section, we compare the results of approaches from the literature that are specialized for the case $m=2$. The competitors are listed below and are described in detail in~\cite{penga2011longest}.
+
+\begin{itemize}
+	\item \textsc{Dp}: the basic dynamic programming algorithm;
+	\item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm;
+	\item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup. All three DP approaches are from~\cite{penga2011longest}. Note that the original paper proposes answering ISMQ using Union-Find operations; however, due to lack of implementation details, we decided to employ a dequeue-based approach in our implementation.
+	\item \textsc{Ilp}: an integer linear programming method proposed in this work (see Appendix~\ref{app:ilp}), motivated by the ILP model for LCS problem~\cite{blum2016metaheuristics}.
+\end{itemize}
+
+Each algorithm was allocated 30 minutes of execution time. The \textsc{Ilp} model was solved using the general-purpose solver \textsc{Cplex} version 22.1.
+
+The results are reported in Table~\ref{tab:results-2d-literature}, which is organized as follows. The first three columns describe the characteristics of the instance groups, over which the results are averaged (10 instances per group). The remaining columns report the performance of the four algorithms: \textsc{Dp}, \textsc{Dp}-1, \textsc{Dp}-2, and \textsc{Ilp}. For each approach, both the average solution quality and the average execution time are provided across the 10 instances.
+
+
+\begin{table}[H]
+	\caption{Results on the \textsc{Random} benchmark set for $m=2$: the exact approaches from the literature.}\label{tab:results-2d-literature}
+	\centering
+	\scalebox{0.7}{
+		\begin{tabular}{lll|lr|rr|rr|rr}
+			\hline
+			\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Dp}}  &
+			\multicolumn{2}{c}{\textsc{Dp-1}} & \multicolumn{2}{c}{\textsc{Dp-2}} & 
+			\multicolumn{2}{c}{\textsc{Ilp}}  \\
+			\cmidrule(lrr){1-3} \cmidrule(lr){4-5}
+			\cmidrule(lr){6-7} \cmidrule(lr){8-9}
+			\cmidrule(lr){10-11} 	\\ 
+			$m$ & $n$ & $|\Sigma|$ & $\overline{obj}$ & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ &$\overline{obj}$  & $\overline{t}[s]$ & $\overline{obj}$  & $\overline{t}[s]$ \\
+			\hline
+			2 &   50 &         2 &              38.1 &          0.01 & 38.1 &          \textbf{0.01} &              38.1 &          0.01  & 38.1 & 168.3 \\
+			2 &   50 &         4 &              30.3 &          \textbf{0.01} &              30.3 &          0.02 &              30.3 &          0.02 & 30.3  & 28.0 \\ \hline
+			2 &  100 &         2 &              77.4 &          0.1 &              77.4 &          \textbf{0.03} &              77.4 &          0.05 & -- & -- \\
+			2 &  100 &         4 &              62.3 &          0.07 &              62.3 &         \textbf{0.06} &              62.3 &          0.09 & 0.00 & 1800.0 \\ \hline
+			
+			2 &  200 &         2 &             156.4 &          0.75 &             156.4 &          \textbf{0.13} &             156.4 &          0.16  & -- & -- \\
+			2 &  200 &         4 &             127.2 &          0.59 &             127.2 &          \textbf{0.25} &             127.2 &          0.32  & -- & -- \\ \hline
+			
+			2 &  500 &         2 &             395.9 &         13.57 &             395.9 &          \textbf{0.84}  &             395.9 &          1.05 & -- & -- \\
+			2 &  500 &         4 &             317.2 &         10.18 &             317.2 &          \textbf{1.70} & 317.2 &  2.1 & -- &-- \\    
+			\hline \hline
+	\end{tabular}}
+	
+\end{table} 
+
+
+Based on the numerical results presented in Table~\ref{tab:results-2d-literature}, the following conclusions can be drawn:
+
+\begin{itemize}
+	\item All three dynamic programming approaches are highly efficient, solving all 80 problem instances.
+	\item The runtimes of DPs required to obtain optimal solutions are relatively short, mostly remaining below 10 seconds.
+	\item The \textsc{Ilp} approach is able to solve only the smallest instances with $n=50$; its execution times are roughly two orders of magnitude higher than those of the DP approaches. For larger instances, especially those with $n=200$, the ILP approach is unable to solve even the initial (root) relaxations.
+\end{itemize}
+
+\begin{figure}[htbp]
+	\centering
+	\begin{minipage}{0.48\textwidth}
+		\includegraphics[width=\linewidth]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
+		\caption*{(a) Relative solution quality percentage distribution for each heuristic approach with respect to the optimal solutions.} 
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
+		\caption*{(b) Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
+	\end{minipage}
+	\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
+	\label{fig:optimal-vs-heuristic}
+\end{figure}
+
+Concerning efficiency of \textsc{Bs}, \textsc{Imsbs-Greedy}, and \textsc{Imsbs} on the instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution in 63 out of 80 instances. These numbers are significantly lower in the case of other two heuristic approaches.   While in the case of instances with $|\Sigma|=4$ (and $m=2$), difference in the solution qualities between these two approaches is slightly in favor of \textsc{Imsbs}, in the case of instance with  small-sized alphabet ($|\Sigma|=2$) the  \textsc{Imsbs} approach clearly outperforms the other two approaches. Obviously, for the group of instances with $n=500$ and $|\Sigma|=2$ there is a room for further improvement. This is due to the fact that the LCS heuristics perform weakly on the instances with smaller alphabet size and larger sequence length~\cite{DJUKANOVIC2020106499} thus one has to look for other alternatives, as discussed in the future work section.
+%Shortly, there remains room for improvement in designing a more robust guiding function especially for small alphabet size, as discussed in the future work section.
+
 
 
 \end{document}
