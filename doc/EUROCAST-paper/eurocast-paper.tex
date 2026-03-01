@@ -67,8 +67,7 @@
 	}
 	%
 	\authorrunning{Djukanovic et al.}
-	
-	\institute{		University of Nova Gorica, Nova Gorica, Slovenia \\ \email{marko.dukanovic@ung.si} \\ \and Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina \\
+	\institute{University of Nova Gorica, Nova Gorica, Slovenia \\ \email{marko.dukanovic@ung.si} \\ \and Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina \\
 		\email{nikola.balaban@student.pmf.unibl.org}, \email{marko.djukanovic@pmf.unibl.org} \and
 		Artificial Intelligence Research Institute (IIIA-CSIC), Barcelona, Spain \\
 		\email{christian.blum@iia.csic.es} \and 
@@ -76,13 +75,14 @@
 		Jožef Stefan Institute, Ljubljana, Slovenia \ \\ \email{saso.dzeroski@ijs.si}  \\
 		\and
 		Institute of Information Sciences (IZUM), Maribor, Slovenia \\
-		\email{ziga.zebec@izum.si}
+		\email{ziga.zebec@izum.si} \vspace{-0.7cm} \\
 	}
 	%
 	\maketitle              % typeset the header of the contribution
 	%
-	\begin{abstract}
-This paper addresses the Variable Gapped Longest Common Subsequence (VGLCS) problem, a generalization of the classical longest common subsequence (LCS) problem involving flexible gap constraints between consecutive solutions' characters in the input sequences. The problem arises in molecular sequence comparison, where structural distance constraints between residues must be respected, and time-series analysis, in which events are required to occur within specified temporal delays. We propose a novel search framework based on a root-based state graph representation, in which the overall state space is defined as the union of generally large number of root-based state subgraphs. To cope with the resulting combinatorial explosion, an iterative beam search strategy is employed, dynamically maintaining a global pool of promising candidate root nodes, enabling effective control of diversification across iterations. To explore the search, several heuristic evaluation functions inspired by the LCS literature are incorporated into the standalone beam search procedure. To the best of our knowledge, this work presents the first comprehensive computational study of the VGLCS problem, generating a benchmark of 320 synthetic instances with up to 10 input sequences and up to 500 characters. Experimental results show robustness of the iterative beam search over the baseline beam search in a comparable runtime. Furthermore, for the special case with two input strings, the proposed method achieves great performance compared to the specialized dynamic programming algorithms on small-to-medium-sized instances.
+
+	\begin{abstract}	\vspace{0.15cm}
+This paper addresses the Variable Gapped Longest Common Subsequence (VGLCS) problem, a generalization of the classical longest common subsequence (LCS) problem involving flexible gap constraints between consecutive solutions' characters. The problem arises in molecular sequence comparison, where structural distance constraints between residues must be respected, and time-series analysis, in which events are required to occur within specified temporal delays. We propose a novel search framework based on a root-based state graph representation, in which the overall state space comprises of generally large number of root-based state subgraphs. To cope with the resulting combinatorial explosion, an iterative beam search strategy is employed, dynamically maintaining a global pool of promising candidate root nodes, enabling effective control of diversification across iterations. To explore the search, several heuristic evaluation functions inspired by the LCS literature are incorporated into the standalone beam search procedure. To the best of our knowledge, this work presents the first comprehensive computational study of the VGLCS problem, generating a benchmark of 320 synthetic instances with up to 10 input sequences and up to 500 characters. Experimental results show robustness of the iterative beam search over the baseline beam search in a comparable runtime. %Furthermore, for the special case with two input strings, the proposed method achieves great performance compared to the specialized dynamic programming algorithms on small-to-medium-sized instances.
 	\keywords{Longest common subsequences  \and Beam Search  \and Bioinformatics \and Gap constraints}
 	\end{abstract}
 	%
@@ -91,35 +91,23 @@ This paper addresses the Variable Gapped Longest Common Subsequence (VGLCS) prob
     \section{Introduction}
 	
 The \textit{Longest Common Subsequence Problem} (LCSP)~\cite{DJUKANOVIC2020106499,bergroth2000survey} is a well-known combinatorial optimization problem with numerous applications in bioinformatics and computational biology, playing a fundamental role in the analysis and comparison of molecular sequences. Given an arbitrarily large set of input sequences $
-S=\{s_1,\ldots,s_m\}, m \in \mathbb{N}, $ 
-defined over an alphabet $\Sigma$, the objective is to identify a longest possible subsequence that is common to all sequences $s_i \in S$.
-
-Over the past decades, a variety of practically motivated extensions of the LCSP have been proposed to better capture structural, biological, or application-specific requirements of real-world sequences. Notable variants include constrained, arc-preserving, and repetition-free longest common subsequence problems~\cite{jiang2004longest,farhana2015constrained,adi2010repetition}, among others. In this work, we focus on the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP),  originally introduced for two input strings in~\cite{penga2011longest} and further investigated from a theoretical perspective in~\cite{adamson2023longest}. The VGLCSP extends the classical LCSP by incorporating flexible distance constraints (referred to as \emph{gaps}) between consecutive symbols of the resulting subsequence. Unlike fixed-gap models, these gap limits are allowed to vary along the input sequences, thereby offering increased modeling flexibility.
-
+S=\{s_1,\ldots,s_m\}, m \in \mathbb{N}$  over an alphabet $\Sigma$, the objective is to identify a longest possible subsequence that is common to all sequences $s_i \in S$. Over the past decades, a variety of practically motivated extensions of the LCSP have been proposed to better capture structural, biological, or application-specific requirements of real-world sequences. Notable variants include constrained, arc-preserving, and repetition-free longest common subsequence problems~\cite{jiang2004longest,farhana2015constrained,adi2010repetition}, among others. In this work, we focus on yet another variant, the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP),  originally introduced for the $m=2$ case in~\cite{penga2011longest} and further investigated from a theoretical perspective in~\cite{adamson2023longest}. The VGLCSP extends the classical LCSP by incorporating flexible distance constraints (referred to as \emph{gaps}) between consecutive symbols of the resulting subsequence. Unlike fixed-gap models, these gap limits are allowed to vary along the input sequences, thereby offering increased modeling flexibility.\\
 Formally, for each input sequence $s_i \in S$, a gap constraint is defined by a function at positions of sequence as $
-G_i \colon \{1,\ldots,|s_i|\} \mapsto \mathbb{N}.$ Precisely, if the characters of $s$ occur at positions
-$i^1_i < \cdots < i^{|s|}_i$ in $s_i$, the gap constraint is satisfied iff $
-i^x_i - i^{x-1}_i \leq G_i[i^x_i] + 1, \quad x = 2,\ldots,|s|.$ 
-
-A common subsequence $s$ is considered \emph{feasible} if the corresponding gap constraints are satisfied simultaneously for all sequences in $S$. As an example of a VGLCSP, given is a set of two input  sequences $S=\{s_1=\texttt{ABCA},   s_2=\texttt{ACAB} \}$ with two gap constraints $G_1(\{1,\ldots, 4\}) \mapsto \textbf{1}= G_2(\{1, \ldots, 4\})$. The sequence $s=\texttt{ACA}$ is a feasible solution because it is a common subsequence of the both input strings, as its corresponding characters appear at positions 1, 3 and 4 in $s_1$ and at the positions 1, 2, and 3 in the $s_2$. As the difference between each consecutive pair of the indices of these positions is less or equal  $1+1=2$, $s$ represents a feasible sequence of the tackled problem.  On the other hand, sequence s=\texttt{AB} is a common subsequence as well, but it does not fulfill all gap constraints. In details, the corresponding characters appear at positions 1 and 2 in $s_1$ adn at positions 1 and 4 in $s_2$. Obviously, $4-1=3>2=1+1$ thus violating the second gap constraint. 
-
-The VGLCSP provides a flexible and realistic model for sequence comparison, particularly suited to applications in DNA and protein analysis where variable structural distances between (active) residues must be respected. Beyond bioinformatics, the problem also arises in time-series analysis, especially in settings where events are required to occur within specified temporal delays~\cite{lainscsek2015delay}.
-
+G_i \colon \{1,\ldots,|s_i|\} \mapsto \mathbb{N}.$ Precisely, if the characters of solution $s$ occur at positions
+$i^1_i < \cdots < i^{|s|}_i$ in $s_i$, the gap constraint is fulfilled iff $
+i^x_i - i^{x-1}_i \leq G_i[i^x_i] + 1, \quad x = 2,\ldots,|s|.$ A common subsequence $s$ is considered \emph{feasible} if the corresponding gap constraints are satisfied simultaneously for all sequences in $S$. As an example of a VGLCSP, given is a set of two input  sequences $S=\{s_1=\texttt{ABCA},   s_2=\texttt{ACAB} \}$ with two gap constraints $G_1(\{1,\ldots, 4\}) \mapsto \textbf{1}= G_2(\{1, \ldots, 4\})$. The sequence $s=\texttt{ACA}$ is a feasible solution because it is a common subsequence of the both input strings, where its corresponding characters appear at positions 1, 3 and 4 in $s_1$ and at the positions 1, 2, and 3 in the $s_2$. As the difference between each consecutive pair of the indices of these positions is less or equal  $1+1=2$, $s$ represents a feasible sequence of the tackled problem.  On the other hand, sequence $s=$\texttt{AB} is also a common subsequence, but not fulfilling all gap constraints. In details, the corresponding characters appear at positions 1 and 2 in $s_1$ and at positions 1 and 4 in $s_2$. Obviously, $4-1=3>2=1+1$ thus violating the second gap constraint. \\ 
+The VGLCSP provides a flexible and realistic model for sequence comparison, particularly suited to applications in DNA and protein analysis where variable structural distances between (active) residues must be respected. Beyond bioinformatics, the problem also arises in time-series analysis, especially in settings where events are required to occur within specified temporal delays~\cite{lainscsek2015delay}.\\
+Although several dynamic programming approaches exist for the two-sequence case ($m=2$) scenario~\cite{penga2011longest}, their computational complexity becomes prohibitive when expanded for larger $m$. To the best of our knowledge, no effective exact or approximate approaches are currently existing for the generalized VGLCSP with arbitrary large set $S$, which is clearly an $\mathcal{NP}$-hard problem as a general version of the LCS problem with arbitrary large set of input strings. 
 	
-	Although several dynamic programming approaches exist for the two-sequence case ($m=2$) scenario~\cite{penga2011longest}, their computational complexity becomes prohibitive when expanded for larger $m$. To the best of our knowledge, no effective exact or approximate approaches are currently existing for the generalized VGLCSP with arbitrary large set $S$, which is clearly an NP-hard problem as a general version of the LCS problem with arbitrary large set of input strings. 
-	
-	\subsection{Preliminaries and Notation}
+\subsection{Preliminaries and Notation}
 	  
 	Before introducing the algorithmic framework for the tackled problem, we first present the notation used throughout this work.	Let $|s|$ denote the length of a sequence $s$. The symbol $s[i]$ refers to the character at position $i$ of sequence $s$, where indexing starts at $i = 1$. The substring of $s$ that begins at position $i$ and ends at position $j$ is denoted by $s[i,j]$. If $i = j$, this substring corresponds to the single character $s[i]$; if $j < i$, then $s[i,j] = \varepsilon$, where $\varepsilon$ denotes the empty string.
 	
 	The number of occurrences of a character $a \in \Sigma$ in a sequence $s$ is denoted by $|s|_a$. For a subset of characters $\Sigma' \subseteq \Sigma$, the number of occurrences of characters from $\Sigma'$ in $s$ is defined as $
-	|s|_{\Sigma'} = \sum_{\sigma \in \Sigma'} |s|_{\sigma}.$
-	
-	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, and by $S^{rev} = \{s_1^{rev}, \ldots, s_m^{rev}\}$. 
+	|s|_{\Sigma'} = \sum_{\sigma \in \Sigma'} |s|_{\sigma}.$	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, and by $S^{rev} = \{s_1^{rev}, \ldots, s_m^{rev}\}$. 
 	 Unless stated otherwise, $m \in \mathbb{N}$ represents the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$.  Given is a positional vector $\mathbf{p}^L \in \mathbb{N}^m$,  subproblem related to these positions is given by $S[\mathbf{p}^L]=\{ s_i[\mathbf{p}^L_i] \mid i=1, \ldots, m\}$.  Last but not least, for a gap constraint $G_i$, its reverse constraint is denoted by  $G_i^{rev}$, and is given as $G_i^{rev}(j):=G_i(|s_i|-j+1)$, for each $j=1, \ldots, |s_i|$.  \\ 
-	
-	
-	The remainder of the paper is organized as follows. Section~\ref{sec: state_graph} introduces the rooted state graph representation of the problem. In Section~\ref{sec: imsbs}, we  design of our main methodological contribution, the iterative multi-source beam search approach. Section~\ref{sec: experiments} reports the computational results, comparing the proposed method with a baseline beam search and an iterative greedy heuristic, but also with several specially designed  approaches for two input sequences. Finally, Section~\ref{sec: conclusions} concludes the paper and outlines directions for future research.
+	The remainder of the paper is organized as follows. Section~\ref{sec: state_graph} introduces the rooted state graph representation of the problem. In Section~\ref{sec: imsbs}, we  design of our main methodological contribution, the iterative multi-source beam search approach. Section~\ref{sec: experiments} reports the computational results, comparing the proposed method with a baseline beam search and an iterative greedy heuristic%, but also with several specially designed  approaches for two input sequences. 
+	Finally, Section~\ref{sec: conclusions} concludes the paper and outlines directions for future research.
 	
 	
 	\section{Rooted State Space Formulation}\label{sec: state_graph}
@@ -138,9 +126,9 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
      \quad \text{and} \quad
      s^{v_2} = s^{v_1} \cdot a,
      \]
-     that is, state $v_2$ corresponds to extending a partial solution of $v_1$ by appending the character $a$.
+     that is, state $v_2$ corresponds to extending a partial solution of $v_1$ by appending the character $a$, respecting the gap constraints. 
      
-     To expand a state $v$, only those characters $a \in \Sigma$ that occur in the suffix of each sequence $s_i$ starting at position $p^{L,v}_i$, for $i = 1,\ldots,m$, are first detected. For each such character $a \in \Sigma$, we identify the smallest feasible positions $p^{L,a}_i \ge p^{L,v}_i$ such that
+     To expand a state $v$, those characters $a \in \Sigma$ that occur in the suffix of each sequence $s_i$ starting at position $p^{L,v}_i$, for $i = 1,\ldots,m$, are first detected. For each such $a \in \Sigma$, we identify the smallest feasible positions $p^{L,a}_i \ge p^{L,v}_i$ such that
     $
      s_i[p^{L,a}_i] = a
      \quad \text{and} \quad
@@ -148,14 +136,12 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
     $ 
      In that way, a child state
      $w = (\mathbf{p}^{L,a} + \mathbf{1},\, l^v + 1)$
-     is created, unless it is dominated by another child state according to the dominance criteria defined later in this section. To efficiently compute children and their associated position vectors, we employ a preprocessing data structure denoted by \texttt{Succ}. This structure is  a three-dimensional integer array indexed by $(i,j,a)$, where $i$ refers to the input sequence $s_i$, $1 \le j \le |s_i|$ denotes a position within that sequence, and $a \in \Sigma$ is a character. As already pointed out, the value $q = \texttt{Succ}[i,j,a]$
+     is created, unless it is dominated by another child state according to the dominance criteria defined later in this section. To efficiently compute children and their associated position vectors, we employ a preprocessing data structure denoted by \texttt{Succ}: a three-dimensional integer array indexed by $(i,j,a)$, where $i$ refers to the input sequence $s_i$, $1 \le j \le |s_i|$ denotes a position within that sequence, and $a \in \Sigma$ is a character. As already pointed out, the value $q = \texttt{Succ}[i,j,a]$
      stores the smallest index $q \ge j$ such that $s_i[q] = a$ so that the gap constraint is satisfied at position $q$, that is, $q - j \le G_i(q).$ 
-     If no such position exists, the value $-1$ is returned.
-     
-   Goal states are those that cannot be further expanded.    The trivial root state is given by $ r = ((1,\ldots,1),\, 0)$ as in-going edges to this node are not possible,   representing an empty partial solution as in the case of LCS problem. However, it is not the only existing root node, in general. The problem can have many (possibly exponentially) root nodes due to the definition of the problem itself allowing a freedom to choose  leading letter of partial solutions,  induced from a position $u=(i^1_1, \ldots, i^1_m)$ matching the letter, as gap constraints do not apply to the starting letter of each solution. 
+     If no such position exists, the value $-1$ is assigned.  Goal states are those that cannot be further expanded.    The trivial root state is given by $ r = ((1,\ldots,1),\, 0)$ as in-going edges to this node are not possible,   representing an empty partial solution as in the case of LCS problem. However, it is not the only root node, in general. The problem can have many (possibly exponentially) root nodes due to the definition of the problem itself allowing a freedom to choose  leading letter of partial solutions,  induced from the position $u=(i^1_1, \ldots, i^1_m)$ matching that letter, as gap constraints do not apply to the starting letter of each solution. 
    
-   This motivate us to introduce the state space subgraph rooted with the match $u$, denoted by $\textsc{RootedSubgraph}(u)$, induced by empty partial solution, which consists of all nodes (and corresponding transitions) that can be feasibly reached via node $(u+\textbf{1}, 1)$, which is constructed from the root node $(u, 0)$ through its extension by the letter at the positions $u$. 
-    In terms of feasible partial solutions, $\textsc{RootedSubgraph}(u)$ will generate  solutions whose leading letter is the letter induced by the match $u$, recursively repeating the procedure of expansion of solutions by one letter in all possible ways, until no more expansions are possible.  As discussed in the following section, the structure of this subspace heavily depends on the choice of the root state from which the search is initiated. As an example, we illustrate  the state space of \textsc{RootedSubgraph}($u=(1, 1), 0$),  depicted in Fig.~\ref{fig:vgcs-grafstanja}. Note that here the position $(1,1)$ correspond to the match of letter \texttt{A}, where $u=(1, 1), 0)$ indeed represents a root node. 
+   This motivate us to introduce the state space subgraph rooted with the match $p^{L, u}$, denoted by $\textsc{RootedSubgraph}(u=(p^{L, v}, 0))$, induced by empty partial solution, which consists of all nodes (and corresponding transitions) that can be feasibly reached via node $(p^{L,v}+\textbf{1}, 1)$,  constructed directly from the root node $u$ through its extension by the letter at the position $p^{L,u}$. 
+    In terms of feasible partial solutions, $\textsc{RootedSubgraph}(u)$ will generate  solutions whose leading letter is the letter at the match $p^{L,u}$, recursively repeating the procedure of expansion of solutions by one letter in all possible ways, until no more expansions are possible.  As discussed in the following section, the structure of this subspace heavily depends on the choice of the root state from which the search is initiated. As an example, we illustrate  the state space of \textsc{RootedSubgraph}($u=(1, 1), 0$),  depicted in Fig.~\ref{fig:vgcs-grafstanja}. Note that here the position $(1,1)$ correspond to the match of letter \texttt{A}, where $u=((1, 1), 0)$ indeed represents a root node. 
      
    % U nekom delu LaTeX dokumenta:
 \begin{figure}[h!]
@@ -223,7 +209,7 @@ The VGLCSP provides a flexible and realistic model for sequence comparison, part
 			
 	\end{tikzpicture}}
 	
-	\caption{State space graph $\textsc{RootedSubspace}(u=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=1$. A final/terminal state is displayed in gray. The white-filled node represents a valid LCS node, but not a feasible VGLCS node, as the second gap constraint has been violated. The longest solution generated is \texttt{ACA}. % \fxnote{Add VGLCS example}
+	\caption{State space graph $\textsc{RootedSubspace}(u=((1, 1), 0))$ for MVGLCSP between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=1$. A final/terminal state is displayed in gray. The white-filled node represents a valid LCS node, but not a feasible VGLCS node, as the second gap constraint has been violated. The longest solution generated from this subspace is \texttt{ACA}. % \fxnote{Add VGLCS example}
 	}
 	
 	\label{fig:vgcs-grafstanja}
@@ -236,7 +222,7 @@ with gap constraints $G_{s_1} = G_{s_2} = 1$.
 
 \begin{figure}[!ht]
 	\centering
-	\scalebox{0.45}{
+	\scalebox{0.40}{
 		\begin{tikzpicture}[
 			rotate=90,
 			transform shape,
@@ -385,7 +371,6 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
   	\label{fig:results_per_m}
   \end{figure}
   
-   \fxnote{Came up to here!!}
   \begin{itemize}
   	    \item \textit{Solution quality comparison.} The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating that selecting a right root node is essential in  achieving high-quality solutions for this problem. 
   	 The baseline \textsc{Bs} performs equally well or better in just one specific case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches in 10 (out of 32) cases, mostly for the instances with larger $m=10$, having shorter final solutions where it turns out that  frequently moving from one to another root and exploring respective subgraphs of the search space is strategically better  than  just strengthening intensification around a solution with a high beam width.  Exploring additional root nodes serves to improve the diversity of the search process, which appears necessary in the case when expected solutions are short. This is exactly where  \textsc{Imsbs-greedy} fits well. 
