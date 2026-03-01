@@ -215,12 +215,12 @@ Although several dynamic programming approaches exist for the two-sequence case 
 	\label{fig:vgcs-grafstanja}
 \end{figure}
 
-\paragraph{Motivation for Multi-Source Beam Search.}  
+\paragraph{Multi-Source Beam Search.}  
 Unlike the classical LCSP, the VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space.  Consequently, a search strategy that expands states from a single initial root may fail to reach the optimal solution. As an illustrative example given in Fig.~\ref{fig:disconected-components}, consider the sequence set $
 S = \{ s_1 = \texttt{ATGGAAA},\; s_2 = \texttt{ATCCAAA} \},$
 with gap constraints $G_{s_1} = G_{s_2} = 1$. 
-
-\begin{figure}[!ht]
+\vspace{-0.5cm}
+\begin{figure}[!ht] 
 	\centering
 	\scalebox{0.40}{
 		\begin{tikzpicture}[
@@ -269,9 +269,10 @@ with gap constraints $G_{s_1} = G_{s_2} = 1$.
 %	((5,5),\ast) \notin Space((1,1))	$, \textcolor{red}{The optimal solution: \texttt{AAA}.}}
 
 
-In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by a sequence of feasible direct transitions. As a result, the optimal common subsequence \texttt{AAA} is unreachable from the root $((1,1),0)$ and its subgraph when completely explored. To address this issue, the complete state space of an VGLCSP instance is defined by  
-$\bigcup_{v \in \mathcal{R}} \textsc{RootedSubspace}(\mathbf{q}^{L, v}),$ 
-where $\mathcal{R}$ denotes the set of all root states, i.e., states defined by position vectors (matches) $\mathbf{p}^{L,v}$ that cannot be reached from any other state by a series of direct transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time, and thus infeasible for instances with large $m$ or $n$.
+In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by a sequence of feasible direct transitions. As a result, the optimal common subsequence \texttt{AAA} is unreachable from the root $((1,1),0)$  when exploring its subgraph. To address this issue, the complete state space of an VGLCSP instance is defined by  
+$\bigcup_{v \in \mathcal{R}} \textsc{RootedSubspace}((\mathbf{q}^{L, v},0))$ 
+where $\mathcal{R}$ denotes the set of all root states,  %i.e., states defined by position vectors (matches) $\mathbf{p}^{L,v}$ 
+which cannot be reached from any other state by a series of direct transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time, and thus infeasible for instances with large $m$ or $n$.
 
 This structural characteristic of the VGLCSP motivates the methodology entitled \textit{Iterative Multi-Source Beam Search} (IMSBS) approach, which is specifically designed to dynamically explore multiple promising rooted subregions of the state space by systematically moving from one rooted subgraph to another one. By iteratively identifying and expanding a set of candidate root states, IMSBS will effectively mitigate the disconnection effects induced by gap constraints, enabling the discovery of high-quality solutions that would otherwise remain inaccessible to single-source search methods.
 
@@ -313,22 +314,21 @@ Assume the procedure has completed, returning the  solution $s^w_{bwrd}$. In thi
 	
 \section{Experimental Evaluation}\label{sec: experiments}
    
-In this section, we compare the performance of heuristic approaches explicitly designed for the  VGLCSP with an arbitrary number of sequences \( m \geq 2 \). Specifically, the following methods are included: (i) \textsc{Bs}: a baseline beam search approach that starts from the root node \( r \) as the initial beam and performs a single iteration of IMSBS while employing a huge beam width; (ii) \textsc{Imsbs-greedy}: a variant of IMSBS with a fixed parameter \( \beta = 1 \) %, as given in Algorithm~\ref{alg:imbs}.  
-   employing a huge number of IMSBS iterations; (iii) \textsc{Imsbs}: a tuned iterative multi-source beam search configured to employ an average runtime comparable to that of \textsc{Bs}.	 
+In this section, we compare the performance of heuristic approaches designed for general  VGLCSP with an arbitrary \( m \geq 2 \). Specifically, the following methods are included: (i) \textsc{Bs}: a baseline beam search approach that starts from root node \( r \) as the initial beam,  performing a single iteration of IMSBS while employing a huge beam width; (ii) \textsc{Imsbs-greedy}: a variant  with a fixed parameter \( \beta = 1 \) %, as given in Algorithm~\ref{alg:imbs}.  
+   employing a huge number of IMSBS iterations; (iii) \textsc{Imsbs}: a tuned IMSBS configured to employ an average runtime comparable to that of \textsc{Bs}.	 
 %\end{itemize}
 
-The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-performance computing system hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped with AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting. \\
- For each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are generated. First, $m$ sequences of equal length are generated uniformly at random. Then, the gap constraints for each instance are generated such that each value $G_i(j), j=1, \ldots, |s_i|, i=1, \ldots, m$ is uniformly assigned from the discrete distribution
+The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-performance computing system hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped with AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.  For each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are generated. First, $m$ sequences of equal length are generated uniformly at random. Then, the gap constraints for each instance are generated such that each value $G_i(j), j=1, \ldots, |s_i|, i=1, \ldots, m$ is  assigned uniformly from 
  $\mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.  Therefore, a total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}, freely available at   
  \url{https://github.com/markodjukanovic90/NikolaBalabanDiplomski/tree/main/src/instance_i_generator}.
  
  \textit{Parameter tuning}. 
  %\fxnote{Came up to here!!}
  To tune the parameters of our algorithms, 
- we employed a basic grid search to more sensible parameters: beam width in the beam search forward pass ($\beta$), and heuristic guidance  $h \in \{\text{UB}_1, \text{UB}_2, h_{prob}\}$, comparing the average solution quality over all (320) problem instances.  Less sensible parameters are chosen after several preliminary runs of our algorithms are conducted. For the baseline \textsc{Bs} approach, a high beam width $\beta = 10,000$ and $h = h_{\text{prob}}$ are utilized. %as further increasing the beam size does not significantly improve solution quality. The heuristic $h_{\text{prob}}$ provides slightly better guidance than $\textrm{UB}_2$ and significantly better than $\textrm{UB}_1$; see Fig.~\ref{fig:bs_tuning}.
- According to preliminary experiments, we fix ${{sources\_from\_R}} = 10$ and $\emph{beam\_iters} = 100$, %as good results were already achieved employing these numbers. Root nodes kept in the global set are prioritized according to 
-  $h' = \textrm{UB}_2$.  %, which consistently improves IMSBS performance compared to using $\textrm{UB}_1$.  
-  Remaining parameters of the IMSBS approach received the following values: $h=\text{UB}_2$ and $\beta=500$ to keep comparable average runtime between IMSBS and the baseline \textsc{Bs} approach. These values balance runtime relative to \textsc{Bs} while maintaining reasonable solution quality.  Similarly, for the \textsc{Imsbs-greedy} approach with fixed $\beta = 1$, while all other parameters hold as in the tuned \textsc{Imsbs}.
+ we employed a basic grid search to more sensible parameters: beam width in the beam search forward pass ($\beta$), and heuristic guidance  $h \in \{\text{UB}_1, \text{UB}_2, h_{prob}\}$, comparing the average solution quality over all (320) problem instances.  Less sensible parameters are chosen after several preliminary runs.  %as further increasing the beam size does not significantly improve solution quality. The heuristic $h_{\text{prob}}$ provides slightly better guidance than $\textrm{UB}_2$ and significantly better than $\textrm{UB}_1$; see Fig.~\ref{fig:bs_tuning}.
+ We fix ${{sources\_from\_R}} = 10$ and $\emph{beam\_iters} = 100$, and %as good results were already achieved employing these numbers. Root nodes kept in the global set are prioritized according to 
+  $h' = \textrm{UB}_2$.   For the baseline \textsc{Bs} approach, a high beam width $\beta = 10,000$ and $h = h_{\text{prob}}$ are utilized. %, which consistently improves IMSBS performance compared to using $\textrm{UB}_1$.  
+  Remaining parameters of the IMSBS approach received the following values: $h=\text{UB}_2$ and $\beta=500$ to keep comparable average runtime between IMSBS and the baseline \textsc{Bs} approach. These values balance runtime relative to \textsc{Bs} while maintaining reasonable solution quality.  Similarly, for the \textsc{Imsbs-greedy} approach with fixed $\beta = 1$ uses  $\emph{beam\_iters} = 10000$, and all other parameters hold as in the tuned \textsc{Imsbs}.
  
  %\subsection{Comparison between the heuristic approaches }
   Numerical results for all three heuristic approaches are displayed in Fig.~\ref{fig:results_per_m}, reporting the average solution quality per instance group for each approach. Four plots are provided, one per each value of $m$. Based on the numerical results, %presented in Table~\ref{tab:numerical_results_general_m}, 
@@ -338,32 +338,32 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
   %The remaining columns report the performance of the three heuristic approaches: \textsc{Bs}, \textsc{Imsbs-greedy}, and \textsc{Imsbs}, each in its own block. For each algorithm, two performance indicators are provided: the average objective value $\overline{obj}$ and the average running time in seconds $\overline{t}$, computed over 10 instances per group.  
 
   \begin{figure}[!ht]
-  	  	\begin{subfigure}[t]{0.48\textwidth}
+  	  	\begin{subfigure}[t]{0.45\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth, height=100pt]{figures/res\_general\_m2.png}
+  		\includegraphics[width=\linewidth, height=90pt]{figures/res\_general\_m2.png}
   		\caption{$m=2$}
   		\label{fig:results_per_m2}
   	\end{subfigure}
   	~
-  	\begin{subfigure}[t]{0.48\textwidth}
+  	\begin{subfigure}[t]{0.45\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth, height=100pt]{figures/res\_general\_m3.png}
+  		\includegraphics[width=\linewidth, height=90pt]{figures/res\_general\_m3.png}
   		\caption{$m=3$}
   		\label{fig:results_per_m3}
   	\end{subfigure}
   	
   	
   	\centering
-  	\begin{subfigure}[t]{0.48\textwidth}
+  	\begin{subfigure}[t]{0.45\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth, height=100pt]{figures/res\_general\_m5.png}
+  		\includegraphics[width=\linewidth, height=90pt]{figures/res\_general\_m5.png}
   		\caption{$m=5$}
   		\label{fig:results_per_m5}
   	\end{subfigure}
   	~
-  	\begin{subfigure}[t]{0.48\textwidth}
+  	\begin{subfigure}[t]{0.45\textwidth}
   		\centering
-  		\includegraphics[width=\linewidth, height=100pt]{figures/res\_general\_m10.png}
+  		\includegraphics[width=\linewidth, height=90pt]{figures/res\_general\_m10.png}
   		\caption{$m=10$}
   		\label{fig:results_per_m10}
   	\end{subfigure}
@@ -372,8 +372,8 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
   \end{figure}
   
   \begin{itemize}
-  	    \item \textit{Solution quality comparison.} The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating that selecting a right root node is essential in  achieving high-quality solutions for this problem. 
-  	 The baseline \textsc{Bs} performs equally well or better in just one specific case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches in 10 (out of 32) cases, mostly for the instances with larger $m=10$, having shorter final solutions where it turns out that  frequently moving from one to another root and exploring respective subgraphs of the search space is strategically better  than  just strengthening intensification around a solution with a high beam width.  Exploring additional root nodes serves to improve the diversity of the search process, which appears necessary in the case when expected solutions are short. This is exactly where  \textsc{Imsbs-greedy} fits well. 
+  	    \item The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating the selection of a right root node is essential in  achieving high-quality solutions. 
+  	 The baseline \textsc{Bs} performs equally well or better in just one case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches in 10 (out of 32) cases, mostly for the instances with larger $m=10$, having shorter final solutions where it turns out that  frequently moving from one to another root and exploring respective subgraphs of the search space is strategically crucial  than  just strengthening intensification around a solution with a high beam width.  Exploring additional root nodes serves to improve the diversity of the search process, which appears necessary in the case when expected solutions are short. This is exactly where  \textsc{Imsbs-greedy} fits well. 
   	
   	\item \textit{Runtime comparison.} The \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes.  \textsc{Imsbs-greedy} has a significantly larger average runtime due to a higher number of executed iterations ($beam\_iters = 10,000$) for the instances with larger $m$, in contrast to by iterations less intensive approaches.  % in the other two approaches.  %(limited to $beam\_iters = 100$).
   	
