@@ -96,8 +96,8 @@ G_i \colon \{1,\ldots,|s_i|\} \mapsto \mathbb{N}.$ Precisely, if the characters 
 $i^1_i < \cdots < i^{|s|}_i$ in $s_i$, the gap constraint is fulfilled iff $
 i^x_i - i^{x-1}_i \leq G_i[i^x_i] + 1, \quad x = 2,\ldots,|s|.$ A common subsequence $s$ is considered \emph{feasible} if the corresponding gap constraints are satisfied simultaneously for all sequences in $S$. As an example of a VGLCSP, given is a set of two input  sequences $S=\{s_1=\texttt{ABCA},   s_2=\texttt{ACAB} \}$ with two gap constraints $G_1(\{1,\ldots, 4\}) \mapsto \textbf{1}= G_2(\{1, \ldots, 4\})$. The sequence $s=\texttt{ACA}$ is a feasible solution because it is a common subsequence of the both input strings, where its corresponding characters appear at positions 1, 3 and 4 in $s_1$ and at the positions 1, 2, and 3 in the $s_2$. As the difference between each consecutive pair of the indices of these positions is less or equal  $1+1=2$, $s$ represents a feasible sequence of the tackled problem.  On the other hand, sequence $s=$\texttt{AB} is also a common subsequence, but not fulfilling all gap constraints. In details, the corresponding characters appear at positions 1 and 2 in $s_1$ and at positions 1 and 4 in $s_2$. Obviously, $4-1=3>2=1+1$ thus violating the second gap constraint. \\ 
 The VGLCSP provides a flexible and realistic model for sequence comparison, particularly suited to applications in DNA and protein analysis where variable structural distances between (active) residues must be respected. Beyond bioinformatics, the problem also arises in time-series analysis, especially in settings where events are required to occur within specified temporal delays~\cite{lainscsek2015delay}.\\
-Although several dynamic programming approaches exist for the two-sequence case ($m=2$) scenario~\cite{penga2011longest}, their computational complexity becomes prohibitive when expanded for larger $m$. To the best of our knowledge, no effective exact or approximate approaches are currently existing for the generalized VGLCSP with arbitrary $m$, clearly an $\mathcal{NP}$-hard problem as a general version of the LCS problem with arbitrary large set of input strings. 
-	
+Although several dynamic programming approaches exist for the two-sequence case ($m=2$) scenario~\cite{penga2011longest}, their computational complexity becomes prohibitive when expanded for larger $m$. To the best of our knowledge, no effective exact or approximate approaches are currently existing for the generalized VGLCSP with arbitrary $m$, clearly an $\mathcal{NP}$-hard problem as a general version of the LCS problem with arbitrary large set of input strings. \\
+	\vspace{-0.7cm}
 \paragraph{Preliminaries and Notation.}	Let $|s|$ denote the length of a sequence $s$. The symbol $s[i]$ refers to the character at position $i$ of sequence $s$, where indexing starts at $i = 1$. The substring of $s$ that begins at position $i$ and ends at position $j$ is denoted by $s[i,j]$. If $i = j$, this substring corresponds to the single character $s[i]$; if $j < i$, then $s[i,j] = \varepsilon$, where $\varepsilon$ denotes the empty string.	The number of occurrences of $a \in \Sigma$ in a sequence $s$ is denoted by $|s|_a$.	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, and by $S^{rev} = \{s_1^{rev}, \ldots, s_m^{rev}\}$. 
 	 Unless stated otherwise, $m \in \mathbb{N}$ represents the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$.  Given is a positional vector $\mathbf{p}^L \in \mathbb{N}^m$,  subproblem related to these positions is given by $S[\mathbf{p}^L]=\{ s_i[\mathbf{p}^L_i] \mid i=1, \ldots, m\}$.  Last but not least, for a gap constraint $G_i$, its reverse constraint is denoted by  $G_i^{rev}$, and is given as $G_i^{rev}(j):=G_i(|s_i|-j+1)$, for each $j=1, \ldots, |s_i|$.  \\ 
 	 
@@ -202,16 +202,14 @@ Although several dynamic programming approaches exist for the two-sequence case 
 			
 	\end{tikzpicture}}
 	
-	\caption{State space  $\textsc{RootedSubspace}(u=((1, 1), 0))$  between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=\textbf{1}$. A final/terminal state is displayed in gray. The white-filled node represents a valid LCS node, but not a feasible VGLCS node, as the second gap constraint has been violated. The longest solution generated from this subspace is \texttt{ACA}. % \fxnote{Add VGLCS example}
+	\caption{State space  $\textsc{RootedSubspace}(u=((1, 1), 0))$  between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=\textbf{1}$. A final/terminal state is displayed in gray. The white-filled node is a valid LCS node, but not an VGLCS node, as the second gap constraint has been violated. The longest solution generated from this subspace is \texttt{ACA}. % \fxnote{Add VGLCS example}
 	}
-	
+	\vspace{-0.5cm}
 	\label{fig:vgcs-grafstanja}
 \end{figure}
 
 \textit{Multi-Source Beam Search.}  
-Unlike the classical LCSP, the VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space.  Consequently, a search strategy that expands states from a single initial root may fail to reach the optimal solution. As an illustrative example given in Fig.~\ref{fig:disconected-components}, consider the sequence set $S = \{ s_1 = \texttt{ATGGAAA},\; s_2 = \texttt{ATCCAAA} \},$
-with  $G_{s_1} = G_{s_2} = 1$. 
-
+Unlike the classical LCSP, the VGLCSP may exhibit multiple, potentially exponentially many, \emph{disconnected root components} in its complete state space.  Consequently, a search strategy that expands states from a single initial root may fail to reach the optimal solution. 
 \begin{figure}[!ht] 
 	\centering
 	\scalebox{0.40}{
@@ -223,7 +221,6 @@ with  $G_{s_1} = G_{s_2} = 1$.
 			invalid/.style={-Latex, thick, dashed, red},
 			node distance=1.8cm
 			]
-			
 			% ---------------- LEFT COMPONENT ----------------
 			\node[state, fill=blue] (r1) at (0,0) {((1,1),0)};
 			\node[state, below=of r1] (a1) {((2,2),1)};
@@ -249,7 +246,7 @@ with  $G_{s_1} = G_{s_2} = 1$.
 			
 			% ---------------- DISCONNECTION INDICATOR ----------------
 			\draw[invalid] (a2.east) .. controls +(1.2,0) and +(-1.2,0) .. 
-            node[above, rotate=-90] {\small \textbf{No valid transition}} (r2.west);
+			node[above, rotate=-90] {\small \textbf{No valid transition}} (r2.west);
 			
 		\end{tikzpicture}
 	}
@@ -257,11 +254,8 @@ with  $G_{s_1} = G_{s_2} = 1$.
 	\label{fig:disconected-components}
 \end{figure}
 
-%\footnotesize{\textbf{Observation:}$
-%	((5,5),\ast) \notin Space((1,1))	$, \textcolor{red}{The optimal solution: \texttt{AAA}.}}
-
-
-In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by a sequence of feasible direct transitions. As a result, the optimal common subsequence \texttt{AAA} is unreachable from the root $((1,1),0)$  when exploring its subgraph. To address this issue, the complete state space of an VGLCSP instance is defined by  
+As an illustrative example given in Fig.~\ref{fig:disconected-components}, consider the sequence set $S = \{ s_1 = \texttt{ATGGAAA},\; s_2 = \texttt{ATCCAAA} \},$
+with  $G_{s_1} = G_{s_2} = 1$. In this instance, any state with position vector $\mathbf{p}^L = (5,5)$ cannot be reached  from the initial state $((1,1),0)$ by a sequence of feasible direct transitions. As a result, the optimal common subsequence \texttt{AAA} is unreachable from the root $((1,1),0)$  when exploring its subgraph. To address this issue, the complete state space of an VGLCSP instance is defined by  
 $\bigcup_{v \in \mathcal{R}} \textsc{RootedSubspace}((\mathbf{q}^{L, v},0))$ 
 where $\mathcal{R}$ denotes the set of all root states,  %i.e., states defined by position vectors (matches) $\mathbf{p}^{L,v}$ 
 which cannot be reached from any other state by a series of direct transitions. However, explicitly enumerating all such root states is computationally prohibitive in general, requiring $O(n^m)$ time, and thus infeasible for instances with large $m$ or $n$.  This structural characteristic of the VGLCSP motivates the methodology entitled \textit{Iterative Multi-Source Beam Search} (IMSBS) approach,  specifically designed to dynamically explore multiple promising rooted subregions of the state space by systematically moving from one rooted subgraph to another one. By iteratively identifying and expanding a set of candidate root states, IMSBS effectively mitigates the disconnection effects induced by gap constraints, enabling the discovery of high-quality solutions that would otherwise remain inaccessible to single-source search methods.
@@ -302,11 +296,8 @@ Assume the procedure has completed, returning the  solution $s^w_{bwrd}$. In thi
 	
 \section{Experimental Evaluation}\label{sec: experiments}
    
-We compare the performance of heuristic approaches designed for an arbitrary \( m \geq 2 \). Specifically, the following methods are included: (i) \textsc{Bs}: a baseline beam search, which performs a single iteration of IMSBS while employing a huge beam width; (ii) \textsc{Imsbs-greedy}: a variant  with a fixed  \( \beta = 1 \) %, as given in Algorithm~\ref{alg:imbs}.  
-   employing a huge number of IMSBS iterations; (iii) \textsc{Imsbs}: a tuned IMSBS which  employs an average runtime comparable to that of \textsc{Bs}.	 
-%\end{itemize}
-
-The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-performance computing system hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped with AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.  For each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are generated. First, $m$ sequences of equal length are generated uniformly at random. Then, the gap constraints for each instance are generated such that each value $G_i(j), j=1, \ldots, |s_i|, i=1, \ldots, m$ is  assigned uniformly from 
+We compare the performance of heuristic approaches designed for an arbitrary \( m \geq 2 \). Specifically, the following methods are compared: (i) \textsc{Bs}: a baseline beam search, which performs a single iteration of IMSBS while employing a huge beam width; (ii) \textsc{Imsbs-greedy}: it sets a fixed  \( \beta = 1 \) %, as given in Algorithm~\ref{alg:imbs}.  
+   employing a huge number of IMSBS iterations; (iii) \textsc{Imsbs}: a tuned IMSBS with an average runtime comparable to that of \textsc{Bs}.	 The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA HPC system hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped with AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.  For each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are generated. First, $m$ sequences of equal length are generated uniformly at random. Then, the gap constraints for each instance are generated such that each value $G_i(j), j=1, \ldots, |s_i|, i=1, \ldots, m$ is  assigned uniformly from 
  $\mathcal{U}(\{ \lfloor 0.5 \cdot |\Sigma| \rfloor, \ldots, \lfloor 1.5 \cdot |\Sigma| \rfloor \})$.  Therefore, a total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}, freely available at   
  \url{https://github.com/markodjukanovic90/NikolaBalabanDiplomski/tree/main/src/instance_i_generator}.
  
@@ -316,18 +307,11 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
  we employed a basic grid search to more sensible parameters: beam width in the beam search forward pass ($\beta$), and heuristic guidance  $h \in \{\text{UB}_1, \text{UB}_2, h_{prob}\}$, comparing the average solution quality over all (320) problem instances.  Less sensible parameters are chosen after several preliminary runs.  %as further increasing the beam size does not significantly improve solution quality. The heuristic $h_{\text{prob}}$ provides slightly better guidance than $\textrm{UB}_2$ and significantly better than $\textrm{UB}_1$; see Fig.~\ref{fig:bs_tuning}.
  We fix ${{sources\_from\_R}} = 10$ and $\emph{beam\_iters} = 100$, and %as good results were already achieved employing these numbers. Root nodes kept in the global set are prioritized according to 
   $h' = \textrm{UB}_2$.   For the baseline \textsc{Bs} approach, a high beam width $\beta = 10,000$ and $h = h_{\text{prob}}$ are utilized. %, which consistently improves IMSBS performance compared to using $\textrm{UB}_1$.  
-  Remaining parameters of the IMSBS approach received the following values: $h=\text{UB}_2$ and $\beta=500$ to keep comparable average runtime between IMSBS and the baseline \textsc{Bs} approach. These values balance runtime relative to \textsc{Bs} while maintaining reasonable solution quality.  Similarly, for the \textsc{Imsbs-greedy} approach with fixed $\beta = 1$ uses  $\emph{beam\_iters} = 10000$, and all other parameters hold as in the tuned \textsc{Imsbs}.
- 
- %\subsection{Comparison between the heuristic approaches }
-  Numerical results for all three heuristic approaches are displayed in Fig.~\ref{fig:results_per_m}, reporting the average solution quality per instance group for each approach. Four plots are provided, one per each value of $m$. %Based on the numerical results, %presented in Table~\ref{tab:numerical_results_general_m}, 
-  %the following conclusions are drawn.
-  %in Table~\ref{tab:numerical_results_general_m}, which is organized into two main parts. 
-  %The first three columns describe the instance characteristics: the number of sequences ($m$), the sequence length ($n$), and the alphabet size ($|\Sigma|$). 
-  %The remaining columns report the performance of the three heuristic approaches: \textsc{Bs}, \textsc{Imsbs-greedy}, and \textsc{Imsbs}, each in its own block. For each algorithm, two performance indicators are provided: the average objective value $\overline{obj}$ and the average running time in seconds $\overline{t}$, computed over 10 instances per group.  
+  Remaining parameters of the IMSBS approach received the following values: $h=\text{UB}_2$ and $\beta=500$ to keep comparable average runtime between IMSBS and the baseline \textsc{Bs} approach. These values balance runtime relative to \textsc{Bs} while maintaining reasonable solution quality.  Similarly, for the \textsc{Imsbs-greedy} approach with fixed $\beta = 1$ uses  $\emph{beam\_iters} = 10000$, and all other parameters hold as in the tuned \textsc{Imsbs}.  
   
-  \begin{figure}[!ht]
+   \begin{figure}[!ht]
   	\vspace{-0.8cm}
-  	  	\begin{subfigure}[t]{0.45\textwidth}
+  	\begin{subfigure}[t]{0.45\textwidth}
   		\centering
   		\includegraphics[width=\linewidth, height=90pt]{figures/res\_general\_m2.png}
   		\caption{$m=2$}
@@ -359,9 +343,14 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
   	\label{fig:results_per_m}
   \end{figure}
   
-  The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating the selection of a right root node is essential in  achieving high-quality solutions. 
-  	 The baseline \textsc{Bs} performs equally well or better in just one case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches in 10 (out of 32) cases, mostly for the instances with larger $m=10$, having shorter final solutions where it turns out that  frequently moving from one to another root and exploring respective subgraphs of the search space is strategically crucial  than  just strengthening intensification around a solution with a high beam width.  Exploring additional root nodes serves to improve the diversity of the search process, which appears necessary in the case when expected solutions are short. This is exactly where  \textsc{Imsbs-greedy} fits well. 
-  	 The \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes.  \textsc{Imsbs-greedy} has a significantly larger average runtime due to a higher number of executed iterations ($beam\_iters = 10,000$) for the instances with larger $m$, in contrast to by iterations less intensive approaches.  % in the other two approaches.  %(limited to $beam\_iters = 100$).
+  
+  Numerical results for all three heuristic approaches are displayed in Fig.~\ref{fig:results_per_m}, reporting the average solution quality per instance group for each approach. Four plots are provided, one per each value of $m$. %Based on the numerical results, %presented in Table~\ref{tab:numerical_results_general_m}, 
+  %the following conclusions are drawn.
+  %in Table~\ref{tab:numerical_results_general_m}, which is organized into two main parts. 
+  %The first three columns describe the instance characteristics: the number of sequences ($m$), the sequence length ($n$), and the alphabet size ($|\Sigma|$). 
+  %The remaining columns report the performance of the three heuristic approaches: \textsc{Bs}, \textsc{Imsbs-greedy}, and \textsc{Imsbs}, each in its own block. For each algorithm, two performance indicators are provided: the average objective value $\overline{obj}$ and the average running time in seconds $\overline{t}$, computed over 10 instances per group.  
+   The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating the selection of a right root node is essential in  achieving high-quality solutions.   \textsc{Bs} performs better in just one case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches in 10 (out of 32) cases, mostly for the instances with larger $m=10$, having shorter final solutions where it turns out that  frequently moving from one to another root and exploring respective subgraphs of the search space is strategically crucial  than  just strengthening intensification around a solution with a high beam width.  Exploring additional root nodes  improves the diversity of the search process,  necessary in the case when expected solutions are short. This is exactly where  \textsc{Imsbs-greedy} fits well. 
+  	  \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes.  \textsc{Imsbs-greedy} has a significantly larger average runtime due to a higher number of executed iterations ($beam\_iters = 10,000$) for the instances with larger $m$, in contrast to by iterations less intensive approaches.  % in the other two approaches.  %(limited to $beam\_iters = 100$).
   	
   %	\item \textit{Other conclusions.}  Overall, \textsc{Imsbs} demonstrates greater robustness and stability as the number of input sequences increases in comparison to the baseline \textsc{Bs} approach which performance is gradually deteriorated. 
   	
@@ -370,8 +359,8 @@ The \textsc{Imsbs} is implemented in Python~3.11 and evaluated on the VEGA high-
 \section{Conclusions and Future Work}
 \label{sec: conclusions}
 
-In this work, we studied a generalized variable gapped LCS problem. It extends the classical LCS problem by constraining the allowable distances between matched characters, reflecting biological scenarios in which spatially closer nucleotides interact more strongly than distant ones.  %, but also to time-series analyses when events occur within specified time delays. 
-We proposed an enhanced Iterative Multi-Source Beam Search (IMSBS) which performs local exploration from promising root nodes involving a global strategy of selecting candidate root nodes based on previously collected search information. Experimental results indicate the IMSBS  consistently produces highest-quality solutions over the baseline beam search strategy. In the case of instances with a shorter expected solutions, the strategy of frequently moving from one feasible subspace to another one appears more efficient, than in case of small sequence number, where high beam width and a larger number of IMSBS iterations is required in achieving high-quality solutions.  %Concerning exact solving, we  compared three dynamic programming approaches from the literature with a newly designed ILP model. The results confirmed the DP variants solved all instances in the shortest amount of time, while the ILP approach was limited to smaller instances.  Additionally, IMSBS approach has frequently achieved close-to-optimum results for the two-input-sequence problem case, while requiring comparable or less computation time than the baseline beam search.
+This paper studied a generalized variable gapped LCS problem. It extends the classical LCS problem by constraining the allowable distances between matched characters, reflecting biological scenarios in which spatially closer nucleotides interact more strongly than distant ones.  %, but also to time-series analyses when events occur within specified time delays. 
+We proposed an Iterative Multi-Source Beam Search (IMSBS) which performs local exploration from promising root nodes involving a global strategy of candidate nodes selection based on previously collected search information. Experimental results indicate the IMSBS  consistently produces highest-quality solutions over the baseline beam search. For the instances with a shorter expected solutions, the strategy of frequently moving from one feasible subspace to another one appears more efficient, than in case of small sequence number, where a high beam width and number of IMSBS iterations is required in achieving high-quality solutions.  %Concerning exact solving, we  compared three dynamic programming approaches from the literature with a newly designed ILP model. The results confirmed the DP variants solved all instances in the shortest amount of time, while the ILP approach was limited to smaller instances.  Additionally, IMSBS approach has frequently achieved close-to-optimum results for the two-input-sequence problem case, while requiring comparable or less computation time than the baseline beam search.
  Future research includes designing more sophisticated heuristics which incorporate gap constraints into scoring, optimizing IMSBS to efficiently reuse previously explored regions of the state space, and testing the approaches on real-world biological instances. % and scaling experiments up to longer sequences. 
  \\
  \textit{\textbf{Acknowledgments.}} This publication is co-funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme (grant agreement No.~101081355 -- SMASH), and by the Republic of Slovenia and the European Union through the European Regional Development Fund. Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.
