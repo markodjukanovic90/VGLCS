@@ -250,7 +250,7 @@ Unlike the classical LCSP, the VGLCSP may exhibit multiple, potentially exponent
 			
 		\end{tikzpicture}
 	}
-	\caption{Root state space subgraphs: disconnected components.}
+	\caption{Root state space subgraphs: disconnected components.} \vspace{-0.5cm}
 	\label{fig:disconected-components}
 \end{figure}
 
@@ -351,7 +351,7 @@ We compare the performance of heuristic approaches designed for an arbitrary \( 
   %The first three columns describe the instance characteristics: the number of sequences ($m$), the sequence length ($n$), and the alphabet size ($|\Sigma|$). 
   %The remaining columns report the performance of the three heuristic approaches: \textsc{Bs}, \textsc{Imsbs-greedy}, and \textsc{Imsbs}, each in its own block. For each algorithm, two performance indicators are provided: the average objective value $\overline{obj}$ and the average running time in seconds $\overline{t}$, computed over 10 instances per group.  
    The \textsc{Imsbs} approach produces the highest average solution quality in 21 out of 32 instance groups, surpassing the baseline \textsc{Bs} approach dramatically, indicating the selection of a right root node is essential in  achieving high-quality solutions.   \textsc{Bs} performs better in just one case. Concerning the \textsc{Imsbs-greedy}, it surpasses the other two  approaches in 10 (out of 32) cases, mostly for the instances with larger $m=10$, having shorter final solutions where it turns out that  frequently moving from one to another root and exploring respective subgraphs of the search space is strategically crucial  than  just strengthening intensification around a solution with a high beam width.  Exploring additional root nodes  improves the diversity of the search process,  necessary in the case when expected solutions are short. This is exactly where  \textsc{Imsbs-greedy} fits well. 
-  	  \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes.  \textsc{Imsbs-greedy} has a significantly larger average runtime due to a higher number of executed iterations ($beam\_iters = 10,000$) for the instances with larger $m$, in contrast to by iterations less intensive approaches. The detailed numerical results with accompanying plots can be found in the supplementary material at  \url{XX}.  % in the other two approaches.  %(limited to $beam\_iters = 100$).
+  	  \textsc{Bs} and \textsc{Imsbs} approaches are tuned to exhibit comparable average runtimes.  \textsc{Imsbs-greedy} has a significantly larger average runtime due to a higher number of executed iterations ($beam\_iters = 10,000$) for the instances with larger $m$, in contrast to by iterations less intensive approaches. The detailed numerical results with accompanying plots can be found in the supplementary material at  \url{https://github.com/markodjukanovic90/VGLCS/blob/main/doc/EUROCAST-paper/supplementary.pdf}.  % in the other two approaches.  %(limited to $beam\_iters = 100$).
   	
   %	\item \textit{Other conclusions.}  Overall, \textsc{Imsbs} demonstrates greater robustness and stability as the number of input sequences increases in comparison to the baseline \textsc{Bs} approach which performance is gradually deteriorated. 
   	
