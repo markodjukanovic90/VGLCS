@@ -96,10 +96,10 @@ G_i \colon \{1,\ldots,|s_i|\} \mapsto \mathbb{N}.$ Precisely, if the characters 
 $i^1_i < \cdots < i^{|s|}_i$ in $s_i$, the gap constraint is fulfilled iff $
 i^x_i - i^{x-1}_i \leq G_i[i^x_i] + 1, \quad x = 2,\ldots,|s|.$ A common subsequence $s$ is considered \emph{feasible} if the corresponding gap constraints are satisfied simultaneously for all sequences in $S$. As an example of a VGLCSP, given is a set of two input  sequences $S=\{s_1=\texttt{ABCA},   s_2=\texttt{ACAB} \}$ with two gap constraints $G_1(\{1,\ldots, 4\}) \mapsto \textbf{1}= G_2(\{1, \ldots, 4\})$. The sequence $s=\texttt{ACA}$ is a feasible solution because it is a common subsequence of the both input strings, where its corresponding characters appear at positions 1, 3 and 4 in $s_1$ and at the positions 1, 2, and 3 in the $s_2$. As the difference between each consecutive pair of the indices of these positions is less or equal  $1+1=2$, $s$ represents a feasible sequence of the tackled problem.  On the other hand, sequence $s=$\texttt{AB} is also a common subsequence, but not fulfilling all gap constraints. In details, the corresponding characters appear at positions 1 and 2 in $s_1$ and at positions 1 and 4 in $s_2$. Obviously, $4-1=3>2=1+1$ thus violating the second gap constraint. \\ 
 The VGLCSP provides a flexible and realistic model for sequence comparison, particularly suited to applications in DNA and protein analysis where variable structural distances between (active) residues must be respected. Beyond bioinformatics, the problem also arises in time-series analysis, especially in settings where events are required to occur within specified temporal delays~\cite{lainscsek2015delay}.\\
-Although several dynamic programming approaches exist for the two-sequence case ($m=2$) scenario~\cite{penga2011longest}, their computational complexity becomes prohibitive when expanded for larger $m$. To the best of our knowledge, no effective exact or approximate approaches are currently existing for the generalized VGLCSP with arbitrary $m$, clearly an $\mathcal{NP}$-hard problem as a general version of the LCS problem with arbitrary large set of input strings. \\
+Although several dynamic programming approaches exist for the $m=2$ case~\cite{penga2011longest}, they are computationally  prohibitive when expanded for larger $m$. To the best of our knowledge, no effective exact or approximate approaches are known for the generalized VGLCSP with arbitrary $m$, clearly an $\mathcal{NP}$-hard problem as a generalization of the LCS problem with arbitrary large set of input strings. \\
 	\vspace{-0.7cm}
-\paragraph{Preliminaries and Notation.}	Let $|s|$ denote the length of a sequence $s$. The symbol $s[i]$ refers to the character at position $i$ of sequence $s$, where indexing starts at $i = 1$. The substring of $s$ that begins at position $i$ and ends at position $j$ is denoted by $s[i,j]$. If $i = j$, this substring corresponds to the single character $s[i]$; if $j < i$, then $s[i,j] = \varepsilon$, where $\varepsilon$ denotes the empty string.	The number of occurrences of $a \in \Sigma$ in a sequence $s$ is denoted by $|s|_a$.	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, and by $S^{rev} = \{s_1^{rev}, \ldots, s_m^{rev}\}$. 
-	 Unless stated otherwise, $m \in \mathbb{N}$ represents the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$.  Given is a positional vector $\mathbf{p}^L \in \mathbb{N}^m$,  subproblem related to these positions is given by $S[\mathbf{p}^L]=\{ s_i[\mathbf{p}^L_i] \mid i=1, \ldots, m\}$.  Last but not least, for a gap constraint $G_i$, its reverse constraint is denoted by  $G_i^{rev}$, and is given as $G_i^{rev}(j):=G_i(|s_i|-j+1)$, for each $j=1, \ldots, |s_i|$.  \\ 
+\paragraph{Preliminaries.}	Let $|s|$ denote the length of a sequence $s$, and let $s[i]$ refers to the character of $s$ at position $i$, where indexing starts at $i = 1$. The substring of $s$ that begins at position $i$ and ends at position $j$ is denoted by $s[i,j]$. If $i = j$, this corresponds to the single character $s[i]$; if $j < i$, then $s[i,j] = \varepsilon$, where $\varepsilon$ denotes the empty string.	The number of occurrences of $a \in \Sigma$ in $s$ is denoted by $|s|_a$.	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, and by $S^{rev} = \{s_1^{rev}, \ldots, s_m^{rev}\}$. 
+	 Unless stated otherwise, $m \in \mathbb{N}$ is the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$.  Given is a positional vector $\mathbf{p}^L \in \mathbb{N}^m$,  subproblem related to these positions is given by $S[\mathbf{p}^L]=\{ s_i[\mathbf{p}^L_i] \mid i=1, \ldots, m\}$.  Last but not least, for a gap constraint $G_i$, its reverse constraint is denoted by  $G_i^{rev}$, and is given as $G_i^{rev}(j):=G_i(|s_i|-j+1)$, for each $j=1, \ldots, |s_i|$.  \\ 
 	 
 	The remainder of the paper is organized as follows. Section~\ref{sec: state_graph} introduces the rooted state graph representation of the problem. In Section~\ref{sec: imsbs}, we  design of our main methodological contribution, the iterative multi-source beam search approach. Section~\ref{sec: experiments} reports the computational results, comparing the proposed method with a baseline beam search and an iterative greedy heuristic%, but also with several specially designed  approaches for two input sequences. 
 	Finally, Section~\ref{sec: conclusions} concludes the paper and outlines directions for future research.
@@ -204,7 +204,7 @@ Although several dynamic programming approaches exist for the two-sequence case 
 	
 	\caption{State space  $\textsc{RootedSubspace}(u=((1, 1), 0))$  between the sequences \texttt{\fbox{A}BCA} and  \texttt{\fbox{A}CAB}, assuming $G_1=G_2=\textbf{1}$. A final/terminal state is displayed in gray. The white-filled node is a valid LCS node, but not an VGLCS node, as the second gap constraint has been violated. The longest solution generated from this subspace is \texttt{ACA}. % \fxnote{Add VGLCS example}
 	}
-	\vspace{-0.5cm}
+	\vspace{-0.7cm}
 	\label{fig:vgcs-grafstanja}
 \end{figure}
 
@@ -339,7 +339,7 @@ We compare the performance of heuristic approaches designed for an arbitrary \( 
   		\caption{$m=10$}
   		\label{fig:results_per_m10}
   	\end{subfigure}
-  	\caption{Average solution quality of the three approaches.}
+  	\caption{Average solution quality of the three approaches.} \vspace{-0.5cm}
   	\label{fig:results_per_m}
   \end{figure}
   
@@ -370,6 +370,31 @@ We proposed an Iterative Multi-Source Beam Search (IMSBS) which performs local e
 	%
 	%https://www.promptingguide.ai/introduction/basics
 	\newpage
+	\title{Supplementary file on the paper entitled ``On Solving the Variable Gapped Longest Common Subsequence Problem''}
+	
+		\author{
+		Marko Djukanović\inst{1,2, 6}  \and
+		Nikola Balaban\inst{2}   \and
+		Christian Blum\inst{3}  \and 
+		Aleksandar Kartelj\inst{4}  \and
+		Sašo Džeroski\inst{5}  \and
+		Žiga Zebec\inst{6}
+	}
+	%
+	\authorrunning{Djukanovic et al.}
+	\institute{University of Nova Gorica, Nova Gorica, Slovenia \\ \email{marko.dukanovic@ung.si} \\ \and Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina \\
+		\email{nikola.balaban@student.pmf.unibl.org}, \email{marko.djukanovic@pmf.unibl.org} \and
+		Artificial Intelligence Research Institute (IIIA-CSIC), Barcelona, Spain \\
+		\email{christian.blum@iia.csic.es} \and 
+		Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\ \email{kartelj@matf.rs} \\ \and
+		Jožef Stefan Institute, Ljubljana, Slovenia \ \\ \email{saso.dzeroski@ijs.si}  \\
+		\and
+		Institute of Information Sciences (IZUM), Maribor, Slovenia \\
+		\email{ziga.zebec@izum.si} \vspace{-0.7cm} \\
+	}
+	
+	
+	\maketitle
 	\appendix
 	\section{ILP model for the fixed $m=2$ VGLCS Problem}\label{app:ilp}
 	
