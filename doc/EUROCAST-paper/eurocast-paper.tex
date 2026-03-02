@@ -399,7 +399,7 @@ We proposed an Iterative Multi-Source Beam Search (IMSBS) which performs local e
 	\appendix
 	\section{ILP model for the fixed $m=2$ VGLCS Problem}\label{app:ilp}
 	
-	When considering the VGLCS problem with two input sequences, in this section we propose an
+	For the case of the VGLCS problem with $m=2$, in this section we design an
 	\emph{integer programming model}, representing a methodological approach that differs from
 	most existing approaches in the literature, which are predominantly based on dynamic
 	programming (DP). This is a proof-of-concept showing structural difficulty of this approach and a baseline modeling contribution when solving the fixed version of the tackled problem. Shortly, the purpose of the ILP model is not computational competitiveness but structural modeling and benchmarking. \\
@@ -421,18 +421,18 @@ We proposed an Iterative Multi-Source Beam Search (IMSBS) which performs local e
 	We introduce additional binary variables $s_{i,j}$ indicating whether the pair $(i,j)$ represents
 	the \emph{starting position of the subsequence}. \\
 	
-	\textrm{Objective function}. We maximize the number of selected admissible matches:
+	\textit{Objective function}. We maximize the number of selected admissible matches:
 	\[
 	\max \sum_{(i,j) \in M} x_{i,j}
 	\]
 	
-	\textrm{Constraints}. The following constraints are imposed:
+	\textit{Constraints}. The following constraints are imposed:
 	
 	\begin{enumerate}
 		\item \textrm{Predecessors (variable gap).}  
 		For each $(i,j) \in M$, we define the set of valid predecessors:
 		\[
-		\textrm{Pred}(i,j) =
+		\texttt{Pred}(i,j) =
 		\{ (i',j') \in M \mid i' < i,\ j' < j,\ i - i' \leq G_{s_1}[i] + 1,\ j - j' \leq G_{s_2}[j] + 1 \}
 		\]
 		The activation constraint is given by:
@@ -440,25 +440,25 @@ We proposed an Iterative Multi-Source Beam Search (IMSBS) which performs local e
 		x_{i,j} \leq \sum_{(i',j') \in \textrm{Pred}(i,j)} x_{i',j'} + s_{i,j}
 		\]
 		
-		\item \textrm{Starting position.}  
+		\item \textit{Starting position.}  
 		At most one starting pair is allowed:
 		\[
 		\sum_{(i,j) \in M} s_{i,j} \leq 1
 		\]
 		
-		\item \textrm{Conflict constraints (character ordering).}  
+		\item \textit{Conflict constraints (character ordering).}  
 		Two distinct pairs $(i,j)$ and $(i',j')$ are in conflict if they violate the character order:
 		\[
 		\textrm{If } (i \leq i' \textrm{ and } j \geq j') \textrm{ or }
 		(i \geq i' \textrm{ and } j \leq j'), \textrm{ then:}
 		\quad x_{i,j} + x_{i',j'} \leq 1
 		\]
-		\item Auxiliary constraints: $s_{i, j}=1 \Rightarrow x_{i',j'}=0, \forall (i' \leq i-1, j' \leq j-1)$. The constraints are expressed in the following form: 
+		\item \textit{Auxiliary constraints}: $s_{i, j}=1 \Rightarrow x_{i',j'}=0, \forall (i' \leq i-1, j' \leq j-1)$. The constraints are expressed in the following form: 
 		$$ \sum_{(i', j') \mid i'\leq i \wedge j'\leq j} x_{i' j'} + s_{i, j} \leq 1, \forall (i, j) \in M$$
 	\end{enumerate}
 	
 
-\textit{The domain of the variables is given by}
+\textit{Domains of the variables is given by}
 \[
 x_{i,j},\ s_{i,j} \in \{0,1\}, \quad \forall (i,j) \in M.
 \]
@@ -469,16 +469,20 @@ elements in both sequences.
 
 \section{Pseudocodes}
 
-\begin{algorithm}
+\begin{algorithm}[H]
 	\caption{Rooted Beam Search}
 	\label{alg:bs}
 	\begin{algorithmic}[1]
 		
 		\Function{RootedBeamSearch}{$R, S, \{G_i\}_{i=1}^m, \beta, h$}
-		\Comment{$r$: root node, $S=\{s_1,\dots,s_m\}$, gap constraints $G_i$, beam width $\beta$, heuristic $h$}
+		\Comment{$r\in R$: root nodes, $S=\{s_1,\dots,s_m\}$, gap constraints $G_i$, beam width $\beta$, heuristic $h$}
 		
 		\State $s_{\text{best}} \gets \varepsilon$
-		\State $B \gets R$ \Comment{Starting beam}
+		\State $B \gets \emptyset$ \Comment{Starting beam}
+		%the first extension: TODO
+		\ForAll{$v \in R$} \Comment{starting match extensions}
+		   \State $B \gets B \cup \{ (p^{L,v}+\textbf{1}, 1) \}$
+		\EndFor
 		\State $V_{\text{complete}} \gets \emptyset$
 		
 		\While{$B \neq \emptyset$}
@@ -511,12 +515,12 @@ elements in both sequences.
 
 
    %pseudocode:
-\begin{algorithm}[!ht]
-	\caption{Iterated Multi-source Beam Search (IMSBS) Framework }
+\begin{algorithm}[H]
+	\caption{Iterative Multi-source Beam Search (IMSBS) Framework }
 	\label{alg:imbs}
 	\begin{algorithmic}[1]
-		\Require Sequences $s_1, \dots, s_m$; Gap functions $G_{s_i}(\cdot)$; beam width $\beta>0$; ${sources\_from\_R}>0$; $beam\_iters>0$, heuristics $h, h'$, time limit $t_{{lim}}$
-		\Ensure Approximate common subsequence $s_{\textrm{best}}$ which fulfills the gap constraints
+		\Require Sequences $S=\{s_1, \dots, s_m\}$; Gap functions $G_{s_i}(\cdot),i=1,\ldots,m$; beam width $\beta>0$; ${sources\_from\_R}>0$; $beam\_iters>0$, heuristics $h, h'$, time limit $t_{{lim}}$
+		\Ensure Approximate common subsequence $s_{\textrm{best}}$ which fulfills all gap constraints
 		
 		\State Initialize $\mathcal{R} \gets \{ (\mathbf{1},0) \}$ \Comment{A set of root nodes}
 		
@@ -529,19 +533,18 @@ elements in both sequences.
 		\State $s_{\textrm{best}} \gets  \varepsilon$
 		
 		\While{$\mathcal{R} \neq \emptyset \wedge iter < beam\_iters  \wedge t_{lim}$ not exceeded }
-		\State Select $\mathcal{L} \subseteq \mathcal{R}$  ${sources\_from\_R}$  and remove them from $\mathcal{R}$ \Comment{ $\mathcal{R}$ prioritized by   $h'$}
+		\State Select $\mathcal{L} \subseteq \mathcal{R}$  ${sources\_from\_R}$  and remove them from $\mathcal{R}$ \Comment{ $\mathcal{R}$ prioritized acc. to $h'$}
 		%\Comment{$\mathcal{R}$ can be a pr. queue ordered by heuristic $h'$}
 		\ForAll{$w \in \mathcal{L}$}
 		\State $s_{bwrd}^w, \_ \gets$ 
 		\textsc{RootedBeamSearch}(  
-		$(\{ (|s_i| - p^w_i-1)_{i=1}^m, 0\}, S^{rev}, G^{rev}, \beta', h')$
+		$(\{ (|s_i| - p^w_i)_{i=1}^m, 0\}, S^{rev}, G^{rev}, \beta', h')$
 		\Comment{Refine each $w \in \mathcal{L}$}
-		\State  $l^w \gets |(s_{bwrd}^w)^{rev}|$  \Comment{Update $l^w$, assign the reverse of $s_{bwrd}^w$ to $w$}
+		\State  $l^w \gets |(s_{bwrd}^w)^{rev}|-1$  \Comment{Update $l^w$, assign the reverse of $s_{bwrd}^w$ without the last letter  to $w$}
 		\EndFor
-		
-		\State \State $s_{b}, V_{complete}
+		\State $s_{b}, V_{complete}
 		\gets$ 
-		\textsc{RootedBeamSearch}( $\mathcal{L}, S, G, \beta, h)$ 
+		\textsc{RootedBeamSearch}($\mathcal{L}, S, G, \beta, h)$ 
 		\If{$|s_b| > s_{best}$}
 		\State $s_{best} \gets s_b$
 		\EndIf
@@ -549,7 +552,7 @@ elements in both sequences.
 		\ForAll{$v \in V_{complete}$}
 		
 		\ForAll{ $a \in \Sigma$} \Comment{Find closest matching positions for each letter}
-		\State $\textbf{p}^w_{a}= ({p}^w_{i, a})_{i=1}^m \gets$ minimum position  $p^w_{i, a} > {p}_i^v$ and $s_i[p^w_{i, a}] = a$ (ignore all gap constraints)
+		\State $\textbf{p}^w_{a}= ({p}^w_{i, a})_{i=1}^m \gets$ minimum position  $p^w_{i, a} \geq {p}_i^v$ and $s_i[p^w_{i, a}] = a$ (ignore all gap constraints)
 		%\If{$|s_{\textrm{best}}| < l^w + \min_{i=1,\dots,m} \{ |s_i| - p^w_i + 1 \}$}    \Comment{cut-off}
 		
 		\State $\mathcal{R} \gets$ $\mathcal{R} \cup \{r^w = (\textbf{p}^w_a, 0)\}$   (if has not previously been  added) \Comment{Update $\mathcal{R}$}
@@ -567,7 +570,7 @@ elements in both sequences.
 
 \begin{figure}[!ht]
   \centering
-  \scalebox{0.38}{
+  \scalebox{0.70}{
 	 \begin{tikzpicture}[
 		node distance=0.7cm and 1.2cm,
 		every node/.style={font=\small},
@@ -645,26 +648,26 @@ elements in both sequences.
 		|- (end.west);		
 	\end{tikzpicture}}
 
-  \caption{Simplified workflow of the Iterated Multi-source Beam Search (IMSBS) framework.}
+  \caption{Simplified workflow of the Iterative Multi-source Beam Search (IMSBS) framework.}
   \label{fig:imsbs_workflow}
 \end{figure}
 
 
 \section{Experimental Evaluation: Additional plots}
 
-\begin{figure}[!ht]
+\begin{figure}[H]
 	\centering
 	\begin{subfigure}[t]{0.48\textwidth}
 		\centering
 		\includegraphics[width=\linewidth, height=120pt]{figures/bs_tuning_quality.png}
-		\caption{Avg. quality over all instances from the \textsc{Random} benchmark suite.}
+		\caption{Avg. quality over all instances of the \textsc{Random} benchmark suite.}
 		\label{fig:tune_bs}
 	\end{subfigure}
 	~
 	\begin{subfigure}[t]{0.48\textwidth}
 		\centering
 		\includegraphics[width=\linewidth, height=120pt]{figures/bs_tuning_time.png}
-		\caption{Avg. runtime over all instances from the \textsc{Random} benchmark suite.}
+		\caption{Avg. runtime over all instances of the \textsc{Random} benchmark suite.}
 		\label{fig:tune_bs_time}
 	\end{subfigure}
 	\caption{Beam search tuning results on the \textsc{Random} benchmark suite.}
@@ -676,14 +679,14 @@ elements in both sequences.
 	\begin{minipage}{0.48\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]{figures/imsbs_tuning.png}
-		\caption*{(a) Avg. quality for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
+		\caption*{(a) Avg. solution quality of different IMSBS settings over all instances of the \textsc{Random} benchmark suite.}
 		\label{fig:tune_imsbs}
 	\end{minipage}
 	~
 	\begin{minipage}{0.48\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]{figures/imsbs_tuning_time.png}
-		\caption*{(b) Avg. runtime for different IMSBS settings over all instances from the \textsc{Random} benchmark suite.}
+		\caption*{(b) Avg. runtime of different IMSBS settings over all instances of the \textsc{Random} benchmark suite.}
 		\label{fig:tune_imsbs_time}
 	\end{minipage}
 	\caption{IMSBS parameter tuning results on the \textsc{Random} benchmark suite.}
@@ -691,10 +694,10 @@ elements in both sequences.
 \end{figure}
 
    
-\begin{table}[H]
+\begin{table}[!ht]
 	\caption{Numerical results of the three heuristic approaches on the \textsc{Random} benchmark suite. }\label{tab:numerical_results_general_m}
 	\centering
-	\scalebox{0.8}{
+	\scalebox{0.7}{
 		\begin{tabular}{lll|rr|rr|rr}
 			\hline
 			\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Bs}} & \multicolumn{2}{c}{\textsc{Imsbs-Greedy}} & \multicolumn{2}{c}{\textsc{Imsbs}} \\
@@ -740,7 +743,7 @@ elements in both sequences.
 \end{table}
 
 
- \section{Numerical results for the special case $m=2$}
+ \section{Numerical results for the special $m=2$ case}
 
 In this section, we compare the results of approaches from the literature that are specialized for the case $m=2$. The competitors are listed below and are described in detail in~\cite{penga2011longest}.
 
@@ -759,7 +762,7 @@ The results are reported in Table~\ref{tab:results-2d-literature}, which is orga
 \begin{table}[H]
 	\caption{Results on the \textsc{Random} benchmark set for $m=2$: the exact approaches from the literature.}\label{tab:results-2d-literature}
 	\centering
-	\scalebox{0.7}{
+	\scalebox{0.9}{
 		\begin{tabular}{lll|lr|rr|rr|rr}
 			\hline
 			\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Dp}}  &
@@ -797,20 +800,20 @@ Based on the numerical results presented in Table~\ref{tab:results-2d-literature
 \begin{figure}[htbp]
 	\centering
 	\begin{minipage}{0.48\textwidth}
-		\includegraphics[width=\linewidth]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
+		\includegraphics[width=\linewidth,height=120pt]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
 		\caption*{(a) Relative solution quality percentage distribution for each heuristic approach with respect to the optimal solutions.} 
 	\end{minipage}
 	\hfill
 	\begin{minipage}{0.48\textwidth}
 		\centering
-		\includegraphics[width=\linewidth]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
+		\includegraphics[width=\linewidth,height=120pt]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
 		\caption*{(b) Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
 	\end{minipage}
-	\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific ratio of the obtained (approximate) solution quality to the known optimal solution for $m=2$.}
+	\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific relative ratio of the obtained   solution quality w.r.t.\ the known optimal solutions.}
 	\label{fig:optimal-vs-heuristic}
 \end{figure}
 
-Concerning efficiency of \textsc{Bs}, \textsc{Imsbs-Greedy}, and \textsc{Imsbs} on the instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution in 63 out of 80 instances. These numbers are significantly lower in the case of other two heuristic approaches.   While in the case of instances with $|\Sigma|=4$ (and $m=2$), difference in the solution qualities between these two approaches is slightly in favor of \textsc{Imsbs}, in the case of instance with  small-sized alphabet ($|\Sigma|=2$) the  \textsc{Imsbs} approach clearly outperforms the other two approaches. Obviously, for the group of instances with $n=500$ and $|\Sigma|=2$ there is a room for further improvement. This is due to the fact that the LCS heuristics perform weakly on the instances with smaller alphabet size and larger sequence length~\cite{DJUKANOVIC2020106499} thus one has to look for other alternatives, as discussed in the future work section.
+Concerning efficiency of \textsc{Bs}, \textsc{Imsbs-Greedy}, and \textsc{Imsbs} on the instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution in 63 out of 80 problem instances. These numbers are significantly lower in the case of other two heuristic approaches.   While in the case of instances with $|\Sigma|=4$ (and $m=2$), difference in the solution qualities between these two approaches is slightly in favor of \textsc{Imsbs}, in the case of instance with  small-sized alphabet ($|\Sigma|=2$) the  \textsc{Imsbs} approach clearly outperforms the other two approaches. Obviously, for the group of instances with $n=500$ and $|\Sigma|=2$ there is a room for further improvement. This is due to the fact that the LCS heuristics perform weakly on the instances with smaller alphabet size and larger sequence length~\cite{DJUKANOVIC2020106499} thus one has to look for other alternatives, as discussed in the future work section.
 %Shortly, there remains room for improvement in designing a more robust guiding function especially for small alphabet size, as discussed in the future work section.
 
 
