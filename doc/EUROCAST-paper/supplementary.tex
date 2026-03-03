@@ -81,66 +81,66 @@
 	\appendix
 	\section{ILP model for the fixed $m=2$ VGLCS Problem}\label{app:ilp}
 	
-	For the case of the VGLCS problem with $m=2$, in this section we design an
-	\emph{integer programming model}, representing a methodological approach that differs from
-	most existing approaches in the literature, which are predominantly based on dynamic
-	programming (DP). This is a proof-of-concept showing structural difficulty of this approach and a baseline modeling contribution when solving the fixed version of the tackled problem. Shortly, the purpose of the ILP model is not computational competitiveness but structural modeling and benchmarking. \\
-	
-	To this end, let:
-	\begin{itemize}
-		\item $M = \{ (i,j) \mid s_1[i] = s_2[j] \}$ denote the set of all positions where the characters match.
-	\end{itemize}
-	
-	For each $(i,j) \in M$, we define a binary variable:
-	\[
-	x_{i,j} =
-	\begin{cases}
-		1, & \textrm{if the pair } (i,j) \textrm{ is selected as part of the solution}, \\
-		0, & \textrm{otherwise}.
-	\end{cases}
-	\]
-	
-	We introduce additional binary variables $s_{i,j}$ indicating whether the pair $(i,j)$ represents
-	the \emph{starting position of the subsequence}. \\
-	
-	\textit{Objective function}. We maximize the number of selected admissible matches:
-	\[
-	\max \sum_{(i,j) \in M} x_{i,j}
-	\]
-	
-	\textit{Constraints}. The following constraints are imposed:
-	
-	\begin{enumerate}
-		\item \textrm{Predecessors (variable gap).}  
-		For each $(i,j) \in M$, we define the set of valid predecessors:
-		\[
-		\texttt{Pred}(i,j) =
-		\{ (i',j') \in M \mid i' < i,\ j' < j,\ i - i' \leq G_{s_1}[i] + 1,\ j - j' \leq G_{s_2}[j] + 1 \}
-		\]
-		The activation constraint is given by:
-		\[
-		x_{i,j} \leq \sum_{(i',j') \in \textrm{Pred}(i,j)} x_{i',j'} + s_{i,j}
-		\]
-		
-		\item \textit{Starting position.}  
-		At most one starting pair is allowed:
-		\[
-		\sum_{(i,j) \in M} s_{i,j} \leq 1
-		\]
-		
-		\item \textit{Conflict constraints (character ordering).}  
-		Two distinct pairs $(i,j)$ and $(i',j')$ are in conflict if they violate the character order:
-		\[
-		\textrm{If } (i \leq i' \textrm{ and } j \geq j') \textrm{ or }
-		(i \geq i' \textrm{ and } j \leq j'), \textrm{ then:}
-		\quad x_{i,j} + x_{i',j'} \leq 1
-		\]
-		\item \textit{Auxiliary constraints}: $s_{i, j}=1 \Rightarrow x_{i',j'}=0, \forall (i' \leq i-1, j' \leq j-1)$. The constraints are expressed in the following form: 
-		$$ \sum_{(i', j') \mid i'\leq i \wedge j'\leq j} x_{i' j'} + s_{i, j} \leq 1, \forall (i, j) \in M$$
-	\end{enumerate}
-	
+	For the case of the VGLCS problem with $m=2$, in this section, we design an
+\emph{integer programming model}, representing a methodological approach that differs from
+most existing approaches in the literature, which are predominantly based on dynamic
+programming (DP). This is a proof-of-concept showing the structural difficulty of this approach and a baseline modeling contribution when solving the fixed version of the tackled problem. Shortly, the purpose of the ILP model is not computational competitiveness but structural modeling and benchmarking. \\
 
-\textit{Domains of the variables is given by}
+To this end, let:
+\begin{itemize}
+	\item $M = \{ (i,j) \mid s_1[i] = s_2[j] \}$ denotes the set of all positions where the characters match.
+\end{itemize}
+
+For each $(i,j) \in M$, we define a binary variable:
+\[
+x_{i,j} =
+\begin{cases}
+	1, & \textrm{if the pair } (i,j) \textrm{ is selected as part of the solution}, \\
+	0, & \textrm{otherwise}.
+\end{cases}
+\]
+
+We introduce additional binary variables $s_{i,j}$ indicating whether the pair $(i,j)$ represents
+the \emph{starting position of the subsequence}. \\
+
+\textit{Objective function}. We maximize the number of selected admissible matches:
+\[
+\max \sum_{(i,j) \in M} x_{i,j}
+\]
+
+\textit{Constraints}. The following constraints are imposed:
+
+\begin{enumerate}
+	\item \textrm{Predecessors (variable gap).}  
+	For each $(i,j) \in M$, we define the set of valid predecessors:
+	\[
+	\texttt{Pred}(i,j) =
+	\{ (i',j') \in M \mid i' < i,\ j' < j,\ i - i' \leq G_{s_1}[i] + 1,\ j - j' \leq G_{s_2}[j] + 1 \}
+	\]
+	The activation constraint is given by:
+	\[
+	x_{i,j} \leq \sum_{(i',j') \in \textrm{Pred}(i,j)} x_{i',j'} + s_{i,j}
+	\]
+	
+	\item \textit{Starting position.}  
+	At most one starting pair is allowed:
+	\[
+	\sum_{(i,j) \in M} s_{i,j} \leq 1
+	\]
+	
+	\item \textit{Conflict constraints (character ordering).}  
+	Two distinct pairs $(i,j)$ and $(i',j')$ are in conflict if they violate the character order:
+	\[
+	\textrm{If } (i \leq i' \textrm{ and } j \geq j') \textrm{ or }
+	(i \geq i' \textrm{ and } j \leq j'), \textrm{ then:}
+	\quad x_{i,j} + x_{i',j'} \leq 1
+	\]
+	\item \textit{Auxiliary constraints}: $s_{i, j}=1 \Rightarrow x_{i',j'}=0, \forall (i' \leq i-1, j' \leq j-1)$. The constraints are expressed in the following form: 
+	$$ \sum_{(i', j') \mid i'\leq i \wedge j'\leq j} x_{i' j'} + s_{i, j} \leq 1, \forall (i, j) \in M$$
+\end{enumerate}
+
+
+\textit{Domains of the variables are given by}
 \[
 x_{i,j},\ s_{i,j} \in \{0,1\}, \quad \forall (i,j) \in M.
 \]
@@ -149,7 +149,7 @@ The model is formulated to maximize the number of valid matches forming a common
 while respecting the ordering of elements and the maximum allowed gaps between consecutive
 elements in both sequences.
 
-\section{Pseudocodes}
+\section{Pseudocodes of the IMSBS approach}
 
 \begin{algorithm}[H]
 	\caption{Rooted Beam Search}
@@ -379,7 +379,7 @@ elements in both sequences.
 \begin{table}[!ht]
 	\caption{Numerical results of the three heuristic approaches on the \textsc{Random} benchmark suite. }\label{tab:numerical_results_general_m}
 	\centering
-	\scalebox{0.7}{
+	\scalebox{0.70}{
 		\begin{tabular}{lll|rr|rr|rr}
 			\hline
 			\multicolumn{3}{c}{Inst.} & \multicolumn{2}{c}{\textsc{Bs}} & \multicolumn{2}{c}{\textsc{Imsbs-Greedy}} & \multicolumn{2}{c}{\textsc{Imsbs}} \\
@@ -424,16 +424,15 @@ elements in both sequences.
 	\end{tabular}}
 \end{table}
 
+\section{Numerical results for the special $m=2$ case}
 
- \section{Numerical results for the special $m=2$ case}
-
-In this section, we compare the results of approaches from the literature that are specialized for the case $m=2$. The competitors are listed below and are described in detail in~\cite{penga2011longest}.
+  In this section, we compare the results of approaches from the literature that are specialized for the case $m=2$. The competitors are listed below and are described in detail in~\cite{penga2011longest}.
 
 \begin{itemize}
 	\item \textsc{Dp}: the basic dynamic programming algorithm;
 	\item \textsc{Dp}-1: an advanced dynamic programming approach that uses Incremental Suffix Maximum Queries (ISMQ) with \texttt{Col} and \texttt{All} matrices to accelerate the basic DP algorithm;
-	\item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup. All three DP approaches are from~\cite{penga2011longest}. Note that the original paper proposes answering ISMQ using Union-Find operations; however, due to lack of implementation details, we decided to employ a dequeue-based approach in our implementation.
-	\item \textsc{Ilp}: an integer linear programming method proposed in this work (see Appendix~\ref{app:ilp}), motivated by the ILP model for LCS problem~\cite{blum2016metaheuristics}.
+	\item \textsc{Dp}-2: an enhanced dynamic programming algorithm that handles ISMQ using a \textit{dequeue} data structure for further speedup. All three DP approaches are from \cite{penga2011longest}. Note that the original paper proposes answering ISMQ using Union-Find operations; however, due to a lack of implementation details, we decided to employ a dequeue-based approach in our implementation.
+	\item \textsc{Ilp}: an integer linear programming method proposed in this work (see Appendix~\ref{app:ilp}), motivated by the ILP model for the LCS problem~\cite{blum2016metaheuristics}.
 \end{itemize}
 
 Each algorithm was allocated 30 minutes of execution time. The \textsc{Ilp} model was solved using the general-purpose solver \textsc{Cplex} version 22.1.
@@ -471,19 +470,19 @@ The results are reported in Table~\ref{tab:results-2d-literature}, which is orga
 \end{table} 
 
 
-Based on the numerical results presented in Table~\ref{tab:results-2d-literature}, the following conclusions can be drawn:
+Based on the numerical results reported in Table~\ref{tab:results-2d-literature}, the following conclusions can be drawn:
 
 \begin{itemize}
-	\item All three dynamic programming approaches are highly efficient, solving all 80 problem instances.
-	\item The runtimes of DPs required to obtain optimal solutions are relatively short, mostly remaining below 10 seconds.
-	\item The \textsc{Ilp} approach is able to solve only the smallest instances with $n=50$; its execution times are roughly two orders of magnitude higher than those of the DP approaches. For larger instances, especially those with $n=200$, the ILP approach is unable to solve even the initial (root) relaxations.
+	\item All three dynamic programming approaches prove to be highly efficient, successfully solving all 80 problem instances to optimality.
+	\item The runtimes required by the DP methods to obtain optimal solutions are relatively short, in most cases remaining below 10 seconds.
+	\item The \textsc{ILP} approach is capable of solving only the smallest instances with $n=50$. Its execution times are approximately two orders of magnitude higher than those of the DP approaches. For larger instances, particularly those with $n=200$, the ILP model fails to solve even the initial (root) relaxation.
 \end{itemize}
 
 \begin{figure}[htbp]
 	\centering
 	\begin{minipage}{0.48\textwidth}
 		\includegraphics[width=\linewidth,height=120pt]{figures/bs_imsbs_imbs_greedy_vs_dp_quality_distribution.png} 
-		\caption*{(a) Relative solution quality percentage distribution for each heuristic approach with respect to the optimal solutions.} 
+		\caption*{(a) Percentage distribution of relative solution quality for each heuristic approach with respect to the optimal solutions.} 
 	\end{minipage}
 	\hfill
 	\begin{minipage}{0.48\textwidth}
@@ -491,14 +490,29 @@ Based on the numerical results presented in Table~\ref{tab:results-2d-literature
 		\includegraphics[width=\linewidth,height=120pt]{figures/bs_imsbs_imsbs_greedy_vs_dp_quality.png}
 		\caption*{(b) Relative solution quality achieved by the heuristic approaches compared to the optimal solutions.}
 	\end{minipage}
-	\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific relative ratio of the obtained   solution quality w.r.t.\ the known optimal solutions.}
+	\caption{Number of instances for which \textsc{Bs} and \textsc{Imsbs} achieve a specific relative ratio of the obtained solution quality with respect to the known optimal solutions.}
 	\label{fig:optimal-vs-heuristic}
 \end{figure}
 
-Concerning efficiency of \textsc{Bs}, \textsc{Imsbs-Greedy}, and \textsc{Imsbs} on the instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} illustrates the distribution of instances (on the $y$-axis) achieving specific ratios of solution quality relative to the known optimal solutions (on the $x$-axis). In particular, \textsc{Imsbs} reaches a near-optimal solution in 63 out of 80 problem instances. These numbers are significantly lower in the case of other two heuristic approaches.   While in the case of instances with $|\Sigma|=4$ (and $m=2$), difference in the solution qualities between these two approaches is slightly in favor of \textsc{Imsbs}, in the case of instance with  small-sized alphabet ($|\Sigma|=2$) the  \textsc{Imsbs} approach clearly outperforms the other two approaches. Obviously, for the group of instances with $n=500$ and $|\Sigma|=2$ there is a room for further improvement. This is due to the fact that the LCS heuristics perform weakly on the instances with smaller alphabet size and larger sequence length%~\cite{DJUKANOVIC2020106499} 
- thus one has to look for other alternatives, as discussed in the future work section.
-%Shortly, there remains room for improvement in designing a more robust guiding function especially for small alphabet size, as discussed in the future work section.
 
 
+Concerning the efficiency of \textsc{Bs}, \textsc{Imsbs-Greedy}, and \textsc{Imsbs} on the instances solved optimally by dynamic programming ($m=2$), Figure~\ref{fig:optimal-vs-heuristic} presents the distribution of instances (y-axis) attaining specific ratios of solution quality relative to the known optimal solutions (x-axis).
+
+In particular, \textsc{Imsbs} achieves near-optimal solutions in 63 out of 80 problem instances, whereas the corresponding numbers are significantly lower for the other two heuristic approaches. For instances with $|\Sigma|=4$ (and $m=2$), the difference in solution quality is slightly in favor of \textsc{Imsbs}. However, for instances with a small alphabet ($|\Sigma|=2$), \textsc{Imsbs} clearly outperforms the other two approaches.
+
+Nevertheless, for the group of instances with $n=500$ and $|\Sigma|=2$, there remains room for further improvement. This behavior can be explained by the known weakness of LCS-based heuristics on instances characterized by small alphabet sizes and long sequences; therefore, alternative strategies should be explored, as discussed in the future work section.
+\begin{thebibliography}{99}
+	
+	\bibitem{blum2016metaheuristics}
+	C.~Blum and P.~Festa,
+	\newblock {\em Metaheuristics for String Problems in Bio-informatics},
+	\newblock Vol.~6, John Wiley \& Sons, 2016.
+	
+	\bibitem{penga2011longest}
+	Y.-H.~Penga and C.-B.~Yangb,
+	\newblock The Longest Common Subsequence Problem with Variable Gapped Constraints,
+	\newblock In {\em Proceedings of the 28th Workshop on Combinatorial Mathematics and Computation Theory, Penghu, Taiwan}, pp.~17--23, 2011.
+	
+\end{thebibliography}
 
 \end{document}
