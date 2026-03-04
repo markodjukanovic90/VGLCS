@@ -335,7 +335,7 @@ elements in both sequences.
 \end{figure}
 
 
-\section{Experimental Evaluation: Additional plots}
+\section{Experimental Evaluation: Tuning \& Numerical Results}
 
 \begin{figure}[H]
 	\centering
@@ -376,8 +376,11 @@ elements in both sequences.
 \end{figure}
 
    
+     Numerical results for all three heuristic derivatives are shown in Table~\ref{tab:numerical_results_general_m}.   organized as follows. 
+     First three columns describe the instance characteristics: the number of sequences ($m$), the sequence length ($n$), and the alphabet size ($|\Sigma|$).  The remaining columns report the performance metrics of three heuristic approaches: \textsc{Bs}, \textsc{Imsbs-greedy}, and \textsc{Imsbs} respectively, each by its own block where two performance indicators are reported: the average objective value ($\overline{obj}$) and the average running time in seconds ($\overline{t}$), computed over 10 instances per group. 
+   
 \begin{table}[!ht]
-	\caption{Numerical results of the three heuristic approaches on the \textsc{Random} benchmark suite. }\label{tab:numerical_results_general_m}
+	\caption{Numerical results   on the \textsc{Random} benchmark suite. }\label{tab:numerical_results_general_m}
 	\centering
 	\scalebox{0.70}{
 		\begin{tabular}{lll|rr|rr|rr}
@@ -424,7 +427,7 @@ elements in both sequences.
 	\end{tabular}}
 \end{table}
 
-\section{Numerical results for the special $m=2$ case}
+\section{Numerical results for the $m=2$ case}
 
   In this section, we compare the results of approaches from the literature that are specialized for the case $m=2$. The competitors are listed below and are described in detail in~\cite{penga2011longest}.
 
