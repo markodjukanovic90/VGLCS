@@ -1,0 +1,17 @@
+TUNING 2 (brkga):
+
+-training_beam_width 50 -training_time_limit 86400 -ga_configuration 2
+
+LIMSBS-2000_imbs-iters-500_num-roots-10_U10_10_10_A2_F2.csv
+
+
+Executed:
+
+ LIMSBS-5000_imbs-iters-100_num-roots-10 U10 10 10 A2 F2 
+ IMSBS-5000_heuristic-h5_imbs-iters-100_num-roots-10
+ --> poor results 
+ 
+ 
+ -- better results with more iterations of IMSBS 
+ IMSBS-1000_heuristic-h5_imbs-iters-1000_num-roots-10
+ LIMSBS-1000_imbs-iters-1000_num-roots-10 U10 10 10 A2 F2

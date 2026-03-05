@@ -1,0 +1,1 @@
+ -weight_limit 1 -training_beam_width 10 -training_time_limit 86400 -activation_function ${35} -feature_configuration ${36}  -ga_configuration 1
