@@ -208,7 +208,7 @@ IMSBS setting (grid search used for tuning):
 	\item     $\beta=1000$, $h'=h5$, $\#imbs\_iters=1000, \#num\_roots=10$
 \end{itemize}
 
-Learning IMSBS setting uses the same setting, to be completely fair with the comparison. The neural network configuration in this case, obtained after running several 2-layer $(n_1, n_2)$ and 3-layer configurations  $(n_1, n_2, n_3)$ for $n_1, n_2, n_3 \in \{5, 10\}$ (neurons) and $n_1 \geq n_2 \geq n_3$. We set up the same activation function in all layers choosing among the three (most) known $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. The best one uses \texttt{ReLU} at each layer, and besides instance-based features, it additionally incorporate the size of alphabet $\Sigma$ (F2).  
+Learning IMSBS setting uses the same setting, to be completely fair with the comparison. The neural network configuration in this case, obtained after running several 2-layer $(n_1, n_2)$ and 3-layer configurations  $(n_1, n_2, n_3)$ for $n_1, n_2, n_3 \in \{5, 10\}$ (neurons) and $n_1 \geq n_2 \geq n_3$. We set up the same activation function in all layers choosing among the three (most) known $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. The best one uses \texttt{ReLU} at each layer, and besides instance-based features, it additionally incorporate the size of alphabet $\Sigma$ (F2).  The configurations of NNs are obtained only after 2 hours of tuning (TODO: employ a signification larger time resources).
 
  
 \end{document}
