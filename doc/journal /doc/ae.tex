@@ -7,13 +7,21 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 
+\title{POSTER: Learning Heuristics for Multiple Gapped Longest Common Subsequence Problem}
+
+\authorinfo{Marko Djukanović}
+{University of Nova Gorica\\	Nova Gorica, Slovenia
+}  {marko.djukanovic@ung.si}
+
 \begin{document}
 	
+	\maketitle
 	\special{papersize=8.5in,11in}
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 	\section*{Abstract}
-	
+		 
  	The Variable Gapped Longest Common Subsequence Problem (VGLCSP) is a challenging combinatorial optimization problem arising in sequence analysis with applications in computational biology and time series analysis, where the search space grows rapidly with the number and with gap constraints. Beam Search--based heuristics can provide good approximate solutions, but their effectiveness strongly depends on the quality of the heuristic used to evaluate partial subsequences.
  	
  	This work proposes a learning-based framework to automatically construct a heuristic for guiding Beam Search (BS) in the VGLCSP. The approach integrates a feed-forward neural network (FFNN) within the Iterative Multi-Source BS (IMSBS) algorithm, where the network estimates the quality of candidate extensions during the search. Instead of gradient-based training, the network parameters are optimized using a Genetic Algorithm (GA), allowing the heuristic to be learned directly from solution quality obtained during the search process. Compact feature representations are designed to encode the state of partial solutions, enabling the learned heuristic to generalize across instances with varying sequence lengths, numbers of sequences, and alphabet sizes. During training, candidate neural networks are evaluated by embedding them within the BS procedure and measuring solution quality on a set of training instances, while separate validation instances are used to monitor generalization.
@@ -24,10 +32,10 @@
 	\section*{CCS Concepts}
 	
 	\begin{itemize}
-		\item Computing methodologies $\rightarrow$ Artificial intelligence;
-		\item Computing methodologies $\rightarrow$ Machine learning;
+		\item Computing methodologies $\rightarrow$ Artificial intelligence, 
+		 Machine learning;
 		\item Theory of computation $\rightarrow$ Design and analysis of algorithms;
-		\item Applied computing $\rightarrow$ Computational biology.
+	%	\item Applied computing $\rightarrow$ Computational biology.
 	\end{itemize}
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -72,25 +80,16 @@
 	Validation instances are evaluated separately to monitor generalization performance.
 	
 	A key aspect of the approach is the design of compact feature representations for partial search states. 
-	Each node in the search tree is described by a feature vector containing:
-	
-	\begin{itemize}
-		\item normalized positions of current matches in each sequence
-		\begin{itemize}
-			\item   statistical descriptors (minimum, maximum, mean, and standard deviation) of these positions;
-	    \end{itemize}
-		\item the current length of the partial subsequence,
-		\item statistical summaries of remaining gap constraints,
-		\item global instance features such as alphabet size $|\Sigma|$.
-	\end{itemize}
-	Some other global features have been considered such as number of sequences ($m$) or lenght of input sequences ($n$), however without improving the results.
+	Each node in the search tree is described by a feature vector containing
+		(i) normalized positions of current matches in each sequence:
+			   statistical descriptors (minimum, maximum, mean, and standard deviation) of these positions; (ii)  the current length of the partial subsequence; (iii) statistical summaries of remaining gap constraints; (iv) global instance features such as alphabet size $|\Sigma|$. Some other global features have been taken into account such as number of sequences ($m$) or lenght of input sequences ($n$), however without improving the results.
 	
 	These features provide a low-dimensional yet informative representation of the search state and allow the neural network to generalize across instances of different sizes. The learning process is illustrated in Figure~\ref{fig:ga_imsbs}.  
 	
 	\begin{figure}[!ht]
 		\centering
 		\includegraphics[width=200pt,height=150pt]{ffnn_train.png}
-				 \caption{Graphical representation of learning a NN-guidance of the VGLCSP.}   \label{fig:ga_imsbs}
+				 \caption{Graphical representation of learning a NN-guidance.}   \vspace{-0.5cm} \label{fig:ga_imsbs}
 
 	\end{figure}
 	
@@ -102,7 +101,7 @@
 	
 	A set of random instances is generated in the letter paper, where for each combinations  number of sequences $m \in \{2,3,5,10\}$, sequence length $n \in \{50,100,200,500\}$, and alphabet size $|\Sigma| \in \{2,4\}$, 10 random instances is generated. All sequences are randomly generated. In overall, 320 problem instances are provided. Both algorithms are tuned by the grid search. The best-performing neural network configuration uses three hidden layers with 10 neurons each and the \texttt{ReLU} activation function, among the three tested (\texttt{ReLU}, \texttt{sigmoid}, and \texttt{tanh}).	Training of the neural heuristic using BRKGA is performed for two hours on the High performance computing infrastructure VEGA, placed at IZUM in Maribor, Slovenia. 
 	
-	Despite this relatively modest training budget, the learned heuristic demonstrates competitive performance and improves average solution quality in several instance categories, particularly for larger numbers of sequences, see numerical results in Table~\ref{tab:preliminary_results}.  These results indicate that learning-based heuristics can effectively guide BS and adapt to structural characteristics of the sequence alignment problems, in this case the VGLCS, especially suited for $m\geq 5$.
+	Despite this relatively modest training budget, the learned heuristic demonstrates competitive performance and improves average solution quality in several instance categories, particularly for larger numbers of sequences, see numerical results in Table~\ref{tab:preliminary_results}.  These results indicate learning-based heuristics can effectively guide BS and adapt to structural characteristics of the sequence  problems, in this case the VGLCS, especially suited for $m\geq 5$.
 	
 	\input{results_preliminary.tex}
 	
@@ -119,7 +118,8 @@
 	%	\item \url{https://www.acm.org/publications/policies/artifact-review-and-badging-current}
 	%	\item \url{https://cTuning.org/ae}
 	%\end{itemize}
-	\section*{Acknowledgments.} TODO
+	\section*{Acknowledgments.} This publication is co-funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme (grant agreement No.~101081355 -- SMASH), and by the Republic of Slovenia and the European Union through the European Regional Development Fund. Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.
+	
 	
 	\bibliographystyle{splncs04}
 	\bibliography{bib}
