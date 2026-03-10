@@ -56,6 +56,8 @@ Given a candidate weight vector:
 
 The fitness value is computed as the average solution quality over all training instances. Validation performance is computed analogously on a separate dataset and is used only for reporting.
 
+\textcolor{red}{(Q0) Speed up -- evaluate fitness value by using parallelization. }
+
 \subsection{Feature Extraction for the Variable-Gap LCS}
 
 To guide the search process, each partial solution (node) is represented by a fixed-length numerical feature vector capturing both the current state of the construction and the structure of the remaining search space. These features are designed to be instance-independent and comparable across problem sizes.
@@ -69,9 +71,9 @@ so that progress in each sequence lies in $[0,1]$ and becomes independent of abs
 From this normalized position vector, four statistical descriptors are extracted: maximum, minimum, mean, and standard deviation (4 features). These quantities characterize, respectively, the most advanced and least advanced sequences, the average depth of the search, and the imbalance of progress among sequences. In addition, \textit{the current length of the partially constructed subsequence} is included as a feature (as the fifth feature). Together, these values provide a compact description of the current search state.
 
 To capture the feasibility of future extensions, gap-related features are computed from the positions of remaining sequences (subproblem) of input sequences. For each sequence $s_i$, all gap bounds associated with positions strictly after the current node position are collected. Symbolically, for each $v$,  $Gap^{min}_i$ is calculated as $\min\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$,  $Gap^{max}_i$ is calculated as $\max\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$,  $Gap^{avg}_i$  as $\text{AVG}\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$, and  
- $Gap^{std}_i$  as $\text{STD}\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$, where $G_1, \ldots, G_m$ are gap constraints associated to $s_1, \ldots, s_m$ respectively. This gives us additionally 4 features; in overall 9 features are used for the \textbf{feature configuration 1} (F1).  These statistics for gap constrains summarize the remaining flexibility of the instance: large average or maximum gaps indicate greater freedom for future matches, whereas small minimum gaps and large variability typically signal tighter constraints and increased difficulty.
+ $Gap^{std}_i$  as $\text{STD}\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$, where $G_1, \ldots, G_m$ are gap constraints associated to $s_1, \ldots, s_m$ respectively \textcolor{red}{speed up the calc. of G-stats -- preprocessing... }. This gives us additionally 4 features; in overall 9 features are used for the \textbf{feature configuration 1} (F1).  These statistics for gap constrains summarize the remaining flexibility of the instance: large average or maximum gaps indicate greater freedom for future matches, whereas small minimum gaps and large variability typically signal tighter constraints and increased difficulty.
   Additional feature $|\Sigma|$, this 10 features, created the \textbf{feature configuration 2} (F2); When adding $m$ (number of input sequences) to F2, we obtain \textbf{feature configuration 3} (F3). 
-
+\textcolor{red}{(Q1) uestion: s there a need for normalization of gap values of respective subproblem... (Q2) other features?}
 %Depending on the selected configuration, additional instance-level characteristics are appended to the feature vector. These may include 
 
 The alphabet size $|\Sigma|$ and the number of sequences $(m)$ as the attributes provide global structural information about the instance and help the learning model adapt to varying problem scales.
@@ -85,7 +87,7 @@ The optimization process follows a population-based evolutionary scheme.
 
 \subsection{Initialization}
 
-Each individual is initialized by sampling weights uniformly from a predefined interval [$-w, w$] (the value $w$ parametrized, but fixed to -1).
+Each individual is initialized by sampling weights uniformly from a predefined interval [$-w, w$] (the value $w$ parametrized, but fixed to 1).
 
 \subsection{Elitism}
 
@@ -105,7 +107,7 @@ Three alternative parent-selection strategies are supported:
     \item \textbf{Lexicase Selection}: Training instances are randomly shuffled. Individuals are filtered iteratively by retaining those achieving the best performance on each instance. Parents are selected randomly from the remaining candidates.
 \end{itemize}
 
-We opt to use the \textit{RKGA} as the first option to work well, but other options may also be tried. 
+We opt to use the \textit{BRKGA} as the first option to work well. 
 
 
 \subsection{Replacement and Termination}
@@ -148,6 +150,7 @@ The learning process alternates between evolutionary optimization of network wei
 \end{algorithmic}
 \end{algorithm}
 
+As the best optimizer, the BRKGA setting used in training: $n_{pop}=20, n_{elites}=1, p_{e}=0.5, p_m=7$.
 
 \begin{figure}[t]
 	\centering
@@ -203,7 +206,7 @@ The proposed framework learns heuristics rather than explicit solutions. The neu
 
 \input{results_preliminary.tex}
 
-IMSBS setting (grid search used for tuning):
+IMSBS setting (grid search used for tuning the algorithm):
 \begin{itemize}
 	\item     $\beta=1000$, $h'=h5$, $\#imbs\_iters=1000, \#num\_roots=10$
 \end{itemize}
