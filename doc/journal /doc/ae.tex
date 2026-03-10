@@ -18,9 +18,9 @@
 {Artificial Intelligence Research Institute (IIIA-CSIC), \\ Bellatera, Barcelona, Spain
 }  {christian.blum@csic.es}
 
-\authorinfo{Others ...}
-{xx, \\ xx, xx, xx
-}  {xx@xx.domain}
+\authorinfo{Žiga Zebec}
+{Institute of Information Sciences (IZUM), \\ Maribor, Slovenia
+}  {ziga.zebec@izum.si}
 
 \begin{document}
 	
@@ -106,7 +106,8 @@
 	\section{Experimental Results}
 	
 
-	The experiments evaluate the performance of the learning-based Beam Search (LIMSBS) against the baseline IMSBS algorithm proposed in~\cite{djukanovic_eurocast_2026} on the set of random instances generated in the letter paper. For each combinations  number of sequences $m \in \{2,3,5,10\}$, sequence length $n \in \{50,100,200,500\}$, and alphabet size $|\Sigma| \in \{2,4\}$, 10 random instances is generated. All sequences are randomly generated. In overall, 320 problem instances are provided. Both algorithms are tuned by the grid search. The best-performing neural network configuration uses three hidden layers with 10 neurons each and the \texttt{ReLU} activation function, among the three tested (\texttt{ReLU}, \texttt{sigmoid}, and \texttt{tanh}).	Training of the neural heuristic using BRKGA is performed for two hours on the High performance computing infrastructure VEGA, placed at IZUM in Maribor, Slovenia. Other crucial parameters in both  IMSBS and LMSBS are set to beam width $\beta=1000$ and $imsbs\_iters=1000$.
+	The experiments evaluate the performance of the learning-based Beam Search (LIMSBS) against the baseline IMSBS algorithm proposed in~\cite{djukanovic_eurocast_2026} on the set of random instances generated in the letter paper. For each combinations  number of sequences $m \in \{2,3,5,10\}$, sequence length $n \in \{50,100,200,500\}$, and alphabet size $|\Sigma| \in \{2,4\}$, 10 random instances is generated. All sequences are randomly generated. In overall, 320 problem instances are provided. Both algorithms are tuned by the grid search. The best-performing neural network configuration uses three hidden layers with 10 neurons each and the \texttt{ReLU} activation function, among the three tested (\texttt{ReLU}, \texttt{sigmoid}, and \texttt{tanh}).	Training process to learn neural heuristic using BRKGA is performed with two hours time limit on the High performance computing infrastructure VEGA, placed at IZUM in Maribor, Slovenia, equipped with AMD EPYC 7H12 CPUs operating
+	at 2.35 GHz.   Other crucial parameters in both  IMSBS and LMSBS are set to beam width $\beta=1000$ and $imsbs\_iters=1000$.
 	
 	Despite this relatively modest training budget, the learned heuristic demonstrates competitive performance and improves average solution quality in several instance categories, particularly for larger numbers of sequences, see numerical results in Table~\ref{tab:preliminary_results}.  These results indicate learning-based heuristics can effectively guide BS and adapt to structural characteristics of the sequence  problems, in this case the VGLCS, especially suited for $m\geq 5$.
 	
