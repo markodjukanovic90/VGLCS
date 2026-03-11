@@ -8,41 +8,48 @@
 \usepackage{amssymb}
 \usepackage{color}
 
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
 \title{POSTER: Learning Heuristics for Multiple Gapped Longest Common Subsequence Problem}
 
 \authorinfo{Marko Djukanović}
-{University of Nova Gorica\\	Nova Gorica, Slovenia
+{University of Nova Gorica	Nova Gorica, Slovenia, \\ Institute of Information Sciences (IZUM), Maribor, Slovenia
 }  {marko.djukanovic@ung.si}
 
 \authorinfo{Christian Blum}
 {Artificial Intelligence Research Institute (IIIA-CSIC), \\ Bellatera, Barcelona, Spain
 }  {christian.blum@csic.es}
 
+\authorinfo{Sašo Džeroski}
+{Jožef Stefan Institute, \\ Ljubljana, Slovenia
+}  {saso.dzeroski@ijs.si}
+
 \authorinfo{Žiga Zebec}
-{Institute of Information Sciences (IZUM), \\ Maribor, Slovenia
+{Institute of Information Sciences (IZUM), \\ Maribor, Slovenia 
 }  {ziga.zebec@izum.si}
+
 
 \begin{document}
 	
 	\maketitle
-	\special{papersize=8.5in,11in}
-	
+	\special{papersize=8.5in, 11in}
+	\vspace{-1cm}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 	\section*{Abstract}
 		 
- 	The Variable Gapped Longest Common Subsequence Problem (VGLCSP) is a challenging combinatorial optimization problem arising in sequence analysis with applications in computational biology and time series analysis, where the search space grows rapidly with the number and with gap constraints. Beam Search--based heuristics can provide good approximate solutions, but their effectiveness strongly depends on the quality of the heuristic used to evaluate partial subsequences.
+ 	The Variable Gapped Longest Common Subsequence Problem (VGLCSP) is a challenging combinatorial optimization problem arising in sequence analysis with applications in computational biology and time series analysis, where the search space grows rapidly with the number of input and gap constraints. Beam Search--based heuristics can provide good approximate solutions here, but their effectiveness strongly depends on the quality of the heuristic used to evaluate partial solutions.
  	
- 	This work proposes a learning-based framework to automatically construct a heuristic for guiding Beam Search (BS) in the VGLCSP. The approach integrates a feed-forward neural network (FFNN) within the Iterative Multi-Source BS (IMSBS) algorithm, where the network estimates the quality of candidate extensions during the search. Instead of gradient-based training, the network parameters are optimized using a Genetic Algorithm (GA), allowing the heuristic to be learned directly from solution quality obtained during the search process. Compact feature representations are designed to encode the state of partial solutions, enabling the learned heuristic to generalize across instances with varying sequence lengths, numbers of sequences, and alphabet sizes. During training, candidate neural networks are evaluated by embedding them within the BS procedure and measuring solution quality on a set of training instances, while separate validation instances are used to monitor generalization.
+ 	This work proposes a learning-based framework to automatically generate a heuristic for guiding Beam Search (BS) in the VGLCSP. The approach integrates a feed-forward neural network (FFNN) within the Iterative Multi-Source BS (IMSBS), where the network estimates the quality of candidate extensions during the search. Instead of gradient-based training, the network parameters are optimized using a Genetic Algorithm (GA), allowing the heuristic to be learned directly from the quality of solutions obtained during the search process. Compact feature representations are designed to encode the state of partial solutions, enabling the learned heuristic to generalize across instances with varying sequence lengths, numbers of sequences, and alphabet sizes. During training, candidate neural networks are evaluated by embedding them within the BS procedure and measuring solution quality on a set of training instances, while separate validation instances are used to monitor generalization.
  	
- 	Preliminary experiments indicate that the learned heuristic can improve the performance of the baseline IMSBS algorithm on a range of VGLCSP instances. These results demonstrate the potential of combining evolutionary optimization with neural network models to automatically design effective heuristics for complex combinatorial search problems.
+ 	Preliminary experiments indicate the learned heuristic can improve the performance of the baseline IMSBS on a range of VGLCSP instances. They demonstrate the potential of combining evolutionary strategies with NN models to automatically design effective heuristics for complex combinatorial  problems.
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\section*{CCS Concepts}
 	
 	\begin{itemize}
-		\item Computing methodologies $\rightarrow$ Artificial intelligence, 
-		 Machine learning;
+		\item Computing methodologies $\rightarrow$ Artificial intelligence, ML;
 		\item Theory of computation $\rightarrow$ Design and analysis of algorithms;
 	%	\item Applied computing $\rightarrow$ Computational biology.
 	\end{itemize}
@@ -56,8 +63,8 @@
 	\section*{ACM Reference Format}
 	
 	Marko Djukanović. 2026. 
-	Learning Heuristics for the Multiple Gapped Longest Common Subsequence Problem: Artifact Appendix. 
-	University of Nova Gorica.
+	Learning Heuristics for the  VGLCS,%
+	%University of Nova Gorica.
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\section{Introduction}
@@ -78,55 +85,93 @@
 	The proposed framework combines three main components:
 	
 	\begin{enumerate}
-		\item \textbf{Iterative Multi-Source Beam Search (IMSBS)}~\cite{djukanovic_eurocast_2026} for constructing candidate subsequences.
+		\item \textbf{Iterative Multi-Source Beam Search (IMSBS)}~\cite{djukanovic_eurocast_2026} for constructing feasible solutions of VGLCSP.
 		\item \textbf{Feed-Forward Neural Network (FFNN)}~\cite{svozil1997introduction} acting as a heuristic evaluation function for partial solutions.
-		\item \textbf{Genetic Algorithm (GA)}~\cite{gonccalves2011biased} for optimizing the neural network parameters.
+		\item \textbf{Genetic Algorithm (GA)}~\cite{gonccalves2011biased} for optimizing NN parameters.
 	\end{enumerate}
 	
-	In the learning process, each GA individual represents a flattened vector of neural network weights. 
-	For each individual, the weights are loaded into the FFNN, which evaluates partial states generated during a BS execution. 
-	The IMSBS algorithm then constructs subsequences guided by the neural heuristic. The fitness of each individual corresponds to the average solution quality obtained on a training set of instances. 
+	In the learning process, each GA individual represents a flattened vector of neural network parameters. 
+	For each individual, the parameters are loaded into the FFNN, which evaluates partial solutions generated during a BS execution. 
+	The IMSBS algorithm then constructs complete solutions guided by the neural heuristic. The fitness of each individual corresponds to the average solution quality obtained on a set of training instances. 
 	Validation instances are evaluated separately to monitor generalization performance.
 	
-	A key aspect of the approach is the design of compact feature representations for partial search states. 
-	Each node in the search tree is described by a feature vector containing
+	A key aspect of the approach is the design of compact feature representations for partial solutions. 
+	Each node in the search graph is described by a feature vector containing
 		(i) normalized positions of current matches in each sequence:
-			   statistical descriptors (minimum, maximum, mean, and standard deviation) of these positions; (ii)  the current length of the partial subsequence; (iii) statistical summaries of remaining gap constraints; (iv) global instance features such as alphabet size $|\Sigma|$. Some other global features have been taken into account such as number of sequences ($m$) or lenght of input sequences ($n$), however without improving the results.
+	     statistical descriptors (minimum, maximum, mean, and standard deviation) of these positions; (ii)  the current length of the partial solutions; (iii) statistical summaries of remaining gap constraints; (iv) global instance features such as alphabet size $|\Sigma|$. Some other global features have been taken into account such as the number of sequences ($m$) or the  length of input sequences ($n$), however without a major effect on the final results.	These features provide a low-dimensional yet informative representation of the search states and allow the network to generalize across instances of different sizes. The learning process is illustrated in Figure~\ref{fig:nn-guidance}.  
 	
-	These features provide a low-dimensional yet informative representation of the search state and allow the neural network to generalize across instances of different sizes. The learning process is illustrated in Figure~\ref{fig:ga_imsbs}.  
-	
-	\begin{figure}[!ht]
-		\centering \vspace{-0.2cm}
-		\includegraphics[width=200pt,height=150pt]{ffnn_train.png}
-				 \caption{Graphical representation of learning a NN-guidance.}   \vspace{-0.5cm} \label{fig:ga_imsbs}
+	%\begin{figure}[!ht]
+	%	\centering \vspace{-0.2cm}
+	%	\includegraphics[width=200pt,height=150pt]{ffnn_train.png}
+	%			 \caption{Graphical representation of learning a NN-guidance.}   \vspace{-0.5cm} \label{fig:ga_imsbs}
+%
+%	\end{figure}
 
-	\end{figure}
+
+\begin{figure}[t]
+	\centering
+	\scalebox{0.45}{
+	\begin{tikzpicture}[
+		box/.style={draw, rounded corners=2mm, align=center, minimum width=3.2cm, minimum height=1cm},
+		smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.6cm, minimum height=0.9cm},
+		arrow/.style={->, thick},
+		node distance=2.2cm
+		]
+		
+		% GA block
+		\node[box] (ga) {Genetic Algorithm\\(Population of NN Parameters)};
+		
+		% NN
+		\node[smallbox, below=of ga] (nn) {Feed-Forward \\ Neural Network};
+		
+		% Beam Search
+		\node[box, below=of nn] (bs) {Iterative Multi-Source\\Beam Search (IMSBS)};
+		
+		% Training instances
+		\node[smallbox, left=of bs] (train) {Training\\Instances};
+		
+		% Solutions / fitness
+		\node[smallbox, right=of bs] (fitness) {Solution Quality\\(Fitness)};
+		
+		% Arrows
+		\draw[arrow] (ga) -- node[right]{parameters} (nn);
+		\draw[arrow] (nn) -- node[right]{heuristic} (bs);
+		\draw[arrow] (train) -- (bs);
+		\draw[arrow] (bs) -- (fitness);
+		\draw[arrow] (fitness.north) |- node[pos=0.25,right]{selection / update} (ga.east);
+		
+		% Validation (optional)
+		\node[smallbox, below=of bs] (val) {Validation\\Instances};
+		\draw[arrow,dashed] (val) -- (bs);
+		
+	\end{tikzpicture}}
+	 \caption{Graphical representation of learning a NN-guidance.} \label{fig:nn-guidance}  \vspace{-0.5cm}
+	 
+\end{figure}
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\section{Experimental Results}
 	
 
-	The experiments evaluate the performance of the learning-based Beam Search (LIMSBS) against the baseline IMSBS algorithm proposed in~\cite{djukanovic_eurocast_2026} on the set of random instances generated in the latter paper. For each combinations  number of sequences $m \in \{2,3,5,10\}$, sequence length $n \in \{50,100,200,500\}$, and alphabet size $|\Sigma| \in \{2,4\}$, 10 random instances is generated. All sequences are randomly generated. In overall, 320 problem instances are provided. Both algorithms are tuned by the grid search. The best-performing neural network configuration uses three hidden layers with 10 neurons each and the \texttt{ReLU} activation function, among the three tested (\texttt{ReLU}, \texttt{sigmoid}, and \texttt{tanh}).	Training process to learn neural heuristic using BRKGA is performed with two hours time limit on the High performance computing infrastructure VEGA, placed at IZUM in Maribor, Slovenia, equipped with AMD EPYC 7H12 CPUs operating
-	at 2.35 GHz.   Other crucial parameters in both  IMSBS and LMSBS are set to beam width $\beta=1000$ and $imsbs\_iters=1000$.
+	The experiments evaluate the performance of the learning-based Beam Search (LIMSBS) against the baseline IMSBS algorithm proposed in~\cite{djukanovic_eurocast_2026} on the set of random instances generated in the latter paper. For each combination of number of sequences $m \in \{2,3,5,10\}$, sequence length $n \in \{50,100,200,500\}$, and alphabet size $|\Sigma| \in \{2,4\}$, 10 random instances are generated.  Overall, 320 problem instances are provided. Both algorithms are tuned by grid search. The best-performing NN configuration uses three hidden layers with 10 neurons each and the \texttt{ReLU} activation function, among the three tested (\texttt{ReLU}, \texttt{sigmoid}, and \texttt{tanh}).	FFNN training is performed with two hours time limit on the High performance computing infrastructure VEGA, placed at IZUM in Maribor, Slovenia, equipped with AMD EPYC 7H12 CPUs operating
+	at 2.35 GHz.   Other crucial parameters in both  IMSBS and LIMSBS are set to beam width $\beta=1000$, allowing 1000 BS iterations.
 	
-	Despite this relatively modest training budget, the learned heuristic demonstrates competitive performance and improves average solution quality in several instance categories, particularly for larger numbers of sequences, see numerical results in Table~\ref{tab:preliminary_results}.  These results indicate learning-based heuristics can effectively guide BS and adapt to structural characteristics of the sequence  problems, in this case the VGLCS, especially suited for $m\geq 5$.
+	Despite this relatively modest training budget, the learned heuristic demonstrates competitive performance and improves average solution quality in several instance categories, particularly for larger numbers of sequences, see numerical results in Table~\ref{tab:preliminary_results}.  These results indicate learning-based heuristics can effectively guide BS and adapt to structural characteristics of the sequence  problems, in this case the VGLCSP, especially suited for $m\geq 5$.
 	
 	\input{results_preliminary.tex}
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\section{Conclusions}
 	
-	This work provides the rough implementation details and experimental framework for learning heuristics in combinatorial sequence optimization using neuro-evolutionary methods. 
-	By integrating Beam Search with neural networks optimized via genetic algorithms, the approach enables adaptive heuristic construction in non-differentiable settings.
-	
-	The   reported results provide a promising basis for further experimentation on learning-guided combinatorial search methods. 
+	This poster paper provides the principal implementation details and the experimental framework for learning heuristics in combinatorial sequence optimization using neuro-evolutionary methods. 
+	By integrating BS with neural networks optimized via genetic algorithms, the approach enables adaptive heuristic generation in non-differentiable settings. The   reported results provide a promising basis for further experimentation on learning-guided combinatorial search methods. 
 	Beyond the VGLCSP, the proposed framework can be extended to other sequence alignment and combinatorial optimization problems where heuristic design is difficult.
 	
 	%\begin{itemize}
 	%	\item \url{https://www.acm.org/publications/policies/artifact-review-and-badging-current}
 	%	\item \url{https://cTuning.org/ae}
 	%\end{itemize}
-	\textit{Acknowledgments.} This publication is co-funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme (grant agreement No.~101081355 -- SMASH), and by the Republic of Slovenia and the European Union through the European Regional Development Fund. Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.
+	\textit{Acknowledgments.} This publication is co-funded by the European Union’s Horizon Europe research and innovation program under the MSCA COFUND Postdoctoral Programme (grant agreement No.~101081355 -- SMASH), and by the Republic of Slovenia and the European Union through the European Regional Development Fund. Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.
 	
 	
 \begin{thebibliography}{99}
