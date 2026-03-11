@@ -33,6 +33,8 @@ extern std::string filename;
 extern int activation_function;
 extern int feature_config;
 extern int population_size;
+extern int num_threads;
+//GA params: 
 extern int n_elites;
 extern int n_mutants;
 extern int ga_config;

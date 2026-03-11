@@ -19,6 +19,7 @@ int num_features = 9; //number of features
 std::string filename;
 int activation_function = 0; // activation function used
 int feature_config = 0; // features used
+int num_threads = 1;
 int ga_config = 0; //type of GA used for training (rkga, brkga, lexicase selection)
 //training rkga/brkga parameters
 int population_size = 20;

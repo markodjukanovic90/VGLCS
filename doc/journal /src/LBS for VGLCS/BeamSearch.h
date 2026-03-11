@@ -11,7 +11,8 @@
 #include "Node.h"
 #include "utils.h"
 #include "Instance.h"
-#include "nnet.h"
+//#include "nnet.h"
+#include "nnet_parallel.h"
 #include <Eigen/Dense>
 #include "unistd.h"
 

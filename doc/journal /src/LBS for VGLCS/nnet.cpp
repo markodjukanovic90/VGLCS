@@ -87,7 +87,7 @@ void MLP::apply_decoder(training_individual& ind){ //calculates the quality of t
     {
         //instance.print(std::cout);
         ofv += BeamSearch::imsbs_with_learning(&instance, training_beam_width, 10, HeuristicType::H5, number_of_roots, 
-                                               50, 10,  this ).best_seq.size();
+                                               50, 10,  this ).best_seq.size(); // number of iters=50, beam_width_backward=10
     }
         
     ofv = ofv / training_instances.size();
@@ -172,7 +172,7 @@ vector<double> MLP::Train(){
             best_ofv = population[pi].ofv;
             best_weights = population[pi].weights;
             write_weights_to_file(best_weights, ctime);
-            double validation_value = calculate_validation_value(best_weights);
+            double validation_value = calculate_validation_value(best_weights); // stop if the validation value is decreased (compared in when new best training value is achieved)
             write_training_and_validation_values(training_values_file, validation_values_file, ctime, niter, best_ofv, validation_value);
             print_information(best_ofv, ctime, niter, validation_value);
         }
@@ -227,7 +227,9 @@ vector<double> MLP::Train(){
                     }
                 }
             }
-            else if(ga_config == 2){ // brkga offspring construction
+            else if(ga_config == 2)
+            {   
+                // brkga offspring construction
                 double rval = standard_distribution_01(generator);
                 int first_parent = produce_random_integer(n_elites, rval);
                 rval = standard_distribution_01(generator);
