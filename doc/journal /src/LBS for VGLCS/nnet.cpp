@@ -129,7 +129,7 @@ void MLP::write_training_and_validation_values(fstream& training_values_file, fs
 }
 
 
-vector<double> MLP::Train(){
+double> MLP::Train(){
 
     std::uniform_real_distribution<double> standard_distribution_weights(-weight_limit, weight_limit);
     

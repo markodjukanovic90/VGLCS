@@ -208,7 +208,12 @@ vector<double> MLP::Train(){
     vector<training_individual> population(population_size);
 
     double best_ofv = std::numeric_limits<double>::min();
+    double best_validation_value = std::numeric_limits<double>::min();
+
     vector<double> best_weights;
+    vector<double> best_weights_validation;
+
+    const double epsilon = 1e-4;
 
     // -------- Parallel population initialization --------
 
@@ -231,7 +236,11 @@ vector<double> MLP::Train(){
         }
     }
 
+    // Initial validation evaluation
     double validation_value = calculate_validation_value(best_weights);
+    best_validation_value = validation_value;
+    best_weights_validation = best_weights;
+
     write_training_and_validation_values(training_values_file, validation_values_file, 0, 0, best_ofv, validation_value);
 
     while(!stop){
@@ -242,10 +251,12 @@ vector<double> MLP::Train(){
 
         vector<training_individual> new_population(population_size);
 
+        // ---- elites ----
         for(int ic = 0; ic < n_elites; ++ic){
             new_population[ic] = population[ic];
         }
 
+        // ---- mutants ----
         for(int ic = 0; ic < n_mutants; ++ic){
 
             new_population[n_elites + ic].weights = vector<double>(n_weights);
@@ -254,6 +265,7 @@ vector<double> MLP::Train(){
                 new_population[n_elites + ic].weights[i] = standard_distribution_weights(generator);
         }
 
+        // ---- offspring ----
         for(int ic = 0; ic < n_offspring; ++ic){
 
             std::vector<int> indices(population_size);
@@ -276,35 +288,49 @@ vector<double> MLP::Train(){
             }
         }
 
-        // -------- Parallel evaluation of new population --------
-
+        // -------- Parallel evaluation --------
         #pragma omp parallel for schedule(dynamic)
         for(int i = n_elites; i < population_size; i++)
             apply_decoder(new_population[i]);
 
+        // -------- Selection with validation control --------
         for(int i = 0; i < population_size; i++)
         {
             if(new_population[i].ofv > best_ofv)
             {
-                best_ofv = new_population[i].ofv;
-                best_weights = new_population[i].weights;
+                double candidate_train = new_population[i].ofv;
+                const vector<double>& candidate_weights = new_population[i].weights;
 
-                ctime = std::chrono::duration<double>(
-                        std::chrono::steady_clock::now() - start).count();
+                double candidate_validation = calculate_validation_value(candidate_weights);
 
-                write_weights_to_file(best_weights, ctime);
+                if(candidate_validation >= best_validation_value - epsilon)
+                {
+                    best_ofv = candidate_train;
+                    best_validation_value = candidate_validation;
 
-                double validation_value = calculate_validation_value(best_weights);
+                    best_weights = candidate_weights;
+                    best_weights_validation = candidate_weights;
 
-                write_training_and_validation_values(
-                    training_values_file,
-                    validation_values_file,
-                    ctime,
-                    niter,
-                    best_ofv,
-                    validation_value);
+                    ctime = std::chrono::duration<double>(
+                            std::chrono::steady_clock::now() - start).count();
 
-                print_information(best_ofv, ctime, niter, validation_value);
+                    write_weights_to_file(best_weights_validation, ctime);
+
+                    write_training_and_validation_values(
+                        training_values_file,
+                        validation_values_file,
+                        ctime,
+                        niter,
+                        best_ofv,
+                        best_validation_value);
+
+                    print_information(best_ofv, ctime, niter, best_validation_value);
+                }
+                else{ // te overfitting occured, STOP the training 
+                    
+                    stop = true;
+                
+                }
             }
         }
 
@@ -326,5 +352,7 @@ vector<double> MLP::Train(){
     validation_values_file.close();
     training_values_file.close();
 
-    return best_weights;
+    // Return best VALIDATION weights (important!)
+    return best_weights_validation;
+
 }
