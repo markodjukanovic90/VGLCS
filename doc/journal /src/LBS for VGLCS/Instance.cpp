@@ -146,6 +146,29 @@ void Instance::buildPTable(int max_n) {
 }
 
 
+void Instance::buildGapSuffixStats()
+{
+        int S = sequences.size();
+        suffix_sum.resize(S);
+        suffix_sq_sum.resize(S);
+        suffix_min.resize(S);    suffix_max.resize(S);
+        for (int i = 0; i < S; ++i) {
+             int n = sequences[i].size();
+             suffix_sum[i].assign(n + 1, 0.0);
+             suffix_sq_sum[i].assign(n + 1, 0.0);
+             suffix_min[i].assign(n + 1, std::numeric_limits<double>::infinity());
+             suffix_max[i].assign(n + 1, -std::numeric_limits<double>::infinity());
+             for (int j = n - 1; j >= 0; --j) {
+                 double val = (double)gaps[i][j];
+                 suffix_sum[i][j] = suffix_sum[i][j + 1] + val;
+                 suffix_sq_sum[i][j] = suffix_sq_sum[i][j + 1] + val * val;
+                 suffix_min[i][j] = std::min(val, suffix_min[i][j + 1]);
+                 suffix_max[i][j] = std::max(val, suffix_max[i][j + 1]);
+             }
+        }
+}
+
+
 Instance Instance::loadFromFile(const std::string& filename) {
     std::ifstream in(filename);
     if (!in) {
@@ -202,6 +225,7 @@ Instance Instance::loadFromFile(const std::string& filename) {
             max_n = s.size();
     //std::cout <<"max_n: " << max_n << std::endl;
     inst.buildPTable(max_n);
+    inst.buildGapSuffixStats();
     
     return inst;
 }

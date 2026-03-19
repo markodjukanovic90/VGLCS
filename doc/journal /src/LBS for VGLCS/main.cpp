@@ -126,6 +126,7 @@ void read_parameters(int argc,char** argv){
             differentiate_ties = true;
         }
 
+
         iarg++;
     }
 
@@ -133,14 +134,15 @@ void read_parameters(int argc,char** argv){
     neural_network->units_per_layer.push_back(num_features);
 
     for(int i = 0; i < hidden_layers; ++i){
-        cout << "Layer " << i << " with " << units[i] << " units" << endl;
+        //cout << "Layer " << i << " with " << units[i] << " units" << endl;
         neural_network->units_per_layer.push_back(units[i]);
     }
 
     neural_network->units_per_layer.push_back(1);
 
-    if(!training){
-        
+    if(!training)
+    {
+            
         ifstream weights_file("weights.txt");
 
         if(!weights_file.is_open()){
@@ -155,9 +157,11 @@ void read_parameters(int argc,char** argv){
             temporal_weights.push_back(num);
 
         neural_network->store_weights(temporal_weights);
+    
+       //validate
     }
 
-    if(feature_config < 1 || feature_config > 4){
+    if((feature_config < 1 || feature_config > 4) and hidden_layers > 0){
         cout << "WARNING: feature configuration not specified. Using default value 1" << endl;
         feature_config = 1;
     }
@@ -179,7 +183,7 @@ void read_parameters(int argc,char** argv){
         exit(-1);
     }
 
-    if(activation_function < 1 || activation_function > 3){
+    if((activation_function < 1 || activation_function > 3) and hidden_layers > 0){
         cout << "WARNING: no activation function specified." << endl;
     }
 }
@@ -190,9 +194,8 @@ int main( int argc, char **argv ) {
     read_parameters(argc, argv);
 
     // SET NUMBER OF THREADS
-    omp_set_num_threads(num_threads);
-
-    cout << "Using " << omp_get_max_threads() << " threads." << endl;
+    //omp_set_num_threads(num_threads);
+    //cout << "Using " << omp_get_max_threads() << " threads." << endl;
 
     if(training)
     { 
@@ -229,7 +232,7 @@ int main( int argc, char **argv ) {
 
         if(hidden_layers > 0)
         {   
-            cout << "Run the learning IMSBS" << endl;
+            //cout << "Run the learning IMSBS" << endl;
 
             BeamSearch::Result res =
                 BeamSearch::imsbs_with_learning(
@@ -243,11 +246,12 @@ int main( int argc, char **argv ) {
                     neural_network);
 
             BeamSearch::write_result(*out, res, inst, "IMSBS-learning");
+            //used for tuning
+            cout << res.best_seq.size();
         }
         else
         {
-            cout << "Run the basic IMSBS" << endl;
-
+            //cout << "Run the basic IMSBS" << endl;
             BeamSearch::Result res =
                 BeamSearch::imsbs_with_learning(
                     &inst,
@@ -260,6 +264,8 @@ int main( int argc, char **argv ) {
                     nullptr);
 
             BeamSearch::write_result(*out, res, inst, "IMSBS");
+            //used for tuning
+            cout << res.best_seq.size();
         }
     }
 

@@ -33,7 +33,13 @@ public:
 
     // P structure 
     std::vector<std::vector<double>> P;
-
+    
+    
+    std::vector<std::vector<double>> suffix_sum;
+    std::vector<std::vector<double>> suffix_sq_sum;
+    std::vector<std::vector<double>> suffix_min;
+    std::vector<std::vector<double>> suffix_max;
+    
     // Konstruktor
     Instance() = default;
 
@@ -60,7 +66,7 @@ public:
     void buildSuccTable();
     //probability-based heuristic    
     void buildPTable(int max_n);
-    
+    void buildGapSuffixStats();
     void print(std::ostream& os);   
 };
 

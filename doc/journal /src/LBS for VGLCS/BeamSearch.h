@@ -86,19 +86,119 @@ static void write_result(
   static void compute_features(std::vector<Node*>& V_ext, Instance* inst)
   {
     //calculate features for the nodes in V_ext
+    for(Node* node : V_ext)
+    {
+        //first option: consider p^{L,v} and l^v. first do p^{L,v}_i = p^{L,v}_i / |s_i| and l^v_j = l^v_j / |r_j| for al input and restricted strings. 
+        // then consider the max, min, std, avg of both vectors as features (8 features). Add also length of partial sol represented by node u^v (9 in total) (config1)
+        //Add the alphabet size (config2)
+        //Add length and number of input and restricted strings (config3)
+        std::vector<double> pL_v; int index=0; bool complete_node=false;
+        pL_v.reserve(node->pos.size());
+        for (int x : node->pos)
+        {
+            if(x >= (int)inst->sequences[index].size()-1)
+                  complete_node=true;
+
+            pL_v.push_back(static_cast<double>(x));
+
+           index++;
+        }
+        // determine the features;
+
+        int len_partial = node->length();
+
+        //normalize left position vectors so that they do not depend on the length of the input strings
+        for(int i = 0; i < (int)pL_v.size(); ++i) pL_v[i] /=  inst->sequences[i].size();
+        
+        if(complete_node)
+          continue;
+
+        vector<double> features;
+        // pL_v stats (NO vector)
+
+        double min_p = 1e18, max_p = -1e18;double mean_p = 0.0, M2_p = 0.0;int count_p = 0;
+        for (int i = 0; i < (int)node->pos.size(); ++i) {
+                double val = (double)node->pos[i] / inst->sequences[i].size();
+                min_p = std::min(min_p, val);
+                max_p = std::max(max_p, val);
+                count_p++;
+                double delta = val - mean_p;
+                mean_p += delta / count_p;
+                M2_p += delta * (val - mean_p);
+
+        }
+        double std_p = (count_p > 1) ? std::sqrt(M2_p / count_p) : 0.0;
+        features.push_back(max_p);
+        features.push_back(min_p);
+        features.push_back(mean_p);
+        features.push_back(std_p);
+        features.push_back(len_partial);
+        
+        //GAPS features:
+        // ---- gaps stats (NO vector) 
+        double min_g = 1e18, max_g = -1e18;double total_sum = 0.0;double total_sq_sum = 0.0;int total_count = 0;
+        int m = inst->sequences.size();
+        for (int i = 0; i < m; ++i) {
+             int start = node->pos[i] + 1;
+             int n = inst->sequences[i].size();
+             if (start >= n) continue;
+             int count = n - start;
+             total_sum += inst->suffix_sum[i][start];
+             total_sq_sum += inst->suffix_sq_sum[i][start];
+             min_g = std::min(min_g, inst->suffix_min[i][start]);
+             max_g = std::max(max_g, inst->suffix_max[i][start]);
+             total_count += count;
+        }
+        // finalize stats
+        double mean_g = (total_count > 0) ? total_sum / total_count : 0.0;
+        double variance = 0.0;
+        if (total_count > 0) {
+                variance = (total_sq_sum / total_count) - (mean_g * mean_g);}
+        double std_g = (variance > 0.0) ? std::sqrt(variance) : 0.0;
+        // push features
+        features.push_back(max_g);
+        features.push_back(min_g);
+        features.push_back(mean_g);
+        features.push_back(std_g);        
+        
+        
+        if(feature_config == 2) // add alphabet size, 10 features 
+            features.push_back( (int)inst->Sigma.size() );
+
+        else if(feature_config == 3){ // 11 features
+
+            features.push_back( (int)inst->Sigma.size() );
+            features.push_back( (int) inst->sequences.size() ); // number of instance 
+        }
+        else if(feature_config == 4){ // 12 features
+
+            features.push_back( (int)inst->Sigma.size() );
+            features.push_back( (int) inst->sequences.size() );
+            features.push_back((inst->sequences[0]).size()); //note that this config only makes sense if all input strings have the same length
+        }
+        standardize(features);
+
+        node->features = features;
+      }
+   }        
+
+ /* static void compute_features(std::vector<Node*>& V_ext, Instance* inst)
+  {
+    //calculate features for the nodes in V_ext
     for(Node* node : V_ext){
         //first option: consider p^{L,v} and l^v. first do p^{L,v}_i = p^{L,v}_i / |s_i| and l^v_j = l^v_j / |r_j| for al input and restricted strings. 
         // then consider the max, min, std, avg of both vectors as features (8 features). Add also length of partial sol represented by node u^v (9 in total) (config1)
         //Add the alphabet size (config2)
         //Add length and number of input and restricted strings (config3)
         std::vector<double> pL_v;
-        pL_v.reserve(node->pos.size());
+        pL_v.reserve(node->pos.size()); int i=0;
         for (int x : node->pos)
 	{
-	    	if (node->pos >= inst->sequences[i].size()-1)
+	    	if (node->pos[i] >= (int)inst->sequences[i].size()-1)
                 return;	
-
+                                            
                 pL_v.push_back(static_cast<double>(x));
+                i++;
         }
 	int len_partial = node->length();
         
@@ -149,8 +249,9 @@ static void write_result(
         node->features = features;
       }
    }
+*/
 
-    static Result run_forward_backward_BS(
+  static Result run_forward_backward_BS(
         Instance* inst,
         bool forward_or_backward,
         int beam_width = 10,

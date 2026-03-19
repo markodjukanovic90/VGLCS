@@ -129,7 +129,7 @@ void MLP::write_training_and_validation_values(fstream& training_values_file, fs
 }
 
 
-double> MLP::Train(){
+vector<double> MLP::Train(){
 
     std::uniform_real_distribution<double> standard_distribution_weights(-weight_limit, weight_limit);
     
@@ -163,7 +163,6 @@ double> MLP::Train(){
         for(int i = 0; i < n_weights; i++)
             (population[pi].weights)[i] = standard_distribution_weights(generator);
         
-        
         apply_decoder(population[pi]);
         
         ctime = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
@@ -177,6 +176,7 @@ double> MLP::Train(){
             print_information(best_ofv, ctime, niter, validation_value);
         }
     }
+    
     ctime = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
     if(ctime > training_time_limit) stop = true;
 
@@ -195,8 +195,11 @@ double> MLP::Train(){
             for(int i = 0; i < n_weights; ++i){
                 (new_population[n_elites + ic].weights)[i] = standard_distribution_weights(generator);
             }
+            
             apply_decoder(new_population[n_elites + ic]);
+            
             ctime = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
+            
             if(ctime > training_time_limit) stop = true;
             if(new_population[n_elites + ic].ofv > best_ofv and not stop){
                 best_ofv = new_population[n_elites + ic].ofv;
