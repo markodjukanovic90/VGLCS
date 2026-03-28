@@ -220,5 +220,23 @@ Learning IMSBS setting uses the same setting, to be completely fair with the com
 	 \caption{FFNN architecture that is learned in the neuro-evolution process.}
 \end{figure}
  
+ \section{Further ideas} (TODO: To be exploited)
+ 
+ Using only the mean optimizes average performance, ignores failures, and can produce unstable heuristics.  In COPs, robustness is often more important than average performance.
+ 
+ Fitness function replacement:
+ \begin{itemize}
+ 	\item  Option A (robust \& simple)   Fitness = 0.7 $\cdot$ mean + 0.3 $\cdot$ 90th-percentile
+    \item  Option B (very strong in COPs) Fitness = mean regret + 0.2 * std\_dev
+   \item Option C (robust learning): Fitness = 90th percentile\\
+  \end{itemize}
+  
+ \textbf{ Curriculum / weighted fitness}.   Give more importance to harder instances and recent failures. 
+  Fitness=$\sum_i w_i f_i$, e.g., $w_i = \frac{1}{2^i}$, or $w_i=\frac{1}{n+1}$. 
+ 
+ \textbf{ Multi-objective fitness}. Instead of a single scalar: Objective 1: average quality, Objective 2: worst-case, runtime
+  
+  Then use:  Pareto ranking (common in evolutionary algorithms), particularly natural for Biased Random-Key Genetic Algorithms (BRKGA). 
+  
 \end{document}
 
