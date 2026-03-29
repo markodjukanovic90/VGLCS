@@ -1,0 +1,54 @@
+This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: optima_2026.aux
+The style file: splncs04.bst
+Database file #1: bib.bib
+I was expecting a `,' or a `}'---line 9 of file bib.bib
+ :  
+ :  @inproceedings{adamson2023longest,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--to sort, need author or key in DJUKANOVIC2020106499
+Warning--empty author in DJUKANOVIC2020106499
+You've used 3 entries,
+            2850 wiz_defined-function locations,
+            614 strings with 5086 characters,
+and the built_in function-call counts, 1840 in all, are:
+= -- 163
+> -- 40
+< -- 4
++ -- 18
+- -- 14
+* -- 109
+:= -- 218
+add.period$ -- 6
+call.type$ -- 3
+change.case$ -- 20
+chr.to.int$ -- 0
+cite$ -- 5
+duplicate$ -- 164
+empty$ -- 172
+format.name$ -- 16
+if$ -- 419
+int.to.chr$ -- 0
+int.to.str$ -- 3
+missing$ -- 29
+newline$ -- 15
+num.names$ -- 4
+pop$ -- 59
+preamble$ -- 1
+purify$ -- 13
+quote$ -- 0
+skip$ -- 65
+stack$ -- 0
+substring$ -- 118
+swap$ -- 90
+text.length$ -- 4
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 12
+warning$ -- 2
+while$ -- 15
+width$ -- 4
+write$ -- 35
+(There was 1 error message)

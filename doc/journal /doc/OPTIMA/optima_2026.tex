@@ -1,0 +1,272 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+%\usepackage{geometry}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
+
+
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following two lines
+% to display URLs in blue roman font according to Springer's eBook style:
+%\usepackage{color}
+%\renewcommand\UrlFont{\color{blue}\rmfamily}
+%\urlstyle{rm}
+%
+\begin{document}
+	
+	\title{Learning a Data-Driven Beam Search Heuristic for the Gapped Longest Common Subsequence Problem}
+	%
+	\titlerunning{Learning a Data-Driven Beam Search Heuristic for the Variable Gapped Longest Common Subsequence Problem}
+	
+	\author{Marko Djukanović\inst{1, 6}  \and Nikola Balaban\inst{2}  \and
+		Christian Blum\inst{3}  \and 
+		Aleksandar Kartelj\inst{4}  \and
+		Sašo Džeroski\inst{5}  \and
+		Žiga Zebec\inst{6}
+	}
+	%
+	\authorrunning{Djukanovic et al.}
+	
+	\institute{ University of Nova Gorica, Nova Gorica, Slovenia \\ \email{marko.dukanovic@ung.si} \and 
+	Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina \\ \email{nikola.balaban@student.pmf.unibl.org}, \email{marko.djukanovic@pmf.unibl.org} \and
+		Artificial Intelligence Research Institute (IIIA-CSIC), Barcelona, Spain \\
+		\email{christian.blum@iia.csic.es} \and 
+		Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\ \email{kartelj@matf.rs} \\ \and
+		Jožef Stefan Institute, Ljubljana, Slovenia \ \\ \email{saso.dzeroski@ijs.si}  \\
+		\and
+		Institute of Information Sciences (IZUM), Maribor, Slovenia \\
+		\email{ziga.zebec@izum.si}
+	}
+	%
+	\maketitle              % typeset  
+	
+	\section{Introduction} 
+	The \textit{Longest Common Subsequence Problem} (LCSP)~\cite{DJUKANOVIC2020106499} is a well-known combinatorial optimization problem with numerous applications in   computational biology, particularly in the analysis of molecular  sequences. Given an arbitrary   set $S=\{s_1,\ldots,s_m\}$ of input sequences over an alphabet $\Sigma$, the goal is to determine the longest possible subsequence common to all $s_i \in S$. In recent decades, many practically motivated variants of the LCSP have been proposed by considering additional structural or biological constraints such as  the constrained, arc-preserving, repetition-free version, etc. This work is focused on solving the \textit{Variable Gapped} LCSP (VGLCSP), introduced in~\cite{penga2011longest} and theoretically examined in~\cite{adamson2023longest}. This problem extends the standard LCSP by imposing flexible distance limits (``gaps'') between consecutive symbols in the resulting subsequence, allowing these gaps to vary along the input sequences. Formally, for each input sequence $s_i \in S$, a gap function $G_{s_i}\colon \{1,\ldots,|s_i|\}\mapsto \mathbb{N}$ defines the maximum distance allowed between consecutive characters of a subsequence. That is, if the characters of a subsequence $s$ appear at the positions $i^1_i < \ldots < i^{{|s|}}_i$ in $s_i$, we say that the gap constraint is satisfied if $i^x_i - i^{x-1}_i \le G_{s_i}[i^x_i] + 1$ for all $x=2,\ldots,|s|$. A common subsequence $s$ is considered feasible if the corresponding gap constraints hold across all sequences in $S$. The VGLCSP represents a flexible and realistic model of sequence alignment, which is particularly useful for comparing DNA or protein sequences with variable structural distances. 	Although exact dynamic programming approaches exist for the two-sequence case ($m=2$), their computational complexity becomes prohibitive for larger $m$. To the best of our knowledge, no effective exact or approximate approaches currently exist for the generalized VGLCSP, a clearly NP-hard problem.
+	
+	Building on the well-established state-space representation of the LCSP~\cite{DJUKANOVIC2020106499}, we propose a general \textit{state graph} formulation for the VGLCSP. Each node represents a partial feasible subsequence, characterized by the vector of current positions in each input sequence and the subsequence length. Specifically, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix string $s_i[1]\cdots s_i[p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all the gaps $G_{s_i}$ are preserved with $s^v$. A directed arc $\alpha=(v_1 v_2)$, labeled $lett(\alpha)={a} \in \Sigma$, exists between states $v_1$ and $v_2$ if $l^{v_2} = l^{v_1} + 1$ and $s^{v_2} = s^{v_1} \cdot {a}$. To expand a state $v$, all letters that occur in each suffix of $s_i$ defined by respective positions $p^{L,v}_i$  are considered. For each such letter $a$, the minimal positions $p^{L,a}_i \geq p^{L,v}_i$ of its appearances are identified fulfilling $p^{L,a}_i - p^{L,v}_i \le G_{s_i}(p^{L,a}_i)$. The resulting child node, if not suboptimal, is given by $w=(p^{L,a}+1, l^v+1)$. The root node  $r:=((1,\ldots,1),0)$ represents the empty subsequence, while goal states correspond to non-extendable feasible subsequences. Unlike the standard LCSP, the VGLCSP admits multiple (possibly exponentially many) root nodes. For example, in sequences $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$, the state $((1,1),0)$ cannot reach any state with the position vector $(5,5)$ via transitions, missing optimal subsequence $\texttt{AAA}$. This  motivates the methodology of \textit{Iterative Multi-Source Beam Search} (IMSBS). BS is a popular meta-heuristic approach that performs in a breadth-first-search manner, controlled by the size of beam $\beta$ and a heuristic $h$. In the IMSBS, BS is iteratively executed with a set of promising root nodes as an initial beam, selected from a dynamically maintained global pool of root nodes, controlling diversification of the approach. 
+	Each iteration performs a complete BS, guided by a heuristic  $h$ based on letter frequencies, minimal residual substring lengths, or probability-weighted estimates.
+	
+ 
+ \section{Overview}
+ 
+ This work proposes a learning framework for constructing a data-driven heuristic to guide Beam Search in combinatorial optimization problems, and specifically one sequence problem that arises in bioinformatics, the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP). A feed-forward neural network (FFNN) is used to parameterize the heuristic function. Instead of relying on gradient-based training, the network weights are optimized using a Genetic Algorithm (GA), precisely its popular versions called the \textit{Random key generic algorithm} (RKGA) and a biased RKGA (BRKGA) approach.  
+ 
+ Each individual in the GA population represents a complete set of neural network weights. The quality of an individual is evaluated by embedding the neural network inside the \textit{Iterative Multi-source Beam Search} (IMSBS) framework (proposed in the paper for EUROCAST 2026) to guide the search in the process of  forward passes of the BS,  
+ and measuring the average solution quality obtained on a set of training instances. Validation instances are used exclusively to monitor generalization.
+ 
+ Formally, the learning problem is defined as:
+ \[
+ \max_{\theta} \; \frac{1}{|T|} \sum_{I \in T} f(\text{IMS\_BeamSearch}(I, h_\theta)),
+ \]
+ where $T$ denotes the training set, $h_\theta$ is the neural heuristic parameterized by weights $\theta$, and $f(\cdot)$ measures solution quality.
+ 
+ \section{Neural Network Model}
+ 
+ The heuristic is represented by a \textit{multilayer perceptron} with an arbitrary number of hidden layers and user-defined units per layer. Supported activation functions include \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}.
+ 
+ For each layer $l$, forward propagation is defined as:
+ \[
+ \mathbf{z}^{(l+1)} = W^{(l)} \mathbf{a}^{(l)} + b^{(l)}, \quad
+ \mathbf{a}^{(l+1)} = \phi(\mathbf{z}^{(l+1)}),
+ \]
+ where $W^{(l)}$ and $b^{(l)}$ are the weight matrix and bias vector, respectively, and $\phi$ denotes the activation function.
+ 
+ All weights and biases are flattened into a single vector, which forms the chromosome of a GA individual.
+ 
+ \subsection{Fitness Evaluation}
+ 
+ Given a candidate weight vector:
+ \begin{enumerate}
+ 	\item The weights are loaded into the FFNN.
+ 	\item IMSBS is executed on each training instance using the neural heuristic (guiding the search in the forward iterations as more sensible than the backward iterations).
+ 	\item The size of the best sequence obtained for each instance is recorded.
+ \end{enumerate}
+ 
+ The fitness value is computed as the average solution quality over all training instances. Validation performance is computed analogously on a separate dataset and is used only for reporting.
+ 
+ \textcolor{red}{(Q0) Speed up -- evaluate fitness value by using parallelization. }
+ 
+ \subsection{Feature Extraction for the Variable-Gap LCS}
+ 
+ To guide the search process, each partial solution (node) is represented by a fixed-length numerical feature vector capturing both the current state of the construction and the structure of the remaining search space. These features are designed to be instance-independent and comparable across problem sizes.
+ 
+ Let $S=\{s_1,\ldots, s_k\}$ denote the set of input sequences, and let $p_i$ be the current matched position in sequence $s_i$ at a given node. The vector $\mathbf{p}^L=(p_1,\ldots,p_k)$ is first normalized by the corresponding sequence lengths,
+ \[
+ p_i \leftarrow \frac{p_i}{|s_i|},
+ \]
+ so that progress in each sequence lies in $[0,1]$ and becomes independent of absolute input sizes.
+ 
+ From this normalized position vector, four statistical descriptors are extracted: maximum, minimum, mean, and standard deviation (4 features). These quantities characterize, respectively, the most advanced and least advanced sequences, the average depth of the search, and the imbalance of progress among sequences. In addition, \textit{the current length of the partially constructed subsequence} is included as a feature (as the fifth feature). Together, these values provide a compact description of the current search state.
+ 
+ To capture the feasibility of future extensions, gap-related features are computed from the positions of remaining sequences (subproblem) of input sequences. For each sequence $s_i$, all gap bounds associated with positions strictly after the current node position are collected. Symbolically, for each $v$,  $Gap^{min}_i$ is calculated as $\min\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$,  $Gap^{max}_i$ is calculated as $\max\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$,  $Gap^{avg}_i$  as $\text{AVG}\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$, and  
+ $Gap^{std}_i$  as $\text{STD}\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$, where $G_1, \ldots, G_m$ are gap constraints associated to $s_1, \ldots, s_m$ respectively \textcolor{red}{speed up the calc. of G-stats -- preprocessing... }. This gives us additionally 4 features; in overall 9 features are used for the \textbf{feature configuration 1} (F1).  These statistics for gap constrains summarize the remaining flexibility of the instance: large average or maximum gaps indicate greater freedom for future matches, whereas small minimum gaps and large variability typically signal tighter constraints and increased difficulty.
+ Additional feature $|\Sigma|$, this 10 features, created the \textbf{feature configuration 2} (F2); When adding $m$ (number of input sequences) to F2, we obtain \textbf{feature configuration 3} (F3). 
+ \textcolor{red}{(Q1) uestion: s there a need for normalization of gap values of respective subproblem... (Q2) other features?}
+ %Depending on the selected configuration, additional instance-level characteristics are appended to the feature vector. These may include 
+ 
+ The alphabet size $|\Sigma|$ and the number of sequences $(m)$ as the attributes provide global structural information about the instance and help the learning model adapt to varying problem scales.
+ 
+ Finally, all features are standardized to zero mean and unit variance prior to being passed to the learning component. The utilization of normalization is know to contribute decreased sensibility of learning process when ML models are trained.  
+ Overall, the resulting representation combines information about (i) the current construction progress, (ii) the remaining gap-constraint landscape, and (iii) global instance properties, yielding between 9 and 11 features depending on the configuration. This compact yet expressive encoding enables effective learning-based guidance of the search for high-quality variable-gap longest common subsequences.
+ 
+ \section{Genetic Algorithm}
+ 
+ The optimization process follows a population-based evolutionary scheme.
+ 
+ \subsection{Initialization}
+ 
+ Each individual is initialized by sampling weights uniformly from a predefined interval [$-w, w$] (the value $w$ parametrized, but fixed to 1).
+ 
+ \subsection{Elitism}
+ 
+ A fixed number of top-performing individuals are copied unchanged into the next generation.
+ 
+ \subsection{Mutation}
+ 
+ Several individuals are generated completely at random (random immigrants). This mechanism promotes exploration and maintains population diversity.
+ 
+ \subsection{Offspring Generation}
+ 
+ Three alternative parent-selection strategies are supported:
+ 
+ \begin{itemize}
+ 	\item \textbf{RKGA}: Two parents are selected uniformly at random, and each gene is inherited from either parent with probability $0.5$.
+ 	\item \textbf{BRKGA}: One parent is selected from the elite set and one from the non-elite set. Each gene is inherited from the elite parent with a predefined probability.
+ 	\item \textbf{Lexicase Selection}: Training instances are randomly shuffled. Individuals are filtered iteratively by retaining those achieving the best performance on each instance. Parents are selected randomly from the remaining candidates.
+ \end{itemize}
+ 
+ We opt to use the \textit{BRKGA} as the first option to work well. 
+ 
+ 
+ \subsection{Replacement and Termination}
+ 
+ The new population consists of elites, mutants, and offspring. The algorithm terminates once a predefined time limit is reached (in this case we used 2 hours). The best individual encountered during training is continuously tracked and stored. \textcolor{red}{(Q3) Terminate immediately when the validation value is decreased?}
+ 
+ \section{Overall Learning Procedure}
+ 
+ The learning process alternates between evolutionary optimization of network weights and evaluation through (iterative multi-source) Beam Search. Importantly, the neural network does not directly predict solutions; instead, it learns how to \textit{guide} the search procedure. This places the method within the class of neuro-evolutionary hyper-heuristics.
+ 
+ \section{Algorithm}
+ 
+ \begin{algorithm}[H]
+ 	\caption{GA-Based Learning of a Beam Search Heuristic}
+ 	\begin{algorithmic}[1]
+ 		\STATE Initialize population $P$ with random neural network weights
+ 		\STATE Evaluate all individuals on training set $T$
+ 		\STATE Store best solution $\theta^\ast$
+ 		\STATE $start \leftarrow$ current time
+ 		\WHILE{time limit $T_{\max}$ has not exceeded}
+ 		\STATE Sort $P$ by fitness (descending) // {Section 2.1}
+ 		\STATE Initialize empty population $P'$
+ 		\STATE Copy top $n_{elites}$ individuals from $P$ to $P'$
+ 		\FOR{$i = 1$ to $n_{mutants}$}
+ 		\STATE Create random individual $x$
+ 		\STATE Evaluate $x$ on $T$
+ 		\STATE Add $x$ to $P'$
+ 		\STATE Update $\theta^\ast$ if improved
+ 		\ENDFOR
+ 		\FOR{$i = 1$ to $n_{offspring}$}
+ 		\STATE Select parents using \textbf{RKGA}, BRKGA, or Lexicase
+ 		\STATE Generate offspring by crossover
+ 		\STATE Evaluate offspring on $T$
+ 		\STATE Add offspring to $P'$
+ 		\STATE Update $\theta^\ast$ if improved
+ 		\ENDFOR
+ 		\STATE $P \leftarrow P'$
+ 		\ENDWHILE
+ 		\STATE \textbf{return} best weights $\theta^\ast$
+ 	\end{algorithmic}
+ \end{algorithm}
+ 
+ As the best optimizer, the BRKGA setting used in training: $n_{pop}=20, n_{elites}=1, p_{e}=0.5, p_m=7$.
+ 
+ \begin{figure}[t]
+ 	\centering
+ 	\begin{tikzpicture}[
+ 		box/.style={draw, rounded corners=2mm, align=center, minimum width=3.2cm, minimum height=1cm},
+ 		smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.6cm, minimum height=0.9cm},
+ 		arrow/.style={->, thick},
+ 		node distance=2.2cm
+ 		]
+ 		
+ 		% GA block
+ 		\node[box] (ga) {Genetic Algorithm\\(Population of NN Weights)};
+ 		
+ 		% NN
+ 		\node[smallbox, below=of ga] (nn) {Feed-Forward\\Neural Network};
+ 		
+ 		% Beam Search
+ 		\node[box, below=of nn] (bs) {Iterative Multi-Source\\Beam Search (IMSBS)};
+ 		
+ 		% Training instances
+ 		\node[smallbox, left=of bs] (train) {Training\\Instances};
+ 		
+ 		% Solutions / fitness
+ 		\node[smallbox, right=of bs] (fitness) {Solution Quality\\(Fitness)};
+ 		
+ 		% Arrows
+ 		\draw[arrow] (ga) -- node[right]{weights} (nn);
+ 		\draw[arrow] (nn) -- node[right]{heuristic} (bs);
+ 		\draw[arrow] (train) -- (bs);
+ 		\draw[arrow] (bs) -- (fitness);
+ 		\draw[arrow] (fitness.north) |- node[pos=0.25,right]{selection / update} (ga.east);
+ 		
+ 		% Validation (optional)
+ 		\node[smallbox, below=of bs] (val) {Validation\\Instances};
+ 		\draw[arrow,dashed] (val) -- (bs);
+ 		
+ 	\end{tikzpicture}
+ 	
+ 	\caption{Learning framework integrating a Genetic Algorithm with Iterative Multi-Source Beam Search (IMSBS).
+ 		The GA evolves neural network weights. For each individual, the FFNN provides a heuristic used by IMSBS on training
+ 		instances. The resulting solution quality defines fitness, which drives evolutionary selection. Validation
+ 		instances are used only for monitoring generalization.}
+ 	\label{fig:ga_imsbs}
+ \end{figure}
+ 
+ 
+ \section{Discussion}
+ 
+ The proposed framework learns heuristics rather than explicit solutions. The neural network is optimized exclusively through downstream search performance, enabling learning in non-differentiable settings. This tightly coupled integration of evolutionary learning and the classical optimization algorithm Beam Search allows the system to adapt its guidance strategy to the structure of the problem instances.
+ 
+ 
+ \section{Preliminary results}
+ 
+ \input{results_preliminary.tex}
+ 
+ IMSBS setting (grid search used for tuning the algorithm):
+ \begin{itemize}
+ 	\item     $\beta=1000$, $h'=h5$, $\#imbs\_iters=1000, \#num\_roots=10$
+ \end{itemize}
+ 
+ Learning IMSBS setting uses the same setting, to be completely fair with the comparison. The neural network configuration in this case, obtained after running several 2-layer $(n_1, n_2)$ and 3-layer configurations  $(n_1, n_2, n_3)$ for $n_1, n_2, n_3 \in \{5, 10\}$ (neurons) and $n_1 \geq n_2 \geq n_3$. We set up the same activation function in all layers choosing among the three (most) known $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. The best one uses \texttt{ReLU} at each layer, and besides instance-based features, it additionally incorporate the size of alphabet $\Sigma$ (F2).  The configurations of NNs are obtained only after 2 hours of training is a 3-layer perception with 10 neurons each.
+ 
+ \section{Conclusions}
+ 
+   \footnotesize{\textbf{Acknowledgments.}   This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
+	
+	\vspace{-0.5cm}
+	
+	\bibliographystyle{splncs04}
+	\bibliography{bib}
+	%
+	
+\end{document}
