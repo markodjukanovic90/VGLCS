@@ -36,17 +36,21 @@
 	%
 	\titlerunning{Learning a Data-Driven Beam Search Heuristic for the Variable Gapped Longest Common Subsequence Problem}
 	
-	\author{Marko Djukanović\inst{1, 6}  \and Nikola Balaban\inst{2}  \and
-		Christian Blum\inst{3}  \and 
-		Aleksandar Kartelj\inst{4}  \and
-		Sašo Džeroski\inst{5}  \and
-		Žiga Zebec\inst{6}
+	\author{Marko Djukanović\inst{1, 5}  %\and Nikola Balaban\inst{2}  
+		\and
+	  Christian Blum\inst{2}  \and 
+	  Aleksandar Kartelj\inst{3}  \and
+	  Sašo Džeroski\inst{4}  \and
+	  Žiga Zebec\inst{5}
 	}
 	%
 	\authorrunning{Djukanovic et al.}
 	
 	\institute{ University of Nova Gorica, Nova Gorica, Slovenia \\ \email{marko.dukanovic@ung.si} \and 
-	Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina \\ \email{nikola.balaban@student.pmf.unibl.org}, \email{marko.djukanovic@pmf.unibl.org} \and
+	%Faculty of Natural Sciences and Mathematics, University of Banja Luka, Banja Luka, Bosnia and Herzegovina
+	% \\ 
+	%\email{nikola.balaban@student.pmf.unibl.org}, 
+	\email{marko.djukanovic@pmf.unibl.org} \and
 		Artificial Intelligence Research Institute (IIIA-CSIC), Barcelona, Spain \\
 		\email{christian.blum@iia.csic.es} \and 
 		Faculty of Mathematics, University of Belgrade, Belgrade, Serbia \\ \email{kartelj@matf.rs} \\ \and
@@ -65,11 +69,11 @@
 	Each iteration performs a complete BS, guided by a heuristic  $h$ based on letter frequencies, minimal residual substring lengths, or probability-weighted estimates.
 	
  
- \section{Overview}
+ \subsection{Contributions}
  
- This work proposes a learning framework for constructing a data-driven heuristic to guide Beam Search in combinatorial optimization problems, and specifically one sequence problem that arises in bioinformatics, the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP). A feed-forward neural network (FFNN) is used to parameterize the heuristic function. Instead of relying on gradient-based training, the network weights are optimized using a Genetic Algorithm (GA), precisely its popular versions called the \textit{Random key generic algorithm} (RKGA) and a biased RKGA (BRKGA) approach.  
+ This work proposes a learning framework for constructing a data-driven heuristic to guide Beam Search in combinatorial optimization problems, and specifically one sequence problem that arises in bioinformatics, the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP). A feed-forward neural network (FFNN) is used to parameterize the heuristic function. Instead of relying on gradient-based training, the network weights are optimized using a Genetic Algorithm (GA), in particular its popular versions called the \textit{Random key generic algorithm} (RKGA) and a biased RKGA (BRKGA) approach.  
  
- Each individual in the GA population represents a complete set of neural network weights. The quality of an individual is evaluated by embedding the neural network inside the \textit{Iterative Multi-source Beam Search} (IMSBS) framework (proposed in the paper for EUROCAST 2026) to guide the search in the process of  forward passes of the BS,  
+ Each individual in the GA population represents a complete set of neural network weights. The quality of an individual is evaluated by embedding the neural network inside the \textit{Iterative Multi-source Beam Search} (IMSBS) framework (proposed in the paper~\cite{}) to guide the search in the process of forward passes of the BS,  
  and measuring the average solution quality obtained on a set of training instances. Validation instances are used exclusively to monitor generalization.
  
  Formally, the learning problem is defined as:
@@ -78,9 +82,18 @@
  \]
  where $T$ denotes the training set, $h_\theta$ is the neural heuristic parameterized by weights $\theta$, and $f(\cdot)$ measures solution quality.
  
- \section{Neural Network Model}
+ The paper is organized as follows. TODO
  
- The heuristic is represented by a \textit{multilayer perceptron} with an arbitrary number of hidden layers and user-defined units per layer. Supported activation functions include \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}.
+ 
+ \section{Iterative Multi-Source Beam Search for GLCS Problem}
+ 
+ TODO 
+ 
+ 
+ 
+ \section{Utilizing Feed-Forward Neural Networks for Guiding the Search}
+ 
+ The heuristic is represented by a \textit{multi-layer perceptron} with an arbitrary number of hidden layers and user-defined units per layer. Supported activation functions include \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}.
  
  For each layer $l$, forward propagation is defined as:
  \[
@@ -195,6 +208,40 @@
  		\STATE \textbf{return} best weights $\theta^\ast$
  	\end{algorithmic}
  \end{algorithm}
+ 
+ 
+ \subsection{Explanation of the GA-Based Learning Procedure}
+ 
+ The proposed algorithm employs a Genetic Algorithm (GA) to learn the parameters of a neural network that guides a beam search heuristic. The objective is to optimize a parameter vector $\theta$, representing the neural network weights, such that the induced heuristic achieves high performance on a given training set $T$.
+ 
+ \paragraph{Initialization.}
+ The procedure starts by generating an initial population $P$ of candidate solutions, where each individual corresponds to a randomly initialized set of neural network weights. All individuals are evaluated on the training set $T$, yielding a fitness value that reflects the quality of the corresponding heuristic. The best-performing individual found so far is stored as $\theta^\ast$.
+ 
+ \paragraph{Evolutionary Process.}
+ The algorithm iteratively improves the population until a predefined time limit $T_{\max}$ is reached. At each iteration, the population is sorted in descending order of fitness, ensuring that higher-quality solutions are prioritized. A new population $P'$ is then constructed using three complementary mechanisms:
+ 
+ \begin{itemize}
+ 	\item \textbf{Elitism.}  
+ 	A fixed number $n_{elites}$ of top-performing individuals are directly copied from the current population $P$ to $P'$. This guarantees that the best solutions are preserved across generations and prevents degradation of solution quality.
+ 	
+ 	\item \textbf{Mutation (Random Immigrants).}  
+ 	A set of $n_{mutants}$ new individuals is generated by random initialization. These individuals introduce diversity into the population and help prevent premature convergence. Each mutant is evaluated on the training set $T$ and added to $P'$. If a mutant outperforms the current best solution, $\theta^\ast$ is updated accordingly.
+ 	
+ 	\item \textbf{Crossover (Recombination).}  
+ 	The remaining $n_{offspring}$ individuals are generated via recombination. Parent solutions are selected using a specified selection strategy, such as Random-Key Genetic Algorithm (RKGA), Biased RKGA (BRKGA), or Lexicase selection. Offspring are created by combining genetic material from the selected parents. Each offspring is evaluated and added to $P'$, and $\theta^\ast$ is updated if an improved solution is found.
+ \end{itemize}
+ 
+ \paragraph{Population Update and Termination.}
+ After generating all individuals, the current population $P$ is replaced by the new population $P'$. This evolutionary process continues until the time limit $T_{\max}$ is reached. The algorithm then returns the best solution $\theta^\ast$, representing the neural network weights that yield the most effective beam search heuristic on the training set.
+ 
+ \paragraph{Key Properties.}
+ The proposed approach exhibits several desirable characteristics:
+ \begin{itemize}
+ 	\item \textbf{Exploration--Exploitation Balance:} The combination of elitism, mutation, and crossover ensures a balance between intensification around high-quality solutions and diversification across the search space.
+ 	\item \textbf{Gradient-Free Optimization:} The GA operates directly on neural network parameters without requiring gradient information, making it suitable for non-differentiable or noisy objective functions.
+ 	\item \textbf{Anytime Behavior:} The best solution $\theta^\ast$ is continuously updated, allowing the algorithm to return a high-quality solution at any point during execution.
+ \end{itemize}
+ 
  
  As the best optimizer, the BRKGA setting used in training: $n_{pop}=20, n_{elites}=1, p_{e}=0.5, p_m=7$.
  
