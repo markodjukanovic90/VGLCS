@@ -40,4 +40,5 @@ extern int n_mutants;
 extern int ga_config;
 extern double elite_inheritance_probability;
 extern bool differentiate_ties;
+extern double lambda; // weight for the NN guidance in the fitness function of GA
 #endif // GLOBAL_VARIABLE_H

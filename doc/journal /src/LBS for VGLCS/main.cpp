@@ -87,6 +87,9 @@ void read_parameters(int argc,char** argv){
         else if ( strcmp(argv[iarg], "-nr") == 0 ){
             number_of_roots = std::stoi(argv[++iarg]);
         }
+        else if ( strcmp(argv[iarg], "-lambda") == 0 ){
+            lambda = std::atof(argv[++iarg]);
+        }
 
         else if(strcmp(argv[iarg], "-activation_function") == 0){
             activation_function = atoi(argv[++iarg]);
@@ -126,7 +129,6 @@ void read_parameters(int argc,char** argv){
             differentiate_ties = true;
         }
 
-
         iarg++;
     }
 
@@ -140,9 +142,8 @@ void read_parameters(int argc,char** argv){
 
     neural_network->units_per_layer.push_back(1);
 
-    if(!training)
-    {
-            
+    if(!training){
+        
         ifstream weights_file("weights.txt");
 
         if(!weights_file.is_open()){
@@ -157,11 +158,9 @@ void read_parameters(int argc,char** argv){
             temporal_weights.push_back(num);
 
         neural_network->store_weights(temporal_weights);
-    
-       //validate
     }
 
-    if((feature_config < 1 || feature_config > 4) and hidden_layers > 0){
+    if((feature_config < 1 || feature_config > 4) and hidden_layers  > 0){
         cout << "WARNING: feature configuration not specified. Using default value 1" << endl;
         feature_config = 1;
     }
@@ -195,6 +194,7 @@ int main( int argc, char **argv ) {
 
     // SET NUMBER OF THREADS
     //omp_set_num_threads(num_threads);
+
     //cout << "Using " << omp_get_max_threads() << " threads." << endl;
 
     if(training)
@@ -232,7 +232,7 @@ int main( int argc, char **argv ) {
 
         if(hidden_layers > 0)
         {   
-            //cout << "Run the learning IMSBS" << endl;
+            cout << "Run the learning IMSBS" << endl;
 
             BeamSearch::Result res =
                 BeamSearch::imsbs_with_learning(
@@ -245,13 +245,13 @@ int main( int argc, char **argv ) {
                     time_limit_imsbs,
                     neural_network);
 
-            BeamSearch::write_result(*out, res, inst, "IMSBS-learning");
-            //used for tuning
-            cout << res.best_seq.size();
-        }
+              BeamSearch::write_result(*out, res, inst, "IMSBS-learning");
+              cout << res.best_seq.size();         
+	}
         else
         {
             //cout << "Run the basic IMSBS" << endl;
+
             BeamSearch::Result res =
                 BeamSearch::imsbs_with_learning(
                     &inst,
@@ -263,10 +263,9 @@ int main( int argc, char **argv ) {
                     time_limit_imsbs,
                     nullptr);
 
-            BeamSearch::write_result(*out, res, inst, "IMSBS");
-            //used for tuning
-            cout << res.best_seq.size();
-        }
+          BeamSearch::write_result(*out, res, inst, "IMSBS");
+          cout << res.best_seq.size();
+	}
     }
 
     return 0;
