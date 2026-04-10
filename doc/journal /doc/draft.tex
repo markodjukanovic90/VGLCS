@@ -212,7 +212,7 @@ The final ranking score is computed as a weighted combination of the two ranks:
 \[
 r(v) = \alpha \cdot r_{\text{FFNN}}(v) + (1 - \alpha) \cdot r_{\text{UB}}(v),
 \]
-where $\alpha = 0.45$ in our implementation. Nodes are then sorted in ascending order of $r(v)$, and the top candidates are retained according to the beam width.
+where $\alpha = 0.45$ in our implementation \textcolor{red}{This will be probably tuned w.r.t. small and large $m$}. Nodes are then sorted in ascending order of $r(v)$, and the top candidates are retained according to the beam width.
 
 This rank-based ensemble provides a robust mechanism for integrating learned and analytical guidance, mitigating scale inconsistencies and improving search stability. 
 
