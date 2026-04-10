@@ -196,11 +196,25 @@ As the best optimizer, the BRKGA setting used in training: $n_{pop}=20, n_{elite
 	\label{fig:ga_imsbs}
 \end{figure}
 
+\subsection{Discussion}
 
-\section{Discussion}
 
 The proposed framework learns heuristics rather than explicit solutions. The neural network is optimized exclusively through downstream search performance, enabling learning in non-differentiable settings. This tightly coupled integration of evolutionary learning and the classical optimization algorithm Beam Search allows the system to adapt its guidance strategy to the structure of the problem instances.
 
+
+\subsection{Improvements: an ensemble method}
+
+To guide the beam search, we employ a rank-based ensemble strategy that combines a learned heuristic with an analytical upper bound (UB) estimate. Specifically, each candidate node is evaluated using two criteria: (i) a neural score obtained from a trained feed-forward neural network (FFNN), and (ii) a problem-specific upper bound ($\text{UB}_2$ in the EUROCAST paper). 
+
+Instead of combining the raw scores directly, which may differ in scale and distribution, we adopt a rank aggregation approach. First, candidate nodes are sorted independently according to each criterion, producing two rankings. Each node is then assigned a rank based on its position in each sorted list. 
+
+The final ranking score is computed as a weighted combination of the two ranks:
+\[
+r(v) = \alpha \cdot r_{\text{FFNN}}(v) + (1 - \alpha) \cdot r_{\text{UB}}(v),
+\]
+where $\alpha = 0.45$ in our implementation. Nodes are then sorted in ascending order of $r(v)$, and the top candidates are retained according to the beam width.
+
+This rank-based ensemble provides a robust mechanism for integrating learned and analytical guidance, mitigating scale inconsistencies and improving search stability. 
 
 \section{Preliminary results}
 
@@ -208,7 +222,7 @@ The proposed framework learns heuristics rather than explicit solutions. The neu
 
 IMSBS setting (grid search used for tuning the algorithm):
 \begin{itemize}
-	\item     $\beta=500$, $h'=h5$, $\#imbs\_iters=3000, \#num\_roots=10$
+	\item     $\beta=500$, $h'=\text{UB}_2$, $\#imbs\_iters=3000, \#num\_roots=10$
 \end{itemize}
 
 The Learning IMSBS algorithm setting as that used in IMSBS,  to be completely fair in the comparisons. The neural network configuration in this case, obtained after running several 2-layer $(n_1, n_2)$ and 3-layer configurations  $(n_1, n_2, n_3)$ for $n_1, n_2, n_3 \in \{5, 10\}$ (neurons) and $n_1 \geq n_2 \geq n_3$ splitting instances per each $\Sigma$. We set up the same activation function in all layers choosing among the three (most) known $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. 
