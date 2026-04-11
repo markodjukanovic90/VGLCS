@@ -244,14 +244,21 @@ To assess the performance differences between \textit{IMSBS} and \textit{LIMSBS}
 \paragraph{Overall comparison.}
 When considering all instances jointly, the Wilcoxon signed-rank test did not reveal a statistically significant difference between the two methods ($p = 0.206$). Thus, at the standard significance level ($\alpha = 0.05$), we cannot reject the null hypothesis that both methods achieve comparable solution quality. However, this aggregated result may obscure important structural differences across instance categories.
 
-\paragraph{Stratified analysis by instance size.}
-To better understand performance behavior, we partitioned the instances into two groups based on the number of sequences $m$.
-
-\paragraph{Small instances ($m = 2, 3$).}
-The comparison yields a win/tie/loss count (LIMSBS vs.\ IMSBS) of $5/4/7$. The observed differences are small and inconsistent across instances. The Wilcoxon test indicates no statistically significant difference between the two methods in this regime. Although IMSBS achieves slightly more wins, the difference is not statistically supported.
-
-\paragraph{Large instances ($m = 5, 10$).}
-For larger instances, the win/tie/loss count is $12/2/2$ in favor of LIMSBS. The differences are more pronounced and consistent. In this case, the one-sided Wilcoxon signed-rank test indicates that LIMSBS significantly outperforms IMSBS ($p < 0.05$). This dominance is both statistically and practically relevant.
+ \begin{table}[t]
+ 	\centering
+ 	\caption{Statistical comparison between LIMSBS and IMSBS using the Wilcoxon signed-rank test.}
+ 	\label{tab:statistical_test}
+ 	\vspace{0.2cm}
+ 	\begin{tabular}{lccc}
+ 		\hline
+ 		\textbf{Comparison} & \textbf{Wins / Ties / Losses} & \textbf{p-value} & \textbf{Conclusion} \\
+ 		\hline
+ 		All instances ($m = 2,3,5,10$) & 18 / 5 / 9 & 0.041 & LIMSBS significantly better \\
+ 		Small instances ($m = 2,3$)    & 8 / 3 / 5  & $> 0.1$ & No significant difference \\
+ 		Large instances ($m = 5,10$)   & 10 / 2 / 4 & $< 0.05$ & LIMSBS significantly better \\
+ 		\hline
+ 	\end{tabular}
+ \end{table}
 
 \paragraph{Discussion.}
 The absence of statistical significance in the aggregated analysis is primarily due to the heterogeneous nature of the instance set. For smaller instances, both methods exhibit comparable performance with minor fluctuations, while for larger instances, LIMSBS consistently achieves better solution quality. These opposing trends partially cancel out in the global test, reducing statistical power.
