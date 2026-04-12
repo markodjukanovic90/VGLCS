@@ -212,7 +212,7 @@ The final ranking score is computed as a weighted combination of the two ranks:
 \[
 r(v) = \alpha \cdot r_{\text{FFNN}}(v) + (1 - \alpha) \cdot r_{\text{UB}}(v),
 \]
-where $\alpha = 0.45$ in our implementation \textcolor{red}{This will be probably tuned w.r.t. small and large $m$}. Nodes are then sorted in ascending order of $r(v)$, and the top candidates are retained according to the beam width.
+where $\alpha = 0.45$ in our implementation except for $m=3$ where $\alpha=0.5$. Nodes are then sorted in ascending order of $r(v)$, and the top candidates are retained according to the beam width.
 
 This rank-based ensemble provides a robust mechanism for integrating learned and analytical guidance, mitigating scale inconsistencies and improving search stability. 
 
@@ -220,12 +220,12 @@ This rank-based ensemble provides a robust mechanism for integrating learned and
 
 \input{results_preliminary.tex}
 
-IMSBS setting (grid search used for tuning the algorithm):
+IMSBS setting (tuned by \texttt{irace}, values of two parameters tuned: $\beta$ and $\#imbs\_iters=3000$); other parameters are less sensible and fixed according to EUROCAST 2026 paper study:
 \begin{itemize}
-	\item     $\beta=500$, $h'=\text{UB}_2$, $\#imbs\_iters=3000, \#num\_roots=10$
+	\item     $\beta=2000$, $h'=\text{UB}_2$, $\#imbs\_iters=5000, \#num\_roots=10$
 \end{itemize}
 
-The Learning IMSBS algorithm setting as that used in IMSBS,  to be completely fair in the comparisons. The neural network configuration in this case, obtained after running several 2-layer $(n_1, n_2)$ and 3-layer configurations  $(n_1, n_2, n_3)$ for $n_1, n_2, n_3 \in \{5, 10\}$ (neurons) and $n_1 \geq n_2 \geq n_3$ splitting instances per each $\Sigma$. We set up the same activation function in all layers choosing among the three (most) known $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. 
+The Learning IMSBS algorithm setting as that used in IMSBS,  to be completely fair in the comparisons with the number of performed iterations. The neural network configuration in this case, obtained after running several 2-layer $(n_1, n_2)$ and 3-layer configurations  $(n_1, n_2, n_3)$ for $n_1, n_2, n_3 \in \{5, 10\}$ (neurons) and $n_1 \geq n_2 \geq n_3$ splitting instances per each $\Sigma$. We set up the same activation function in all layers choosing among the three (most) known $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. 
 
 We have split the random instances into 4 different subsets, according to different $m$, and run a GA process on each pf these subsets independently. 
 In that way, one configuration per each $m$ has been obtained after the training process. In details, the following FFNN configurations are obtained:
@@ -239,26 +239,31 @@ In that way, one configuration per each $m$ has been obtained after the training
 
 \subsection{Statistical Analysis of Solution Quality}
 
-To assess the performance differences between \textit{IMSBS} and \textit{LIMSBS}, we employed the Wilcoxon signed-rank test, a non-parametric statistical test suitable for paired comparisons without assuming normality. Since both algorithms were evaluated on the same set of instances, the paired nature of the data is preserved.
+ \subsection{Statistical Comparison}
+ 
+ We evaluated the difference in solution quality between LIMSBS and IMSBS using the Wilcoxon signed-rank test on paired instances.
+ 
+ The test reveals a statistically significant difference in favor of LIMSBS, indicating that LIMSBS achieves superior performance overall. Out of 32 instances, LIMSBS outperforms IMSBS in 20 cases, while 7 instances result in ties and 5 favor IMSBS.
+ 
+ %The improvement is particularly pronounced for larger instances ($m = 5, 10$), where LIMSBS consistently achieves higher-quality solutions. 
+ 
+These results demonstrate that the proposed approach provides both statistically and practically significant gains over IMSBS.
 
-\paragraph{Overall comparison.}
-When considering all instances jointly, the Wilcoxon signed-rank test did not reveal a statistically significant difference between the two methods ($p = 0.206$). Thus, at the standard significance level ($\alpha = 0.05$), we cannot reject the null hypothesis that both methods achieve comparable solution quality. However, this aggregated result may obscure important structural differences across instance categories.
-
- \begin{table}[t]
- 	\centering
- 	\caption{Statistical comparison between LIMSBS and IMSBS using the Wilcoxon signed-rank test.}
- 	\label{tab:statistical_test}
- 	\vspace{0.2cm}
- 	\begin{tabular}{lccc}
- 		\hline
- 		\textbf{Comparison} & \textbf{Wins / Ties / Losses} & \textbf{p-value} & \textbf{Conclusion} \\
- 		\hline
- 		All instances ($m = 2,3,5,10$) & 18 / 5 / 9 & 0.041 & LIMSBS significantly better \\
- 		Small instances ($m = 2,3$)    & 8 / 3 / 5  & $> 0.1$ & No significant difference \\
- 		Large instances ($m = 5,10$)   & 10 / 2 / 4 & $< 0.05$ & LIMSBS significantly better \\
- 		\hline
- 	\end{tabular}
- \end{table}
+\begin{table}[t]
+	\centering
+	\caption{Statistical comparison between LIMSBS and IMSBS using the Wilcoxon signed-rank test (one-sided).}
+	\label{tab:statistical_test}
+	\vspace{0.2cm}
+	\begin{tabular}{lccc}
+		\hline
+		\textbf{Comparison} & \textbf{Wins / Ties / Losses} & \textbf{p-value} & \textbf{Conclusion} \\
+		\hline
+		All instances ($m = 2,3,5,10$) & 20 / 7 / 5 & 0.009 & LIMSBS significantly better \\
+		Small instances ($m = 2,3$)    & 10 / 4 / 2  & $<0.01$ & Significant difference \\
+		Large instances ($m = 5,10$)   & 10 / 3 / 3 & $< 0.05$ & LIMSBS significantly better \\
+		\hline
+	\end{tabular}
+\end{table}
 
 \paragraph{Discussion.}
 The absence of statistical significance in the aggregated analysis is primarily due to the heterogeneous nature of the instance set. For smaller instances, both methods exhibit comparable performance with minor fluctuations, while for larger instances, LIMSBS consistently achieves better solution quality. These opposing trends partially cancel out in the global test, reducing statistical power.
