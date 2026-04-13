@@ -330,6 +330,18 @@ Overall, while IMSBS and LIMSBS perform similarly on small instances, LIMSBS dem
  	'GG':1.84, 'CC':1.84
  \}$
   
+  %@article{watkins2005nearest,
+  %	title={Nearest-neighbor thermodynamics of deoxyinosine pairs in DNA duplexes},
+  %	author={Watkins Jr, Norman E and SantaLucia Jr, John},
+  %	journal={Nucleic acids research},
+  %	volume={33},
+  %	number={19},
+  %	pages={6258--6267},
+  %	year={2005},
+  %	publisher={Oxford University Press}
+  %}
+  
+  
   Structure-aware variable-gap LCS... Where: constraints are data-driven. 
   
   We state: ''\textit{Gap constraints are proportional to local thermodynamic stability estimated via nearest-neighbor interactions.}``
@@ -513,7 +525,26 @@ The resulting influence values induce \emph{directional structure} in the sequen
  
  By linking gap constraints directly to structural influence, the generator produces instances with controllable heterogeneity and realistic dependency patterns. The resulting benchmarks enable systematic evaluation of multi-sequence gapped LCS algorithms under diverse and challenging conditions.
  
+ \subsection{Results of RAT \& VIRUS benchmark set}
  
+ To demonstrate effectiveness of the two approaches on real-world instances, we have generated a set of instances by taking well-known benchmark sets \textsc{Rat} and \textsc{Virus} from the LCS problem literature. In details, we consider only those instances with $|\Sigma|=4$, as for the instances with $|\Sigma|=20$, the results were rather short solutions---therefore not relevant from the biological standpoint---  generating gaps in the same way as for the synthetic instances.  On each input sequences in each instances, we have generated one gap constraint by the methodology introduced in this chapter. In this way, input sequences are copied in corresponding VGLCS instances, while gap constraints have been accompanied  after generation. This dataset consists of $2\cdot 10=20$ problem instances. All sequences are of length 600, and, as already mentioned, over an alphabet set of size 4. Their differ characteristically by $m$ values which range from 10 to 200. In our experiments, we have taken the settings of \textsc{Imsbs} used in for synthetic instances, and for the \textsc{Limsbs}-ensemble, a neural network trained specifically for a largest our $m$ because in the case of these 20 instances,  $m\geq 10$ holds.
+ 
+ 
+ \input{real_results.tex}
+ 
+ The following conclusions can be made form the obtained results, reprted in
+ Table~\ref{tab:real_results}. The results indicate a clear advantage of LIMSBS in terms of solution quality. 
+ \begin{itemize}
+ 	\item  Overall, LIMSBS outperforms IMSBS in 15 out of 20 instances, while 5 instances result in ties and none favor IMSBS. This demonstrates a consistent dominance of LIMSBS across the tested dataset.
+ 
+    \item In terms of solution quality, LIMSBS achieves an average value of 11.8, compared to 9.9 for IMSBS, corresponding to an average relative improvement of approximately 19\%. The median quality values are 5 (LIMSBS) and 4 (IMSBS), confirming that improvements are consistent and not driven by outliers.
+ 
+   \item The advantage of LIMSBS is particularly pronounced on more difficult instances (e.g., virus cases with higher variability), where substantial gains are observed (e.g., 87 vs.\ 36). In contrast, ties typically occur on simpler instances with very low objective values.
+ 
+   \item Regarding computational time, IMSBS is generally faster, achieving an average runtime of 36.9 seconds compared to 32.6 seconds for LIMSBS. However, this difference is not consistent across all instances, and in several cases LIMSBS is competitive or even faster.
+  \end{itemize}
+  The results again demonstrate that LIMSBS provides a substantial and consistent improvement in solution quality over IMSBS on real-world instances, at the cost of a comparable computational effort. This makes LIMSBS a preferable choice when solution quality is the primary objective.
+  
  
 \end{document}
 
