@@ -154,47 +154,103 @@ As the best optimizer, the BRKGA setting used in training: $n_{pop}=20, n_{elite
 
 \begin{figure}[t]
 	\centering
+	\scalebox{0.7}{
 	\begin{tikzpicture}[
-		box/.style={draw, rounded corners=2mm, align=center, minimum width=3.2cm, minimum height=1cm},
-		smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.6cm, minimum height=0.9cm},
+		box/.style={draw, rounded corners=2mm, align=center, minimum width=3.4cm, minimum height=1cm, fill=blue!5},
+		smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.8cm, minimum height=0.9cm, fill=green!5},
+		evalbox/.style={draw, rounded corners=2mm, align=center, minimum width=3cm, minimum height=0.9cm, fill=orange!10},
 		arrow/.style={->, thick},
+		dashedarrow/.style={->, thick, dashed},
 		node distance=2.2cm
 		]
 		
-		% GA block
-		\node[box] (ga) {Genetic Algorithm\\(Population of NN Weights)};
+		% --- GA ---
+		\node[box, fill=purple!10] (ga) {Genetic Algorithm\\\small (Population of NN Weights)};
 		
-		% NN
+		% --- NN ---
 		\node[smallbox, below=of ga] (nn) {Feed-Forward\\Neural Network};
 		
-		% Beam Search
+		% --- Beam Search ---
 		\node[box, below=of nn] (bs) {Iterative Multi-Source\\Beam Search (IMSBS)};
 		
-		% Training instances
-		\node[smallbox, left=of bs] (train) {Training\\Instances};
+		% --- Training ---
+		\node[smallbox, left=3cm of bs] (train) {Training\\Instances};
 		
-		% Solutions / fitness
-		\node[smallbox, right=of bs] (fitness) {Solution Quality\\(Fitness: avg. quality)};
+		% --- Validation ---
+		\node[smallbox, right=3cm of bs] (val) {Validation\\Instances};
 		
-		% Arrows
+		% --- Fitness ---
+		\node[evalbox, below=of bs] (fitness) {Solution Quality\\\small (Fitness: avg.\ quality)};
+		
+		% --- Arrows ---
 		\draw[arrow] (ga) -- node[right]{weights} (nn);
 		\draw[arrow] (nn) -- node[right]{heuristic} (bs);
+		
 		\draw[arrow] (train) -- (bs);
+		\draw[dashedarrow] (val) -- node[above]{monitoring} (bs);
+		
 		\draw[arrow] (bs) -- (fitness);
-		\draw[arrow] (fitness.north) |- node[pos=0.25,right]{selection / update} (ga.east);
 		
-		% Validation (optional)
-		\node[smallbox, below=of bs] (val) {Validation\\Instances, if the validation quality decreased, \textbf{break}};
-		\draw[arrow,dashed] (val) -- (bs);
+     % --- Rectangular loop around training node ---
+    \draw[arrow] (fitness.west) -- ++(-6.5,0)          % go left past training node
+|- node[pos=0.25,left]{selection / update} (ga.west);
 		
-	\end{tikzpicture}
+		% --- Optional annotation ---
+		\node[below=0.3cm of fitness] {\small \textbf{Early stopping} if validation quality decreases};
+		
+	\end{tikzpicture}}
 	
-	\caption{Learning framework integrating a Genetic Algorithm with Iterative Multi-Source Beam Search (IMSBS).
-		The GA evolves neural network weights. For each individual, the FFNN provides a heuristic used by IMSBS on training
-		instances. The resulting solution quality defines fitness, which drives evolutionary selection. Validation
-		instances are used only for monitoring generalization.}
+	\caption{Enhanced learning framework integrating a Genetic Algorithm with IMSBS.
+		The GA evolves neural network weights, which define a heuristic used within the beam search.
+		Training instances guide optimization, while validation instances monitor generalization.
+		The feedback loop updates the population based on solution quality.}
 	\label{fig:ga_imsbs}
 \end{figure}
+
+
+%\begin{figure}[t]
+%	\centering
+%	\begin{tikzpicture}[
+%		box/.style={draw, rounded corners=2mm, align=center, minimum width=3.2cm, minimum height=1cm},
+%		smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.6cm, minimum height=0.9cm},
+%		arrow/.style={->, thick},
+%		node distance=2.2cm
+%		]
+		
+		% GA block
+%		\node[box] (ga) {Genetic Algorithm\\(Population of NN Weights)};
+		
+		% NN
+%		\node[smallbox, below=of ga] (nn) {Feed-Forward\\Neural Network};
+		
+		% Beam Search
+%		\node[box, below=of nn] (bs) {Iterative Multi-Source\\Beam Search (IMSBS)};
+		
+		% Training instances
+%		\node[smallbox, left=of bs] (train) {Training\\Instances};
+		
+		% Solutions / fitness
+%		\node[smallbox, right=of bs] (fitness) {Solution Quality\\(Fitness: avg. quality)};
+		
+		% Arrows
+%		\draw[arrow] (ga) -- node[right]{weights} (nn);
+%		\draw[arrow] (nn) -- node[right]{heuristic} (bs);
+%		\draw[arrow] (train) -- (bs);
+%		\draw[arrow] (bs) -- (fitness);
+%		\draw[arrow] (fitness.north) |- node[pos=0.25,right]{selection / update} (ga.east);
+		
+		% Validation (optional)
+%		\node[smallbox, below=of bs] (val) {Validation\\Instances, if the validation quality decreased, \textbf{break}};
+%		\draw[arrow,dashed] (val) -- (bs);
+		
+%	\end{tikzpicture}
+	
+%	\caption{Learning framework integrating a Genetic Algorithm with Iterative Multi-Source Beam Search (IMSBS).
+%		The GA evolves neural network weights. For each individual, the FFNN provides a heuristic used by IMSBS on training
+%		instances. The resulting solution quality defines fitness, which drives evolutionary selection. Validation
+%		instances are used only for monitoring generalization.}
+%	\label{fig:ga_imsbs}
+%\end{figure}
 
 \subsection{Discussion}
 
@@ -212,7 +268,7 @@ The final ranking score is computed as a weighted combination of the two ranks:
 \[
 r(v) = \alpha \cdot r_{\text{FFNN}}(v) + (1 - \alpha) \cdot r_{\text{UB}}(v),
 \]
-where $\alpha = 0.45$ in our implementation except for $m=3$ where $\alpha=0.5$. Nodes are then sorted in ascending order of $r(v)$, and the top candidates are retained according to the beam width.
+where $\alpha = 0.45$ in our implementation except for $m=3$ where $\alpha=0.5$ is fixed. Nodes are then sorted in ascending order of $r(v)$, and the top candidates are retained according to the beam width.
 
 This rank-based ensemble provides a robust mechanism for integrating learned and analytical guidance, mitigating scale inconsistencies and improving search stability. 
 
@@ -237,11 +293,10 @@ In that way, one configuration per each $m$ has been obtained after the training
 \end{itemize}
 
 
-\subsection{Statistical Analysis of Solution Quality}
+\subsection{Statistical Analysis of Solution Quality: benchmark set RANDOM}
 
- \subsection{Statistical Comparison}
  
- We evaluated the difference in solution quality between LIMSBS and IMSBS using the Wilcoxon signed-rank test on paired instances.
+ We evaluated the difference in solution quality between LIMSBS and IMSBS using the Wilcoxon signed-rank test on paired instances, reported in Table~\ref{tab:statistical_test}. 
  
  The test reveals a statistically significant difference in favor of LIMSBS, indicating that LIMSBS achieves superior performance overall. Out of 32 instances, LIMSBS outperforms IMSBS in 20 cases, while 7 instances result in ties and 5 favor IMSBS.
  
@@ -264,42 +319,22 @@ These results demonstrate that the proposed approach provides both statistically
 		\hline
 	\end{tabular}
 \end{table}
-
-\paragraph{Discussion.}
-The absence of statistical significance in the aggregated analysis is primarily due to the heterogeneous nature of the instance set. For smaller instances, both methods exhibit comparable performance with minor fluctuations, while for larger instances, LIMSBS consistently achieves better solution quality. These opposing trends partially cancel out in the global test, reducing statistical power.
-
-\paragraph{Conclusion.}
-Overall, while IMSBS and LIMSBS perform similarly on small instances, LIMSBS demonstrates superior scalability and robustness, achieving significantly better results on larger problem instances. This suggests that LIMSBS is more suitable for complex scenarios where instance size increases.
+  
 
 %The best one uses \texttt{ReLU} at each layer, and besides instance-based features, it additionally incorporate the size of alphabet $\Sigma$ (F2).  The configurations of NNs are obtained only after 2 hours of training is a 3-layer perception with 10 neurons each. 
 
-\begin{figure}[!ht]
-	\centering
-	 \includegraphics[width=360pt,height=230pt]{NN_obtained.png}
-	 \label{fig:nn_vglcs}
-	 \caption{FFNN architecture that is learned in the neuro-evolution process.}
-\end{figure}
+%\begin{figure}[!ht]
+%	\centering
+%	 \includegraphics[width=360pt,height=230pt]{NN_obtained.png}
+%	 \label{fig:nn_vglcs}
+%	 \caption{FFNN architecture that is learned in the neuro-evolution process.}
+%\end{figure}
  
- \section{Work in progress: Further ideas} (To be exploited)
- 
- \textbf{The training process}. Using only the mean optimizes average performance, ignores failures, and can produce unstable heuristics.  In COPs, robustness is often more important than average performance.
- 
- Fitness function replacement:
- \begin{itemize}
- 	\item  Option A (robust \& simple)   Fitness = 0.7 $\cdot$ mean + 0.3 $\cdot$ 20th-percentile
-   \item Option B (robust learning):    Fitness = 20-th percentile 
-   \item allow some degradation in the validation fitness score, not immediately stop by obtaining a weaker score.  
-  \end{itemize}
-  
- \textbf{ Curriculum / weighted fitness}.   Give more importance to harder instances and recent failures. 
-  Fitness=$\sum_i w_i f_i$, e.g., $w_i = \frac{1}{2^i}$, or $w_i=\frac{1}{n+1}$. 
-  
+
    
-  \section{Work in progress: Real-world VGLCSP instances }
+  \section{Practically-motivated VGLCSP instances }
   
-  What we are really modeling is: context-dependent importance of positions
-  
-  This aligns nicely with:
+  What we are really modeling is: context-dependent importance of positions.  This aligns nicely with:
   \begin{itemize}
   	\item  sequence alignment scoring
     \item attention mechanisms
@@ -308,7 +343,7 @@ Overall, while IMSBS and LIMSBS perform similarly on small instances, LIMSBS dem
   
   Interpretation (very important)
   More negative = more stable = stronger influence ...
-  Stability ranking picked from literature:
+  Stability ranking picked from literature (provide a reference):
   \begin{itemize}
   	\item   $GC>CG>GG>GA \approx GT \approx CA>CT>AA>AT>TA
   GC>CG>GG>GA \approx GT \approx CA>CT>AA>AT>TA$
@@ -349,38 +384,35 @@ Overall, while IMSBS and LIMSBS perform similarly on small instances, LIMSBS dem
   %That sounds simple, but it’s actually very solid scientifically.
   
  
- \section{Structure-Aware Benchmark Generator for Multi-Sequence Gapped LCS}
- 
- \subsection{Overview}
+ \subsection{Structure-Aware Benchmark Generator for Multi-Sequence Gapped LCS}
  
  We propose a benchmark generator for the multi-sequence gapped longest common subsequence (GLCS) problem, where position-dependent gap constraints are derived from local structural influence.
  
  Given a set of sequences:
  $
- \mathcal{S} = {S^{(1)}, S^{(2)}, \dots, S^{(m)}},
+ \mathcal{S} = \{S_1, S_2, \dots, S_m\},
  $
- each sequence $S^{(j)} = (s^{(j)}_1, \dots, s^{(j)}_n)$ is associated with gap constraints:
+ each sequence $S_j = (s_j[1], \dots, s_j[n])$ is associated with gap constraints:
  $
  w^{(j)} = (w^{(j)}_1, \dots, w^{(j)}_n),
  $
  where $w^{(j)}_i$ determines the maximum number of symbols that may be skipped before matching position $i$.
  
- \subsection{Sequence Generation}
+% \subsection{Sequence Generation}
  
- A base sequence $S^{(0)}$ is generated over $\Sigma = \{A,C,G,T\}$ using a distribution:
- $
- p = \eta p^{(u)} + (1-\eta)p^{(b)}, \quad \eta \in [0,1],
- $
- where $p^{(u)}$ is uniform and $p^{(b)}$ is biased. In our case no bias has been included ($\eta=1$). 
+% A base sequence $S_0$ is generated over e.g.,  $\Sigma = \{A,C,G,T\}$ using a distribution:
+% $p = \eta p^{(u)} + (1-\eta)p^{(b)}, \quad \eta \in [0,1],
+% $
+% where $p^{(u)}$ is uniform and $p^{(b)}$ is biased. In our case no bias has been included ($\eta=1$). 
  
- Each sequence $S^{(j)}$ is obtained via mutation:
- $
- s^{(j)}_i =
- \begin{cases}
- 	\text{random symbol from } \Sigma, & \text{with probability } \mu, \
- 	s^{(0)}_i, & \text{otherwise}.
- \end{cases}
- $
+% Each sequence $S^{(j)}$ is obtained via mutation:
+% $
+% s^{(j)}_i =
+% \begin{cases}
+% 	\text{random symbol from } \Sigma, & \text{with probability } \mu, \
+% 	s^{(0)}_i, & \text{otherwise}.
+% \end{cases}
+% $
  
 \subsection{Dinucleotide-Based Structural Model}
 
@@ -402,8 +434,7 @@ f^{(j)}_k =
 \end{cases}
 $
 
-\paragraph{Interpretation.}
-\begin{itemize}
+\textit{Interpretation.} \begin{itemize}
 	\item Each position inherits structural influence from the bond linking it to the previous nucleotide (linkage between these considered).
 	\item First position has no predecessor and is therefore assigned zero contribution.
 \end{itemize}
@@ -442,11 +473,11 @@ The resulting influence values induce \emph{directional structure} in the sequen
 \end{itemize}
 
   
- \subsection{Normalization}
+ \textit{Normalization}. 
  
- $
+ $$
  \hat{I}^{(j)}_i = \frac{I^{(j)}_i - \min(I^{(j)})}{\max(I^{(j)}) - \min(I^{(j)}) + \epsilon} \in \left[0, 1 \right].
- $
+$$
  
  \subsection{Direct Mapping to Gap Constraints}
  
@@ -512,8 +543,8 @@ The resulting influence values induce \emph{directional structure} in the sequen
  
  \begin{itemize}
  	\item $m$: number of sequences
- 	\item $\eta$: entropy level
- 	\item $\mu$: mutation rate
+ %	\item $\eta$: entropy level
+ %	\item $\mu$: mutation rate
  	\item $r$: influence radius
  	\item $\lambda$: decay factor
  	\item $[w_{\min}, w_{\max}]$: gap bounds
@@ -521,11 +552,9 @@ The resulting influence values induce \emph{directional structure} in the sequen
  	\item $\sigma$: noise level
  \end{itemize}
  
- \subsection{Conclusion}
+ \textit{Conclusion}.  By linking gap constraints directly to structural influence, the generator produces instances with controllable heterogeneity and realistic dependency patterns. The resulting benchmarks enable systematic evaluation of multi-sequence gapped LCS algorithms under diverse and challenging conditions.
  
- By linking gap constraints directly to structural influence, the generator produces instances with controllable heterogeneity and realistic dependency patterns. The resulting benchmarks enable systematic evaluation of multi-sequence gapped LCS algorithms under diverse and challenging conditions.
- 
- \subsection{Results of RAT \& VIRUS benchmark set}
+ \subsection{Results on RAT \& VIRUS benchmark set}
  
  To demonstrate effectiveness of the two approaches on real-world instances, we have generated a set of instances by taking well-known benchmark sets \textsc{Rat} and \textsc{Virus} from the LCS problem literature. In details, we consider only those instances with $|\Sigma|=4$, as for the instances with $|\Sigma|=20$, the results were rather short solutions---therefore not relevant from the biological standpoint---  generating gaps in the same way as for the synthetic instances.  On each input sequences in each instances, we have generated one gap constraint by the methodology introduced in this chapter. In this way, input sequences are copied in corresponding VGLCS instances, while gap constraints have been accompanied  after generation. This dataset consists of $2\cdot 10=20$ problem instances. All sequences are of length 600, and, as already mentioned, over an alphabet set of size 4. Their differ characteristically by $m$ values which range from 10 to 200. In our experiments, we have taken the settings of \textsc{Imsbs} used in for synthetic instances, and for the \textsc{Limsbs}-ensemble, a neural network trained specifically for a largest our $m$ because in the case of these 20 instances,  $m\geq 10$ holds.
  
@@ -544,6 +573,22 @@ The resulting influence values induce \emph{directional structure} in the sequen
    \item Regarding computational time, IMSBS is generally faster, achieving an average runtime of 36.9 seconds compared to 32.6 seconds for LIMSBS. However, this difference is not consistent across all instances, and in several cases LIMSBS is competitive or even faster.
   \end{itemize}
   The results again demonstrate that LIMSBS provides a substantial and consistent improvement in solution quality over IMSBS on real-world instances, at the cost of a comparable computational effort. This makes LIMSBS a preferable choice when solution quality is the primary objective.
+  
+  \section{Future Work}  
+  
+  \textbf{The training process}. Using only the mean optimizes average performance, ignores failures, and can produce unstable heuristics.  In COPs, robustness is often more important than average performance.
+  
+  Fitness function replacement:
+  \begin{itemize}
+  	\item  Option A (robust \& simple)   Fitness = 0.7 $\cdot$ mean + 0.3 $\cdot$ 20th-percentile
+  	\item Option B (robust learning):    Fitness = 20-th percentile 
+  	\item allow some degradation in the validation fitness score, not immediately stop by obtaining a weaker score.  
+  \end{itemize}
+  
+  \textbf{ Curriculum / weighted fitness}.   Give more importance to harder instances and recent failures. 
+  Fitness=$\sum_i w_i f_i$, e.g., $w_i = \frac{1}{2^i}$, or $w_i=\frac{1}{n+1}$. 
+  
+  
   
  
 \end{document}
