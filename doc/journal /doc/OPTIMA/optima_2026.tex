@@ -139,7 +139,7 @@ At each layer, to catch up non-linear relations between input features,  we supp
  
  The fitness value is computed as the average solution quality over all training instances. Formally, the learning problem is defined as:
  \begin{equation} \label{eq:training_problem_optimization}
-     \max_{w} \; \frac{1}{|T|} \sum_{I \in \mathcal{T}} \texttt{IMSBS}(I, h_w),
+     \max_{w} \; \emph{Fitness}(w)=\frac{1}{|T|} \sum_{I \in \mathcal{T}} \texttt{IMSBS}(I, h_w),
  \end{equation}
  where $h_w$ is the heuristic induced by neural network $\mathcal{N}(w)$. Validation performance score is computed analogously on a separate dataset $\mathcal{V}$ and is used only for reporting.  
  
@@ -175,46 +175,46 @@ This gives us additionally 4 features; in overall 9 features are comprised to cr
  The new population consists of elites, mutants, and offspring. The algorithm terminates once a predefined time limit is reached (in this case we used 2 hours). The best individual encountered during training is continuously tracked and stored. Once the new incumbent is reached, its validation score is also determined. If it is decreased in comparison to the best so far validation value, over-fitting is detected and the learning process is immediately terminated. 
  
  
- \textbf{Overall Learning Procedure}. \textcolor{red}{TODO: Came up to here... } 
-   The learning process alternates between evolutionary optimization of network weights and evaluation through (iterative multi-source) Beam Search. Importantly, the neural network does not directly predict solutions; instead, it learns how to \textit{guide} the search procedure. This places the method within the class of neuro-evolutionary hyper-heuristics.
+ \textbf{Overall Learning Procedure}. The learning process alternates between evolutionary optimization of network weights and evaluation through (iterative multi-source) Beam Search. Importantly, the neural network does not directly predict solutions; instead, it learns how to \textit{guide} the search procedure. This places the method within the class of neuro-evolutionary hyper-heuristics.
  
  \begin{algorithm}[H]
- 	\caption{GA-Based Learning of a Beam Search Heuristic} \label{alg:learning_mechanism}
+ 	\caption{GA-Based Learning of a BS Heuristic} \label{alg:learning_mechanism}
  	\begin{algorithmic}[1]
+ 		\STATE \textbf{Input}: NN architecture, parameters of IMSBS for \emph{Fitness}, parameters of BRKGA
+ 		\STATE \textbf{Output}: best weights for NN 
  		\STATE Initialize population $P$ with random neural network weights
- 		\STATE Evaluate all individuals on training set $T$
- 		\STATE Store best solution $\theta^\ast$
+ 		\STATE Evaluate all individuals on training set $\mathcal{T}$
+ 		\STATE Store best solution $w^\ast$
  		\STATE $start \leftarrow$ current time
- 		\WHILE{time limit $T_{\max}$ has not exceeded}
- 		\STATE Sort $P$ by fitness (descending) // {Section 2.1}
+ 		\WHILE{time limit $t_{\max}$ has not exceeded}
+ 		\STATE Sort $P$ by \emph{Fitness}($\cdot$) value (descending)
  		\STATE Initialize empty population $P'$
  		\STATE Copy top $n_{elites}$ individuals from $P$ to $P'$
  		\FOR{$i = 1$ to $n_{mutants}$}
  		\STATE Create random individual $x$
- 		\STATE Evaluate $x$ on $T$
+ 		\STATE Evaluate $x$ on $\mathcal{T}$
  		\STATE Add $x$ to $P'$
- 		\STATE Update $\theta^\ast$ if improved
+ 		\STATE Update $w^\ast$ if improved \& validation score not decreased 
  		\ENDFOR
  		\FOR{$i = 1$ to $n_{offspring}$}
- 		\STATE Select parents using \textbf{RKGA}, BRKGA, or Lexicase
+ 		\STATE Select parents from the elite set and the set of rest of individuals 
  		\STATE Generate offspring by crossover
- 		\STATE Evaluate offspring on $T$
+ 		\STATE Evaluate offspring on $\mathcal{T}$
  		\STATE Add offspring to $P'$
- 		\STATE Update $\theta^\ast$ if improved
+ 		\STATE Update $w^\ast$ if improved  
  		\ENDFOR
  		\STATE $P \leftarrow P'$
  		\ENDWHILE
- 		\STATE \textbf{return} best weights $\theta^\ast$
+ 		\STATE \textbf{return} $w^\ast$
  	\end{algorithmic}
  \end{algorithm}
  
- 
-\subsection{Explanation of the GA-Based Learning Procedure}
+ %\subsection{Explanation of the GA-Based Learning Procedure}
 
-The proposed algorithm employs a Genetic Algorithm (GA) to learn the parameters of a neural network that guides a beam search heuristic. The objective is to optimize a parameter vector $\theta$, representing the neural network weights, such that the induced heuristic achieves high performance on a given training set $T = \{I_1, I_2, \dots, I_m\}$ of problem instances.
+%The proposed algorithm employs a Genetic Algorithm (GA) to learn the parameters of a neural network that guides a beam search heuristic.   The objective is to optimize a parameter vector $\theta$, representing the neural network weights, such that the induced heuristic achieves high performance on a given training set $T = \{I_1, I_2, \dots, I_m\}$ of problem instances.
 
-\paragraph{Initialization.}
-The procedure starts by generating an initial population $P$ of candidate solutions, where each individual corresponds to a randomly initialized set of neural network weights. All individuals are evaluated on the training set $T$, yielding a fitness value that reflects the quality of the corresponding heuristic. The best-performing individual found so far is stored as $\theta^\ast$.
+%\paragraph{Initialization.}
+The procedure starts by generating an initial population $P$ of candidate solutions, where each individual corresponds to a randomly initialized set of neural network weights. All individuals are evaluated on the training set $T$, yielding a fitness value that reflects the quality of the corresponding heuristic. The best-performing individual found so far is stored as $w^\ast$. \textcolor{red}{Marko: Came up to here!!}
 
 \paragraph{Fitness Function.}
 Let $\mathcal{B}(I, \theta)$ denote the solution obtained by applying a beam search guided by parameters $\theta$ on instance $I$. Let $f(\cdot)$ be a problem-specific objective function (e.g., solution quality or cost). The fitness of an individual $\theta$ is defined as:
