@@ -83,7 +83,7 @@
 	
  
  \paragraph{Contributions.} This work utilizes a  framework for constructing a data-driven heuristic to guide the iterative beam search, specifically designed in the context of the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP). A feed-forward neural network (FFNN) is used to parameterize the heuristic score of each node in the beam search. Instead of relying on gradient-based training, which is shown effective for the (constrained) continuous problems,  the network weights are optimized using a Genetic Algorithm (GA), in particular the popular biased RKGA (BRKGA) approach.  Note that here we deal with a fully non-differentiable search space when training this ML model. To establish synergy between two complementary scores, the outcome of the trained neural network and hand-crafted heuristics, a novel ensemble heuristic is introduced. This novel ensemble heuristic is clearly a new state-of-the-art guidance, according to the echausive experimental evaluation. 
-   The second contribution is the introduction of the first real-world benchmark set fo the tackled problem. In this case-scenario, gap constraints are designed to reflect on local thermodynamic stability estimated via nearest-neighbor interaction around each nucleotide. 
+  The second contribution is the introduction of the first real-world benchmark set fo the tackled problem. In this case-scenario, gap constraints are designed to reflect on local thermodynamic stability estimated via nearest-neighbor interaction around each nucleotide. In this way, the purpose is to obtain a subsequence with stable molecular structure.  
 
  
 
@@ -98,16 +98,27 @@
 
 
  
- The paper is organized as follows. TODO
+ The paper is organized as follows. In Section~\ref{sec:imsbs}, the iterative multi source beam search approach from the literature is roughly presented. Section~\ref{sec:ffnn_guidance} provides details on the process of learning heuristic guidance through multi-layer neural network, and the design of the combined heuristic estimator for the tacked problem. Section~\ref{sec:experiments} reports a rigorous experimental analysis. Finally, Section~\ref{sec:conclusions} concludes the paper highlighting several future research directions. 
  
  
- \section{Iterative Multi-Source Beam Search for GLCS Problem}
+ \section{Iterative Multi-Source Beam Search for GLCS Problem}\label{sec:imsbs}
  
- TODO 
+ The methodology of Iterative multi-source beam search (IMSBS) is proposed in~\cite{djukanovic2026_eurocast} and here we only present it in sufficient but not all details. Interested readers are advised to check them in the above-cited paper. \\
+ 
+	This approach is derived from the general \textit{state graph} formulation for the VGLCSP. Each node represents a partial feasible subsequence, characterized by the vector of current positions in each input sequence and the subsequence length. Specifically, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix string $s_i[1]\cdots s_i[p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all the gaps $G_{s_i}$ are preserved with $s^v$. A directed arc $\alpha=(v_1 v_2)$, labeled $lett(\alpha)={a} \in \Sigma$, exists between states $v_1$ and $v_2$ if $l^{v_2} = l^{v_1} + 1$ and $s^{v_2} = s^{v_1} \cdot {a}$. To expand a state $v$, all letters that occur in each suffix of $s_i$ defined by respective positions $p^{L,v}_i$  are considered. For each such letter $a$, the minimal positions $p^{L,a}_i \geq p^{L,v}_i$ of its appearances are identified fulfilling $p^{L,a}_i - p^{L,v}_i \le G_{s_i}(p^{L,a}_i)$. The resulting child node, if not suboptimal, is given by $w=(p^{L,a}+1, l^v+1)$. The root node  $r:=((1,\ldots,1),0)$ represents the empty subsequence, while goal states correspond to non-extendable feasible subsequences.
+	
+	 Unlike the classical LCSP, the VGLCSP admits multiple (possibly exponentially many) root nodes.  For example, in sequences $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$, the state $r=((1,1),0)$ cannot reach any state with the position vector $(5,5)$ via transitions, missing an opportunity to reach optimal subsequence $\texttt{AAA}$ is starting the search from $r$. This  motivates the development of  IMSBS approach that works on a space of rooted nodes, which are dynamically generated over iterations and explored based on priority. BS is a popular meta-heuristic approach~\cite{wiseman2016sequence} that performs in a breadth-first-search manner by expanding up to a certain number of nodes at the current level until the bottom is reached. 
+	 This amount of nodes is controlled by the size of beam ($\beta$)---which controls the level of greediness---and a heuristic guidance ($h$) for selecting them---as especially sensible algorithmic parameter. 
+	 
+	 
+	 In the IMSBS, BS is iteratively executed with a set of promising candidate root nodes as an initial beam, selected from a dynamically maintained global priority queue of candidate root nodes, controlling the diversification of the approach.	Each iteration performs a complete BS on a few  ($num\_root\_nodes$) top candidate root nodes, which are, beforehand, refined by the beam search with a small beam width $\beta'$ and heuristic guidance $h'$, as not all candidate nodes indeed represent root nodes. This process intensify the search and permit it from returning proven suboptimal solutions. During each BS call, new candidate root nodes are generated from the complete (non-expandable) nodes and subsequently added in the priority queue. This approach balances the intensification and diversification by several of its parameters. The stopping criteria for the IMSBS are the number of allowed beam search iterations ($bs\_iters$), and time limit of 30 minutes.
+	 
+	 In the remaining part of the paper, we refer to the algorithm as \texttt{IMSBS}($\beta, h, \beta'$, $h', num\_root\_nodes$), returning an approximate solution $s_{imsbs}$. 
  
  
+ \section{Learning to Guide the Search} \label{sec:ffnn_guidance}
  
- \section{Utilizing Feed-Forward Neural Networks for Guiding the Search}
+ TODO:
  
  The heuristic is represented by a \textit{multi-layer perceptron} with an arbitrary number of hidden layers and user-defined units per layer. Supported activation functions include \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}.
  
@@ -327,7 +338,7 @@ After generating all individuals, the population is updated as $P \leftarrow P'$
  The proposed framework learns heuristics rather than explicit solutions. The neural network is optimized exclusively through downstream search performance, enabling learning in non-differentiable settings. This tightly coupled integration of evolutionary learning and the classical optimization algorithm Beam Search allows the system to adapt its guidance strategy to the structure of the problem instances.
  
  
- \section{Preliminary results}
+ \section{Experimental analysis}\label{sec:experiments}
  
  \input{results_preliminary.tex}
  
@@ -338,7 +349,7 @@ After generating all individuals, the population is updated as $P \leftarrow P'$
  
  Learning IMSBS setting uses the same setting, to be completely fair with the comparison. The neural network configuration in this case, obtained after running several 2-layer $(n_1, n_2)$ and 3-layer configurations  $(n_1, n_2, n_3)$ for $n_1, n_2, n_3 \in \{5, 10\}$ (neurons) and $n_1 \geq n_2 \geq n_3$. We set up the same activation function in all layers choosing among the three (most) known $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. The best one uses \texttt{ReLU} at each layer, and besides instance-based features, it additionally incorporate the size of alphabet $\Sigma$ (F2).  The configurations of NNs are obtained only after 2 hours of training is a 3-layer perception with 10 neurons each.
  
- \section{Conclusions}
+ \section{Conclusions}\label{sec:conclusions}
  
    \footnotesize{\textbf{Acknowledgments.}   This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
 	
