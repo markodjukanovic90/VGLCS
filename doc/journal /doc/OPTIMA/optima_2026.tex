@@ -103,11 +103,11 @@
  
  \section{Iterative Multi-Source Beam Search for GLCS Problem}\label{sec:imsbs}
  
- The methodology of Iterative multi-source beam search (IMSBS) is proposed in~\cite{djukanovic2026_eurocast} and here we only present it in sufficient but not all details. Interested readers are advised to check them in the above-cited paper. \\
+ The methodology of Iterative multi-source beam search (IMSBS) is proposed in~\cite{djukanovic2026_eurocast} and here we only present it in some details. Interested readers are advised to check complete details in the above-cited paper. \\
  
-	This approach is derived from the general \textit{state graph} formulation for the VGLCSP. Each node represents a partial feasible subsequence, characterized by the vector of current positions in each input sequence and the subsequence length. Specifically, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix string $s_i[1]\cdots s_i[p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all the gaps $G_{s_i}$ are preserved with $s^v$. A directed arc $\alpha=(v_1 v_2)$, labeled $lett(\alpha)={a} \in \Sigma$, exists between states $v_1$ and $v_2$ if $l^{v_2} = l^{v_1} + 1$ and $s^{v_2} = s^{v_1} \cdot {a}$. To expand a state $v$, all letters that occur in each suffix of $s_i$ defined by respective positions $p^{L,v}_i$  are considered. For each such letter $a$, the minimal positions $p^{L,a}_i \geq p^{L,v}_i$ of its appearances are identified fulfilling $p^{L,a}_i - p^{L,v}_i \le G_{s_i}(p^{L,a}_i)$. The resulting child node, if not suboptimal, is given by $w=(p^{L,a}+1, l^v+1)$. The root node  $r:=((1,\ldots,1),0)$ represents the empty subsequence, while goal states correspond to non-extendable feasible subsequences.
+	This approach is derived from the general \textit{state graph} formulation for the VGLCSP. Each node represents a partial feasible subsequence, characterized by the vector of current positions in each input sequence and the subsequence length. Specifically, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix string $s_i[1]\cdots s_i[p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all the gaps $G_{s_i}$ are preserved with $s^v$. A directed arc $\alpha=(v_1 v_2)$, labeled $lett(\alpha)={a} \in \Sigma$, exists between states $v_1$ and $v_2$ if $l^{v_2} = l^{v_1} + 1$ and $s^{v_2} = s^{v_1} \cdot {a}$. To expand a state $v$, all letters that occur in each suffix of $s_i$ defined by respective positions $p^{L,v}_i$  are considered. For each such letter $a$, the minimal positions $p^{L,a}_i \geq p^{L,v}_i$ of its appearances are identified fulfilling $p^{L,a}_i - p^{L,v}_i \le G_{s_i}(p^{L,a}_i)$. The resulting child node---if not suboptimal---is given by $w=(p^{L,a}+1, l^v+1)$. The root node  $r:=((1,\ldots,1),0)$ represents the empty subsequence, while goal/target states correspond to non-extendable feasible subsequences.
 	
-	 Unlike the classical LCSP, the VGLCSP admits multiple (possibly exponentially many) root nodes.  For example, in sequences $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$, the state $r=((1,1),0)$ cannot reach any state with the position vector $(5,5)$ via transitions, missing an opportunity to reach optimal subsequence $\texttt{AAA}$ is starting the search from $r$. This  motivates the development of  IMSBS approach that works on a space of rooted nodes, which are dynamically generated over iterations and explored based on priority. BS is a popular meta-heuristic approach~\cite{wiseman2016sequence} that performs in a breadth-first-search manner by expanding up to a certain number of nodes at the current level until the bottom is reached. 
+	 Unlike the classical LCSP, the VGLCSP admits multiple (possibly exponentially many) root nodes as the starting position of a root node is constrained-free.  For example, in sequences $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$, the state $r=((1,1),0)$ cannot reach any state with the position vector $(5,5)$ via transitions, missing an opportunity to reach optimal subsequence $\texttt{AAA}$ is starting the search from $r$. This  motivates the development of  IMSBS approach that works on a space of rooted nodes, which are dynamically generated over iterations and explored based on its priority. BS is a popular meta-heuristic approach~\cite{wiseman2016sequence} that performs in a breadth-first-search manner by expanding up to a certain number of nodes at the current level until the bottom is reached. 
 	 This amount of nodes is controlled by the size of beam ($\beta$)---which controls the level of greediness---and a heuristic guidance ($h$) for selecting them---as especially sensible algorithmic parameter. 
 	 
 	 
@@ -118,22 +118,23 @@
  
  \section{Learning to Guide the Search} \label{sec:ffnn_guidance}
  
- TODO:
+ Neural networks are well-known machine learning model~\cite{gurney2018introduction} that has shown its applicability in majority of fields~\cite{bishop1994neural}. There are many kind of neural networks such as the basic one, multi-layer perceptron, towards more complex Constitutional and recurrent neural networks of different architectures~\cite{mienye2024recurrent}.  We will here keep the things simple, and will consider only the fully-connected (multi)layered neural networks that will serve as tool to guide the search process of our iterative beam-search approach instead of the hand-crafted versions used in~\cite{djukanovic2026_eurocast}. For doing so, the major issue is to train the neural network, that is, setting its proper weights. In the context of classical neural networks for regression, this process is performed by alternating between forward and backward propagation, where the later is used to adapt the weights to minimize the error score on a set of  training data w.r.t.\ a loss function. The process of weights adaptation is usually executed by employing iterative numerical procedures such as (stohastic) gradient descent~\cite{amari1993backpropagation} or versions thereof using the power of gradient in quickly reaching local optima and decreasing the overall loss w.r.t. known target values, hopping to generalize well on unseen data. \\
  
- The heuristic is represented by a \textit{multi-layer perceptron} with an arbitrary number of hidden layers and user-defined units per layer. Supported activation functions include \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}.
+ 
+ As we operate in combinatorial space of an \textsc{NP}-hard problem, we do not expect in general target values are known in advance, or to some extent these will be known but only for small-to-middle sized instances if an efficient exact solver exists. This limits the application of gradient descent algorithms in learning weights for such environments. Thus, we approach here differently, by employing meta-heuristic approach with a diverse population of solutions representing weights of NN, able to quickly evolve towards local optima. Therefore, the back propagation pass in the classical NN training process is replaced by a population based meta-heuristic which adopts weights over iterations. In the feed forward pass fitness value for specific NN configuration has been determined. \\
+ 
+  
+\textbf{Predefined Architecture of Neural Network}. The heuristic score is represented by a \textit{multi-layer perceptron} with an number of hidden layers and user-defined units per layer, the standard input and output layer.  The input layer received a set of numerical values associated to subproblem to be evaluated, and the output consists of one (real) value, indicating how the considered subproblem is ``important''. 
+At each layer, to catch up non-linear relations between input features,  we support the use of following activation functions: \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}.
  
  For each layer $l$, forward propagation is defined as:
  \[
  \mathbf{z}^{(l+1)} = W^{(l)} \mathbf{a}^{(l)} + b^{(l)}, \quad
  \mathbf{a}^{(l+1)} = \phi(\mathbf{z}^{(l+1)}),
  \]
- where $W^{(l)}$ and $b^{(l)}$ are the weight matrix and bias vector, respectively, and $\phi$ denotes the activation function.
+ where $W^{(l)}$ and $b^{(l)}$ are the weight matrix and bias vector, respectively, and $\phi$ denotes the activation function.  All weights and biases are flattened into a \textbf{single vector}, which forms the chromosome of a GA individual. \\
  
- All weights and biases are flattened into a single vector, which forms the chromosome of a GA individual.
- 
- \subsection{Fitness Evaluation}
- 
- Given a candidate weight vector:
+ \textbf{Fitness Evaluation}. TODO   Given a candidate weight vector:
  \begin{enumerate}
  	\item The weights are loaded into the FFNN.
  	\item IMSBS is executed on each training instance using the neural heuristic (guiding the search in the forward iterations as more sensible than the backward iterations).
