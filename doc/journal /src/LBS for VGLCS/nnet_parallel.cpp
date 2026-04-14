@@ -87,7 +87,7 @@ double MLP::calculate_validation_value(const vector<double>& weights)
 
     double validation_value = 0;
 
-    #pragma omp parallel for reduction(+:validation_value) schedule(dynamic)
+    //#pragma omp parallel for reduction(+:validation_value) schedule(dynamic)
     for(int i = 0; i < (int)validation_instances.size(); i++)
     {
         Instance& instance = validation_instances[i];
@@ -112,10 +112,10 @@ double MLP::calculate_validation_value(const vector<double>& weights)
 void MLP::apply_decoder(training_individual& ind){
 
     this->store_weights(ind.weights);
-
+    
     double ofv = 0;
 
-    #pragma omp parallel for reduction(+:ofv) schedule(dynamic)
+    //#pragma omp parallel for reduction(+:ofv) schedule(dynamic)
     for(int i = 0; i < (int)training_instances.size(); i++)
     {
         Instance& instance = training_instances[i];
@@ -132,7 +132,12 @@ void MLP::apply_decoder(training_individual& ind){
         ).best_seq.size();
     }
 
-    ind.ofv = ofv / training_instances.size();
+    ind.ofv = ofv / training_instances.size(); 
+    // change ind.ofv  this for something more advanced:  ofv / training_instances.size() + penalty * 20-percentile results among all train_individuals, or something like that, to increase the pressure on the training to find weights that perform well on all training instances, not just a subset of them
+    // ind.ofv = ofv / training_instances.size() + penalty * percentile_20;
+    //percentile_20 can be calculated by collecting the results of all training individuals on all training instances, and then calculating the 20th percentile of these results. The penalty can be calculated as the proportion of training instances for which the individual's performance is below the 20th percentile. This way, individuals that perform well on a larger portion of the training instances will have a higher fitness value, even if their average performance is not the best.
+    
+    
 }
 
 void MLP::store_weights(const vector<double>& weights){
@@ -215,9 +220,8 @@ vector<double> MLP::Train(){
 
     const double epsilon = 1e-4;
 
-    // -------- Parallel population initialization --------
-
-    #pragma omp parallel for schedule(dynamic)
+    // -------- Parallel population initialization ------
+    //#pragma omp parallel for schedule(dynamic)
     for(int pi = 0; pi < population_size; ++pi){
 
         population[pi].weights = vector<double>(n_weights);
@@ -227,7 +231,7 @@ vector<double> MLP::Train(){
 
         apply_decoder(population[pi]);
     }
-
+    
     for(int pi = 0; pi < population_size; ++pi)
     {
         if(population[pi].ofv > best_ofv){
@@ -241,8 +245,11 @@ vector<double> MLP::Train(){
     best_validation_value = validation_value;
     best_weights_validation = best_weights;
 
-    write_training_and_validation_values(training_values_file, validation_values_file, 0, 0, best_ofv, validation_value);
-
+    ctime = std::chrono::duration<float>(std::chrono::steady_clock::now() - start).count();
+    
+    write_training_and_validation_values(training_values_file, validation_values_file, ctime, 0, best_ofv, validation_value);
+    write_weights_to_file(best_weights_validation, ctime);
+    //std::cout << "while ... ";
     while(!stop){
 
         sort(population.begin(), population.end(),
@@ -250,7 +257,7 @@ vector<double> MLP::Train(){
              {return a.ofv > b.ofv;});
 
         vector<training_individual> new_population(population_size);
-
+         // BRKGA for training 
         // ---- elites ----
         for(int ic = 0; ic < n_elites; ++ic){
             new_population[ic] = population[ic];
@@ -281,7 +288,7 @@ vector<double> MLP::Train(){
 
                 double rnum = standard_distribution_01(generator);
 
-                if(rnum <= 0.5)
+                if(rnum <= elite_inheritance_probability)
                     new_population[n_elites + n_mutants + ic].weights[i] = population[p1].weights[i];
                 else
                     new_population[n_elites + n_mutants + ic].weights[i] = population[p2].weights[i];
@@ -289,7 +296,7 @@ vector<double> MLP::Train(){
         }
 
         // -------- Parallel evaluation --------
-        #pragma omp parallel for schedule(dynamic)
+        //#pragma omp parallel for schedule(dynamic)
         for(int i = n_elites; i < population_size; i++)
             apply_decoder(new_population[i]);
 
@@ -303,7 +310,7 @@ vector<double> MLP::Train(){
 
                 double candidate_validation = calculate_validation_value(candidate_weights);
 
-                if(candidate_validation >= best_validation_value - epsilon)
+                if(candidate_validation >= best_validation_value - epsilon) //validation control: only accept new weights if validation value is not worse than the best validation value found so far (with a small tolerance epsilon)
                 {
                     best_ofv = candidate_train;
                     best_validation_value = candidate_validation;
@@ -332,7 +339,7 @@ vector<double> MLP::Train(){
                 
                 }
             }
-        }
+        }  
 
         population = new_population;
 

@@ -41,4 +41,5 @@ extern int ga_config;
 extern double elite_inheritance_probability;
 extern bool differentiate_ties;
 extern double lambda; // weight for the NN guidance in the fitness function of GA
+extern int time_limit_imsbs; // time limit for the IMSBS algorithm in seconds (default: 30 mins)        
 #endif // GLOBAL_VARIABLE_H

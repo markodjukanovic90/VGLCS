@@ -27,4 +27,5 @@ int n_elites = 1;
 int n_mutants = 7;
 double elite_inheritance_probability = 0.5; //brkga rho
 bool differentiate_ties = false; //whether to use the probabilistic heuristic as a secondary heuristic function
-double lambda = 1.0; // weight for the NN guidance in the fitness function of GA     
+
+double lambda = 0.45; // weight for the NN guidance in the fitness function of GA     

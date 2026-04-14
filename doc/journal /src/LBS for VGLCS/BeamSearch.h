@@ -216,7 +216,7 @@ static void write_result(
         bool forward_or_backward,
         int beam_width = 10,
         HeuristicType heuristic = HeuristicType::H5,  // forward or backward heuristic, depending on the parameter @formward_or_backward
-        int time_limit_sec = 1800,
+        int time_limit_sec = 1800, // max time allowed is 30 mins 
         const std::vector<Node*>& start_node_vector = {},
         MLP* neural_network = nullptr  
     ) {
@@ -304,7 +304,7 @@ static void write_result(
              else{ //use the outcome from NN as heuristic guidance  
                  compute_features(candidates, inst);
                  compute_heuristic_values(candidates, neural_network, inst); 
-             
+             }
                  // sort candidates by their heuristic values and keep the top ones according to the beam width
                 std::sort(candidates.begin(), candidates.end(),
                     [](Node* a, Node* b) { return a->score > b->score; });
@@ -329,12 +329,12 @@ static void write_result(
 
                     std::sort(candidates.begin(), candidates.end(), 
                         [&rank_first, &rank_second](Node* a, Node* b) { 
-                            double avg_rank_a = (0.45 *rank_first.at(a) + 0.55 * rank_second.at(a));
-                            double avg_rank_b = (0.45 * rank_first.at(b) + 0.55 *  rank_second.at(b));
+                            double avg_rank_a = (lambda *rank_first.at(a) + (1-lambda) * rank_second.at(a));
+                            double avg_rank_b = (lambda * rank_first.at(b) + (1-lambda) *  rank_second.at(b));
                                 return avg_rank_a < avg_rank_b; // sort by average rank (lower is better)       
                     });
                 }   
-            }
+            
             if ((int)candidates.size() > beam_width)
                 candidates.resize(beam_width);
 
