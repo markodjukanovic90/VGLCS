@@ -138,9 +138,9 @@ At each layer, to catch up non-linear relations between input features,  we supp
  	2) Executing the IMSBS on each instance from a training set $\mathcal{T}$ utilizing the neural heuristic (to guide the search in forward iterations of IMSBS as a sensible step); 3)  Recording size of the best sequence obtained for each instance.
  
  The fitness value is computed as the average solution quality over all training instances. Formally, the learning problem is defined as:
- $$
- \max_{w} \; \frac{1}{|T|} \sum_{I \in \mathcal{T}} \texttt{IMSBS}(I, h_w),
- $$
+ \begin{equation} \label{eq:training_problem_optimization}
+     \max_{w} \; \frac{1}{|T|} \sum_{I \in \mathcal{T}} \texttt{IMSBS}(I, h_w),
+ \end{equation}
  where $h_w$ is the heuristic induced by neural network $\mathcal{N}(w)$. Validation performance score is computed analogously on a separate dataset $\mathcal{V}$ and is used only for reporting.  
  
  
@@ -160,52 +160,26 @@ This gives us additionally 4 features; in overall 9 features are comprised to cr
   The alphabet size $|\Sigma|$ and the number of sequences $(m)$ as the attributes provide global structural information about the instance and help the learning model adapt to varying problem scales. Note that we additionally probed with more features such as length of input sequences, but this has negative impact on solution quality of the learning approach. 
  
  Finally, all features are standardized to zero mean and unit variance prior to being passed to the learning component. The utilization of normalization is know to contribute decreased sensibility of learning process in the process of training ML models.  
- Overall, the resulting representation combines information about (i) the current construction progress, (ii) the remaining gap-constraint landscape, and (iii) global instance properties, yielding between 9 and 11 features depending on the (3) configuration. This compact yet expressive encoding enables effective learning-based guidance of the search for high-quality  subsequences.
+ Overall, the resulting representation combines information about (i) the current construction progress, (ii) the remaining gap-constraint landscape, and (iii) global instance properties, yielding between 9 and 11 features depending on the (3) configuration. This compact yet expressive encoding enables effective learning-based guidance of the search for high-quality  subsequences. \\
  
- \section{Genetic Algorithm}
+ \textbf{Optimizer of NN Configurations}. We opt for Genetic Algorithm, in particular its popular version called the Biased Random Key Genetic Algorithm (BRKGA) to solve the problem given in Eq.~(\ref{eq:training_problem_optimization}).  The optimization process follows a population-based evolutionary scheme, described in Algorithm~\ref{alg:learning_mechanism}. Before we briefly explain the main workflow of the algorithm, first a few important notes. 
  
- TODO: Came up to here!!
+  Each individual is initialized by sampling weights uniformly from a predefined interval [$-w, w$] ($w$ is parametrized, but here fixed to 1).
+  \textit{Elitism} is included by copying a fixed number of top-performing individuals into the next generation. \textit{Mutation} is performed so that several individuals are generated completely at random (random immigrants). This mechanism promotes exploration and maintains population diversity.
  
+ Concerning \textit{offspring Generation} in BRKGA, 
+ one parent is selected from the elite set and one from the non-elite set. Each gene is inherited from the elite parent with a predefined probability (we fix it to 0.5).
  
- The optimization process follows a population-based evolutionary scheme.
+ %We opt to use the \textit{BRKGA} as the first option to work well. 
  
- \subsection{Initialization}
- 
- Each individual is initialized by sampling weights uniformly from a predefined interval [$-w, w$] (the value $w$ parametrized, but fixed to 1).
- 
- \subsection{Elitism}
- 
- A fixed number of top-performing individuals are copied unchanged into the next generation.
- 
- \subsection{Mutation}
- 
- Several individuals are generated completely at random (random immigrants). This mechanism promotes exploration and maintains population diversity.
- 
- \subsection{Offspring Generation}
- 
- Three alternative parent-selection strategies are supported:
- 
- \begin{itemize}
- 	\item \textbf{RKGA}: Two parents are selected uniformly at random, and each gene is inherited from either parent with probability $0.5$.
- 	\item \textbf{BRKGA}: One parent is selected from the elite set and one from the non-elite set. Each gene is inherited from the elite parent with a predefined probability.
- 	\item \textbf{Lexicase Selection}: Training instances are randomly shuffled. Individuals are filtered iteratively by retaining those achieving the best performance on each instance. Parents are selected randomly from the remaining candidates.
- \end{itemize}
- 
- We opt to use the \textit{BRKGA} as the first option to work well. 
+ The new population consists of elites, mutants, and offspring. The algorithm terminates once a predefined time limit is reached (in this case we used 2 hours). The best individual encountered during training is continuously tracked and stored. Once the new incumbent is reached, its validation score is also determined. If it is decreased in comparison to the best so far validation value, over-fitting is detected and the learning process is immediately terminated. 
  
  
- \subsection{Replacement and Termination}
- 
- The new population consists of elites, mutants, and offspring. The algorithm terminates once a predefined time limit is reached (in this case we used 2 hours). The best individual encountered during training is continuously tracked and stored. \textcolor{red}{(Q3) Terminate immediately when the validation value is decreased?}
- 
- \section{Overall Learning Procedure}
- 
- The learning process alternates between evolutionary optimization of network weights and evaluation through (iterative multi-source) Beam Search. Importantly, the neural network does not directly predict solutions; instead, it learns how to \textit{guide} the search procedure. This places the method within the class of neuro-evolutionary hyper-heuristics.
- 
- \section{Algorithm}
+ \textbf{Overall Learning Procedure}. \textcolor{red}{TODO: Came up to here... } 
+   The learning process alternates between evolutionary optimization of network weights and evaluation through (iterative multi-source) Beam Search. Importantly, the neural network does not directly predict solutions; instead, it learns how to \textit{guide} the search procedure. This places the method within the class of neuro-evolutionary hyper-heuristics.
  
  \begin{algorithm}[H]
- 	\caption{GA-Based Learning of a Beam Search Heuristic}
+ 	\caption{GA-Based Learning of a Beam Search Heuristic} \label{alg:learning_mechanism}
  	\begin{algorithmic}[1]
  		\STATE Initialize population $P$ with random neural network weights
  		\STATE Evaluate all individuals on training set $T$
