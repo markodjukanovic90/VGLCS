@@ -124,7 +124,7 @@
  As we operate in combinatorial space of an \textsc{NP}-hard problem, we do not expect in general target values are known in advance, or to some extent these will be known but only for small-to-middle sized instances if an efficient exact solver exists. This limits the application of gradient descent algorithms in learning weights for such environments. Thus, we approach here differently, by employing meta-heuristic approach with a diverse population of solutions representing weights of NN, able to quickly evolve towards local optima. Therefore, the back propagation pass in the classical NN training process is replaced by a population based meta-heuristic which adopts weights over iterations. In the feed forward pass fitness value for specific NN configuration has been determined. \\
  
   
-\textbf{Predefined Architecture of Neural Network}. The heuristic score is represented by a \textit{multi-layer perceptron} with an number of hidden layers and user-defined units per layer, the standard input and output layer.  The input layer received a set of numerical values associated to subproblem to be evaluated, and the output consists of one (real) value, indicating how the considered subproblem is ``important''. 
+\textbf{Predefined Architecture of NN}. The heuristic score is represented by a \textit{multi-layer perceptron} with an number of hidden layers and user-defined units per layer, the standard input and output layer.  The input layer received a set of numerical values associated to subproblem to be evaluated, and the output consists of one (real) value, indicating how the considered subproblem is ``important''. 
 At each layer, to catch up non-linear relations between input features,  we support the use of following activation functions: \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}.
  
  For each layer $l$, forward propagation is defined as:
@@ -134,41 +134,38 @@ At each layer, to catch up non-linear relations between input features,  we supp
  \]
  where $W^{(l)}$ and $b^{(l)}$ are the weight matrix and bias vector, respectively, and $\phi$ denotes the activation function.  All weights and biases are flattened into a \textbf{single vector}, which forms the chromosome of a GA individual. \\
  
- \textbf{Fitness Evaluation}. TODO   Given a candidate weight vector:
- \begin{enumerate}
- 	\item The weights are loaded into the FFNN.
- 	\item IMSBS is executed on each training instance using the neural heuristic (guiding the search in the forward iterations as more sensible than the backward iterations).
- 	\item The size of the best sequence obtained for each instance is recorded.
- \end{enumerate}
+ \textbf{Fitness Evaluation of NN configurations}. Given a candidate weight vector $w$, we perform:  1) Load of the weights into a FFNN $\mathcal{N}(w)$ of fixed architecture;
+ 	2) Executing the IMSBS on each instance from a training set $\mathcal{T}$ utilizing the neural heuristic (to guide the search in forward iterations of IMSBS as a sensible step); 3)  Recording size of the best sequence obtained for each instance.
  
- The fitness value is computed as the average solution quality over all training instances. Validation performance is computed analogously on a separate dataset and is used only for reporting.
+ The fitness value is computed as the average solution quality over all training instances. Formally, the learning problem is defined as:
+ $$
+ \max_{w} \; \frac{1}{|T|} \sum_{I \in \mathcal{T}} \texttt{IMSBS}(I, h_w),
+ $$
+ where $h_w$ is the heuristic induced by neural network $\mathcal{N}(w)$. Validation performance score is computed analogously on a separate dataset $\mathcal{V}$ and is used only for reporting.  
  
- \textcolor{red}{(Q0) Speed up -- evaluate fitness value by using parallelization. }
  
- \subsection{Feature Extraction for the Variable-Gap LCS}
+\textbf{Feature Extraction for the VGLCSP}. To guide the search process, each node is represented by a fixed-length numerical feature vector capturing both the current state in construction phase and the structure of induced subproblem to solve. These features are designed to be instance-independent. %and comparable across problem sizes.
  
- To guide the search process, each partial solution (node) is represented by a fixed-length numerical feature vector capturing both the current state of the construction and the structure of the remaining search space. These features are designed to be instance-independent and comparable across problem sizes.
- 
- Let $S=\{s_1,\ldots, s_k\}$ denote the set of input sequences, and let $p_i$ be the current matched position in sequence $s_i$ at a given node. The vector $\mathbf{p}^L=(p_1,\ldots,p_k)$ is first normalized by the corresponding sequence lengths,
- \[
- p_i \leftarrow \frac{p_i}{|s_i|},
- \]
+ Let $S=\{s_1,\ldots, s_k\}$ denote the set of input sequences, and let $v=(\textbf{p}^v, l^v)$ be  a given node. The vector $\mathbf{p}^L=(\textbf{p}^v_1,\ldots,\textbf{p}^v_m)$ is first normalized by the corresponding sequence lengths $F^{v} = (F^{v})_i \leftarrow \frac{\textbf{p}^v_i}{|s_i|}, i=1, \ldots, m$ 
  so that progress in each sequence lies in $[0,1]$ and becomes independent of absolute input sizes.
  
- From this normalized position vector, four statistical descriptors are extracted: maximum, minimum, mean, and standard deviation (4 features). These quantities characterize, respectively, the most advanced and least advanced sequences, the average depth of the search, and the imbalance of progress among sequences. In addition, \textit{the current length of the partially constructed subsequence} is included as a feature (as the fifth feature). Together, these values provide a compact description of the current search state.
+ From this normalized position vector, four statistical descriptors are extracted: maximum, minimum, mean, and standard deviation (4 features). These quantities characterize, respectively, the most advanced and least advanced sequences, the average depth of the search, and the imbalance of progress among sequences. In addition, \textit{the current length of partially constructed subsequence} $l^v$ is included as a feature (the fifth feature). Together, these values provide a compact description of the current search state. \\
  
- To capture the feasibility of future extensions, gap-related features are computed from the positions of remaining sequences (subproblem) of input sequences. For each sequence $s_i$, all gap bounds associated with positions strictly after the current node position are collected. Symbolically, for each $v$,  $Gap^{min}_i$ is calculated as $\min\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$,  $Gap^{max}_i$ is calculated as $\max\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$,  $Gap^{avg}_i$  as $\text{AVG}\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$, and  
- $Gap^{std}_i$  as $\text{STD}\{ G_i(j) \mid j=p_i^L, i=1, \ldots, m \}$, where $G_1, \ldots, G_m$ are gap constraints associated to $s_1, \ldots, s_m$ respectively \textcolor{red}{speed up the calc. of G-stats -- preprocessing... }. This gives us additionally 4 features; in overall 9 features are used for the \textbf{feature configuration 1} (F1).  These statistics for gap constrains summarize the remaining flexibility of the instance: large average or maximum gaps indicate greater freedom for future matches, whereas small minimum gaps and large variability typically signal tighter constraints and increased difficulty.
- Additional feature $|\Sigma|$, this 10 features, created the \textbf{feature configuration 2} (F2); When adding $m$ (number of input sequences) to F2, we obtain \textbf{feature configuration 3} (F3). 
- \textcolor{red}{(Q1) uestion: s there a need for normalization of gap values of respective subproblem... (Q2) other features?}
+ To capture the feasibility of future extensions, gap-related features are computed from the positions of remaining sequences. That is, for each $v$,  we determine $G^{\min} = \min\{ G_i(j) \mid j=\textbf{p}_i^v, i=1, \ldots, m \}$,  $G^{\max} =\max\{ G_i(j) \mid j=\textbf{p}_i^v, i=1, \ldots, m \}$,  $G^{avg}_i = \text{mean}\{ G_i(j) \mid j=\textbf{p}_i^v, i=1, \ldots, m \}$, and  
+ $G^{\text{std}}_i = \text{std}\{ G_i(j) \mid j=\textbf{p}_i^v, i=1, \ldots, m \}$, where $G_1, \ldots, G_m$ are corresponding gap constraints associated to $s_1, \ldots, s_m$ respectively.
+ %\textcolor{red}{we speed up the calculation of G-stats -- preprocessing steps (not explained here due to page limit constraints)... }. 
+This gives us additionally 4 features; in overall 9 features are comprised to create the \textbf{feature configuration 1} (F1).  These statistics for gap constrains summarize the remaining flexibility of the instance: large average or maximum gaps indicate greater freedom for future matches, whereas small minimum gaps and large variability typically signal tighter constraints and increased difficulty.
+ Additional feature $|\Sigma|$ creates the \textbf{feature configuration 2} (F2); When adding the value of $m$ (number of input sequences) to F2, we obtain the \textbf{feature configuration 3} (F3).   
  %Depending on the selected configuration, additional instance-level characteristics are appended to the feature vector. These may include 
+  The alphabet size $|\Sigma|$ and the number of sequences $(m)$ as the attributes provide global structural information about the instance and help the learning model adapt to varying problem scales. Note that we additionally probed with more features such as length of input sequences, but this has negative impact on solution quality of the learning approach. 
  
- The alphabet size $|\Sigma|$ and the number of sequences $(m)$ as the attributes provide global structural information about the instance and help the learning model adapt to varying problem scales.
- 
- Finally, all features are standardized to zero mean and unit variance prior to being passed to the learning component. The utilization of normalization is know to contribute decreased sensibility of learning process when ML models are trained.  
- Overall, the resulting representation combines information about (i) the current construction progress, (ii) the remaining gap-constraint landscape, and (iii) global instance properties, yielding between 9 and 11 features depending on the configuration. This compact yet expressive encoding enables effective learning-based guidance of the search for high-quality variable-gap longest common subsequences.
+ Finally, all features are standardized to zero mean and unit variance prior to being passed to the learning component. The utilization of normalization is know to contribute decreased sensibility of learning process in the process of training ML models.  
+ Overall, the resulting representation combines information about (i) the current construction progress, (ii) the remaining gap-constraint landscape, and (iii) global instance properties, yielding between 9 and 11 features depending on the (3) configuration. This compact yet expressive encoding enables effective learning-based guidance of the search for high-quality  subsequences.
  
  \section{Genetic Algorithm}
+ 
+ TODO: Came up to here!!
+ 
  
  The optimization process follows a population-based evolutionary scheme.
  
