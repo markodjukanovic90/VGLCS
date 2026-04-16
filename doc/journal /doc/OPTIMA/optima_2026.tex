@@ -337,22 +337,31 @@ In this section we compare the performance of the following methods are compared
 
 All approaches are implemented in C++ and compiled via GCC compiler,  evaluated on the VEGA HPC system which is hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped with AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.  
 
-\textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}, where for each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are comprised. A total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances is proposed here. \textcolor{red}{TODO: Marko: Came up to here!!!}
+\textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}, where for each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are comprised. A total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances are here proposed. \textcolor{red}{TODO: Marko: Explaining the way of generating the instances from benchmark set \textsc{Real}!!!}
 
 All benchmark sets are freely available at   
 \url{XX}.
 
  
+ \input{results_random.tex}
+ 
+ \input{results_real.tex}
+ 
+\textbf{Tuning process.}  IMSBS parameters are tuned by employing \texttt{irace}~\cite{perez2014analysis}, producing the following IMSBS as the best configuration witin allowed training budget of 5000 runs (each run is limited to an execution time of 30 minutes):   $\beta=3000$, $h=h5$, $\#imbs\_iters=5000$.
+ 
+ All other (less sensible) parameters are set to the values reported in~\cite{djukanovic2026_eurocast}.  Concerning the learning IMSBS setting, it uses the same setting, to be completely fair with the comparison. For the training process, we experimented with different architectures for NN:  2-layer structures with 5 and 10 nodes per layer, and 3-layer configurations    with  5 and 10 neurons. 
+ 
+In order to reduce time for tuning neural networks, we set up the same activation function in all layers, selecting among three (most) known: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$.  After exhaustive experimental evaluations, We opt to chose the following configurations for the architecture of neural networks, one per different $m$:
+\begin{itemize}
+	\item $m=2$: units at each layer of FFNN: (10, 5, 5); activation function: \texttt{ReLu}; and the feature set (F2);
+	\item $m=3$: units at each layer of FFNN (10, 10, 5); activation function: \texttt{ReLu}; and the feature set (F2);
+	\item $m=5$: units at each layer of FFNN (10, 5, 5), activation function \texttt{sigmoid}; and the feature set (F1);
+	\item $m=10$: units at each layer of FFNN (10, 5, 5);   activation function \texttt{ReLu}; and the feature set (F2). 
+\end{itemize}
 
- 
- \input{results_preliminary.tex}
- 
- IMSBS setting (grid search used for tuning the algorithm):
- \begin{itemize}
- 	\item     $\beta=1000$, $h'=h5$, $\#imbs\_iters=1000, \#num\_roots=10$
- \end{itemize}
- 
- Learning IMSBS setting uses the same setting, to be completely fair with the comparison. The neural network configuration in this case, obtained after running several 2-layer $(n_1, n_2)$ and 3-layer configurations  $(n_1, n_2, n_3)$ for $n_1, n_2, n_3 \in \{5, 10\}$ (neurons) and $n_1 \geq n_2 \geq n_3$. We set up the same activation function in all layers choosing among the three (most) known $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. The best one uses \texttt{ReLU} at each layer, and besides instance-based features, it additionally incorporate the size of alphabet $\Sigma$ (F2).  The configurations of NNs are obtained only after 2 hours of training is a 3-layer perception with 10 neurons each.
+\textcolor{red}{TODO: Marko: Came up to here!!!}
+
+\textbf{Numerical results}.  TODO 
  
  \section{Conclusions}\label{sec:conclusions}
  
