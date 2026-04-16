@@ -351,17 +351,54 @@ All benchmark sets are freely available at
  
  All other (less sensible) parameters are set to the values reported in~\cite{djukanovic2026_eurocast}.  Concerning the learning IMSBS setting, it uses the same setting, to be completely fair with the comparison. For the training process, we experimented with different architectures for NN:  2-layer structures with 5 and 10 nodes per layer, and 3-layer configurations    with  5 and 10 neurons. 
  
-In order to reduce time for tuning neural networks, we set up the same activation function in all layers, selecting among three (most) known: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$.  After exhaustive experimental evaluations, We opt to chose the following configurations for the architecture of neural networks, one per different $m$:
+In order to reduce time for tuning neural networks, we set up the same activation function in all layers, selecting among three (most) known: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$.  After exhaustive experimental evaluations, We opt to chose the following configurations for the architecture of neural networks, one per different $m$ on benchmark set \textsc{Random}:
 \begin{itemize}
 	\item $m=2$: units at each layer of FFNN: (10, 5, 5); activation function: \texttt{ReLu}; and the feature set (F2);
 	\item $m=3$: units at each layer of FFNN (10, 10, 5); activation function: \texttt{ReLu}; and the feature set (F2);
 	\item $m=5$: units at each layer of FFNN (10, 5, 5), activation function \texttt{sigmoid}; and the feature set (F1);
 	\item $m=10$: units at each layer of FFNN (10, 5, 5);   activation function \texttt{ReLu}; and the feature set (F2). 
 \end{itemize}
+The parameter  $\alpha = 0.45$ in our ensemble approach except for $m=3$ where $\alpha=0.5$ as the results of grid search.  
+
+
+For the benchmark set \textsc{Real}, the architecture of neural network employed here is the one used for the benchmark set \textsc{Random} and the case of the largest $m=10$   to verify the robustness of the learned heuristic also for different from random instances distributions with large $m$. (Note that here for all 20 instances $m$ is larger than 10). 
+
+
+\textbf{Numerical results on benchmark set \textsc{Random}}. 
+ We evaluated the difference in solution quality between LIMSBS and IMSBS using the Wilcoxon signed-rank test on paired instances, reported in Table~\ref{tab:statistical_test}. 
+ 
+ \begin{table}[t]
+ 	\centering
+ 	\caption{Statistical comparison between LIMSBS and IMSBS using the Wilcoxon signed-rank test (one-sided).}
+ 	\label{tab:statistical_test}
+ 	\vspace{0.2cm}
+ 	\begin{tabular}{lccc}
+ 		\hline
+ 		\textbf{Comparison} & \textbf{Wins / Ties / Losses} & \textbf{p-value} & \textbf{Conclusion} \\
+ 		\hline
+ 		All instances ($m = 2,3,5,10$) & 20 / 7 / 5 & 0.009 & LIMSBS significantly better \\
+ 		Small instances ($m = 2,3$)    & 10 / 4 / 2  & $<0.01$ & Significant difference \\
+ 		Large instances ($m = 5,10$)   & 10 / 3 / 3 & $< 0.05$ & LIMSBS significantly better \\
+ 		\hline
+ 	\end{tabular}
+ \end{table}
+
+The test reveals a statistically significant difference in favor of LIMSBS, indicating that LIMSBS achieves superior performance overall. Out of 32 instances, LIMSBS outperforms IMSBS in 20 cases, while 7 instances result in ties and 5 favor IMSBS. 
+
+\textbf{Numerical results on benchmark set \textsc{Real}}.  The following conclusions can be made form the obtained results, reprted in
+Table~\ref{tab:real_results}.  
+\begin{itemize}
+	\item  Overall, LIMSBS outperforms IMSBS in 15 out of 20 instances, while 5 instances result in ties and none favor IMSBS. This demonstrates a consistent dominance of LIMSBS across the tested dataset.
+	
+	\item In terms of solution quality, LIMSBS achieves an average value of 11.8, compared to 9.9 for IMSBS, corresponding to an average relative improvement of approximately 19\%. The median quality values are 5 (LIMSBS) and 4 (IMSBS), confirming that improvements are consistent and not driven by outliers.
+	
+	\item The advantage of (ensemble) LIMSBS is particularly pronounced on more difficult instances (e.g., virus cases with higher variability), where substantial gains are observed (e.g., 87 vs.\ 36). In contrast, ties typically occur on simpler instances with very low objective values.
+	
+	\item Regarding computational time, IMSBS is generally faster, achieving an average runtime of 36.9 seconds compared to 32.6 seconds for the ensemble LIMSBS. However, this difference is not consistent across all instances, and in several cases LIMSBS is competitive or even faster.
+\end{itemize}
+The results again demonstrate that the ensemble LIMSBS provides a substantial and consistent improvement in solution quality over IMSBS on real-world instances, at the cost of a comparable computational effort. This makes LIMSBS a preferable choice when solution quality is the primary objective.
 
 \textcolor{red}{TODO: Marko: Came up to here!!!}
-
-\textbf{Numerical results}.  TODO 
  
  \section{Conclusions}\label{sec:conclusions}
  
