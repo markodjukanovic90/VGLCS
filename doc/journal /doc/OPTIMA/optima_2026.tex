@@ -66,7 +66,7 @@
 	\maketitle              % typeset  
 	
 	\begin{abstract}
-		 TODO
+		    This study tackles a variable gapped  longest common subsequence problem which involves gap constraints for each input sequence. It has a notable applications in sequence alignment and time-series analysis. We design a learned heuristic for the tackled problem, represented by a neural network of predefined architecture, whose weights are automatically adjusted by the  biased random key genetic algorithm in the process of wights evolution. Even more efficient heuristic is proposed by combining two complementary heuristics: the learned heuristic and the best performing hand-crafted heuristic for the tackled problem. In this way, the   ensemble-designed heuristic is incorporated into the state-of-the-art iterative multi-source beam search approach. This learning approach outperforms the leading heuristics on the known synthetic problem instances from literature as well as newly introduced real-world problem instances with data-driven gap constraints.  %that simulate energy-aware context between successive nucleotides to relate on gap constraint and its values. 
 	\end{abstract}
 	
 	\section{Introduction} 
@@ -339,43 +339,38 @@ All approaches are implemented in C++ and compiled via GCC compiler,  evaluated 
 
 \textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}, where for each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are comprised. A total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances are here proposed. \\
 
-In the context of real instances,  we will be modeling context-dependent importance of positions of sequences.  It aligns with  sequence alignment scoring and %, attention mechanisms, and  
- weighted subsequence problems. Interpretation of these context relies on the fact that more stable weights on positions refer to  stronger influence of these acids in forming reliable connections with other (neighboring) acids in common subsequences. 
-Stability ranking between pairs of acids is picked from the fundamental works in~\cite{santalucia1998unified,watkins2005nearest} and here used in
-%\begin{itemize}
-%	\item   $GC>CG>GG>GA \approx GT \approx CA>CT>AA>AT>TA
-%	GC>CG>GG>GA \approx GT \approx CA>CT>AA>AT>TA$
-%\end{itemize} %This exact trend is experimentally confirmed.  \\
-creating energy-aware LCS solutions:
+In the context of real instances,  we will be modeling context-dependent importance of positions of sequences that represents gap values.  It aligns with  sequence alignment scoring and %, attention mechanisms, and  
+ weighted subsequence problems. Interpretation of these context relies on the fact that higher weights on positions refer to  stronger influence of these nucleotides in forming reliable connections with other (neighboring) acids in common subsequences. 
+Stability ranking between pairs of nucleotides is picked from the fundamental works in~\cite{santalucia1998unified,watkins2005nearest} and here used in creating energy-aware LCS solutions:
 %\textit{Energy-aware LCS / weighted subsequence}.
 
 $\texttt{DINUC\_WEIGHT} = \{
-'AA':1.00, 'TT':1.00,
-'AT':0.88, 'TA':0.58,
-'CA':1.45, 'TG':1.45,
-'GT':1.44, 'AC':1.44,
-'CT':1.28, 'AG':1.28,
-'GA':1.30, 'TC':1.30,
-'CG':2.17,
-'GC':2.24,
-'GG':1.84, 'CC':1.84
+`\text{AA}':1.00, `\text{TT}':1.00,
+`\text{AT}':0.88, `\text{TA}':0.58,
+`\text{CA}':1.45, `\text{TG}':1.45,
+`\text{GT}':1.44, `\text{AC}':1.44,
+`\text{CT}':1.28, `\text{AG}':1.28,
+`\text{GA}':1.30, `\text{TC}':1.30,
+`\text{CG}':2.17,
+`\text{GC}':2.24,
+`\text{GG}':1.84, `\text{CC}':1.84
 \}$
 
 %
-These values will be used to create structure-aware variable-gap sequences (with data-driven constraints).  We state that ''\textit{gap constraints are proportional to local thermodynamic stability estimated via nearest-neighbor interactions.}  
+These values will be used to create structure-aware variable-gap sequences (data-driven constraints). In essence,  {value of gap constraint at each position will be proportional to local thermodynamic stability estimated via nearest-neighbor interactions around the nucleotide placed at that position.}  
 
-\textit{Dinucleotide-Based Structural Model} is defined as a dinucleotide weight function by 
+\textit{Dinucleotide-Based structural model} is defined as a dinucleotide weight function by 
 $$
-f(s_i, s_{i+1}) = -\Delta G(s_i, s_{i+1}),
+f(s[i], s[i+1]) = -\Delta G(s[i], s[i+1]),
 $$
 where $\Delta G$ denotes the nearest-neighbor free energy estimated by \texttt{DINUC\_WEIGHT}. 
 
-To ensure consistency with the directional nature of the gapped LCS constraint, a \emph{causal} positional contribution is derived. Each position $k$ is associated only with the interaction formed with its immediate predecessor:
+To ensure consistency with the directional nature of the gapped LCS constraint, a \emph{causal} positional contribution is derived. Each position $k$ of a sequence $s$ is associated only with the interaction formed with its immediate predecessor:
 
 $
-f^{(j)}_k =
+f^s_k =
 \begin{cases}
-	f(s^{(j)}_{k-1}, s^{(j)}_k), & k > 1, \ \\
+	f(s[{k-1}], s[k]), & k > 1, \ \\
 	0, & k = 1.
 \end{cases}
 $
@@ -387,16 +382,12 @@ $
 
 The influence at position $i$ is computed using only preceding positions:
 $$
-I^{(j)}(i) = \sum_{k=\max(1,i-r)}^{i} e^{-\lambda (i-k)} \cdot f^{(j)}_k.
+I^{s}(i) = \sum_{k=\max(1,i-r)}^{i} e^{-\lambda (i-k)} \cdot f^{s}_k.
 $$
 
-This formulation reflects the fact that, in the gapped LCS problem, feasibility of selecting position $i$ depends on the previously selected position. Therefore, the structural context relevant to $i$ must be derived exclusively from preceding positions.
+This formulation reflects the fact that, in the gapped LCS problem, feasibility of selecting position $i$ depends on the previously selected position. Therefore, the structural context relevant to $i$ must be derived exclusively from preceding positions. Note that $r$ is here parametrized. 
 
- The resulting influence values induce \emph{directional structure} in the sequence:
-\begin{itemize}
-	\item regions preceded by strong interactions accumulate high influence,
-	\item regions following weak or irregular segments exhibit lower influence.
-\end{itemize}
+ The resulting influence values induce \emph{directional structure} in the sequence: (i) regions preceded by strong interactions accumulate high influence, (ii) regions following weak or irregular segments exhibit lower influence.
 
 In order to normalize these values,  we employ the following formula:
 
@@ -404,33 +395,23 @@ $$
 \hat{I}^{(j)}_i = \frac{I^{(j)}_i - \min(I^{(j)})}{\max(I^{(j)}) - \min(I^{(j)}) + \epsilon} \in \left[0, 1 \right],
 $$
 
-and gap constraints are obtained via a \emph{direct mapping}:
-$$
+and gap constraints are obtained via a \emph{direct mapping}:  $
 w^{(j)}_i = w_{\min} + (w_{\max} - w_{\min}) \cdot \hat{I}^{(j)}_i.
-$$
-
-{Interpretation of this mapping is as follows:}
-\begin{itemize}
-	\item high influence refers to large allowed gap,
-	\item low influence refers to restrictive gap.
-\end{itemize}
-
-This mapping reflects the idea that positions with strong structural connectivity can support longer-range dependencies and allow more flexible matching. Values/interval $[w_{\min}, w_{\max}]$ are the parameters, for our purposes fixed to 1 and 10, respectively.  
-
-
-
- This generator produces a set of gapped sequences 
-$
-\{(s^{(j)}, w^{(j)}) \mid j = 1,\dots,m\}.
 $
 
-based on the following parameters: $m$ as number of sequences, $r$ as influence radius, $\lambda$ as decay factor, $[w_{\min}, w_{\max}]$ as gap bounds. 
+In this context,  high influence refers to large allowed gap, whilst low influence refers to restrictive gap.
+
+This mapping reflects the idea that positions with strong structural connectivity can support longer-range dependencies and allow more flexible matching. Interval $[w_{\min}, w_{\max}]$ is parametrized, for our purpose we fixed  them to 1 and 10, respectively.  
 
 
- By linking gap constraints directly to structural influence, the generator produces instances with controllable heterogeneity and realistic dependency patterns. The resulting benchmarks enable systematic evaluation of multi-sequence gapped LCS algorithms under diverse and challenging conditions.\\ 
+
+The described  instance generator is based on the following parameters: $m$ as number of sequences, $r$ as influence radius, $\lambda$ as decay factor, $[w_{\min}, w_{\max}]$ as gap bounds. 
+
+
+ By linking gap constraints directly to structural influence, the generator produces instances with controllable heterogeneity and realistic dependency patterns. The resulting benchmark enable systematic evaluation of multi-sequence gapped LCS algorithms under diverse and challenging conditions.\\ 
  
- To demonstrate effectiveness of the designed approaches on real-world instances, we have used well-known LCS benchmark sets \textsc{Rat} and \textsc{Virus}~\cite{DJUKANOVIC2020106499}. For each input sequence of each instance, we have generated a respective gap constraint by the introduced  methodology.
-  We consider only the instances with $|\Sigma|=4$ in both datasets, as the gap involvement for the instance with  $|\Sigma|=20$ induced a rather short solutions---therefore hardly relevant from the biological context.  
+ To demonstrate effectiveness of the designed approaches on real-world instances, we have used well-known LCS benchmark sets \textsc{Rat} and \textsc{Virus}~\cite{DJUKANOVIC2020106499}. For each input sequence in each problem instance, we have induced a respective gap constraint by the introduced  methodology.
+  We consider only the instances with $|\Sigma|=4$ in both datasets, as the gap involvement for the instance with  $|\Sigma|=20$ induced a rather short solutions---therefore hardly relevant from the biological standpoint.  
  The generated dataset, denoted by \textsc{Real},  comprises $2\cdot 10=20$ problem instances. All sequences are with a length of 600, and, as already mentioned, defined over an alphabet set of size 4. Their differentiate by $m$, ranging from 10 to 200. 
 
 
@@ -449,21 +430,21 @@ based on the following parameters: $m$ as number of sequences, $r$ as influence 
  
  \input{results_real.tex}
  
-\textbf{Tuning process.}  IMSBS parameters are tuned on benchmark set \textsc{Random}  by employing \texttt{irace}~\cite{perez2014analysis}, producing the following IMSBS as the best configuration within allowed training budget of 5000 runs (each run is limited to an execution time of 30 minutes):   $\beta=3000$, $h=h5$, $\#imbs\_iters=5000$. One instance from each group has been used for training test, thus 32 problem instances in overall. 
+\textbf{Tuning process.}  IMSBS parameters are tuned on benchmark set \textsc{Random}  by employing \texttt{irace}~\cite{perez2014analysis},  with an allowed training budget of 5000 runs (each run is limited to an execution time of 30 minutes) producing the following IMSBS configuration:   $\beta=3000$, $h=\text{UB}_2$, and   $\#imbs\_iters=5000$. One instance from each group has been used for the training, thus 32 problem instances in overall. 
  
  All other (less sensible) parameters are set to the values reported in~\cite{djukanovic2026_eurocast}.  Concerning the learning IMSBS-ensemble approach, it uses the same setting, to be completely fair with the comparison. For the learning process, we experimented with different architectures for NN:  2-layer structures with 5 and 10 nodes per layer, and 3-layer configurations    with  5 and 10 neurons. 
  
-In order to reduce time for tuning neural networks, we set up the same activation function in all layers, selecting among three (most) known: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$.  After exhaustive experimental evaluations, We opt to chose the following configurations for the architecture of neural networks, one per different $m$ on benchmark set \textsc{Random}:
+In order to reduce time for tuning neural networks, we set up the same activation function per each layer, selecting among three (most) known: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$.  After exhaustive experimental evaluations, we opt to chose the following configurations for the architecture of neural networks, one per different $m$ for benchmark set \textsc{Random}:
 \begin{itemize}
-	\item $m=2$: units at each layer of FFNN: (10, 5, 5); activation function: \texttt{ReLu}; and the feature set (F2);
-	\item $m=3$: units at each layer of FFNN (10, 10, 5); activation function: \texttt{ReLu}; and the feature set (F2);
-	\item $m=5$: units at each layer of FFNN (10, 5, 5), activation function \texttt{sigmoid}; and the feature set (F1);
-	\item $m=10$: units at each layer of FFNN (10, 5, 5);   activation function \texttt{ReLu}; and the feature set (F2). 
+	\item $m=2$: units at each layer of FFNN is (10, 5, 5); activation function is \texttt{ReLu}; and the feature set (F2);
+	\item $m=3$: units at each layer of FFNN set to (10, 10, 5); activation function is set to  \texttt{ReLu}; and the feature set to (F2);
+	\item $m=5$: units at each layer of FFNN set to (10, 5, 5), activation function set to \texttt{sigmoid}, and the feature set to (F1);
+	\item $m=10$: units at each layer of FFNN set to (10, 5, 5);   activation function set to \texttt{ReLu}, and the feature set to (F2). 
 \end{itemize}
 The parameter  $\alpha = 0.45$ in our ensemble approach except for $m=3$ where $\alpha=0.5$ as the results of grid search.  
 
 
-For the benchmark set \textsc{Real}, the architecture of neural network employed here is the one used for the benchmark set \textsc{Random} and the case of the largest $m=10$   to verify the robustness of the learned heuristic also for non-random instance distributions with large $m$. (Note that here for all 20 instances $m$ is larger than 10). The remaining parameters of \textsc{Imsbs} on benchmark set \textsc{Real} follows the settings utilized on benchmark set \textsc{Random}.  
+For the benchmark set \textsc{Real}, the employed architecture of neural network is the one used for the benchmark set \textsc{Random} on the  largest $m=10$ case, to verify the robustness of the learned heuristic in                                                             non-random instance distributions with large $m$. (Note that here for all 20 instances $m$ is larger than 10). The remaining parameters of \textsc{Imsbs} on benchmark set \textsc{Real} follows the setting from the benchmark set \textsc{Random}.  
 
 
 
@@ -488,23 +469,26 @@ For the benchmark set \textsc{Real}, the architecture of neural network employed
 
 The test reveals a statistically significant difference in favor of LIMSBS, indicating that LIMSBS achieves superior performance overall. Out of 32 instances, LIMSBS outperforms IMSBS in 20 cases, while 7 instances result in ties and 5 favor IMSBS. 
 
-\textbf{Numerical results on benchmark set \textsc{Real}}.  The following conclusions can be made form the obtained results, reprted in
+\textbf{Numerical results on benchmark set \textsc{Real}}.  The following conclusions can be made from the obtained results, reported in
 Table~\ref{tab:real_results}.  
 \begin{itemize}
-	\item  Overall, LIMSBS outperforms IMSBS in 15 out of 20 instances, while 5 instances result in ties and none favor IMSBS. This demonstrates a consistent dominance of LIMSBS across the tested dataset.
+	\item  Overall, LIMSBS-ensemble outperforms IMSBS in 15 out of 20 instances, while 5 instances result in ties and none favor IMSBS. This demonstrates a consistent dominance of LIMSBS-ensemble across the tested dataset.
 	
-	\item In terms of solution quality, LIMSBS achieves an average value of 11.8, compared to 9.9 for IMSBS, corresponding to an average relative improvement of approximately 19\%. The median quality values are 5 (LIMSBS) and 4 (IMSBS), confirming that improvements are consistent and not driven by outliers.
+	\item In terms of solution quality, LIMSBS-ensemble achieves an average value of 11.8, compared to 9.9 for IMSBS, corresponding to an average relative improvement of approximately 19\%. The median quality values are 5 (LIMSBS-ensemble) and 4 (IMSBS), confirming that improvements are consistent and not driven by outliers.
 	
-	\item The advantage of (ensemble) LIMSBS is particularly pronounced on more difficult instances (e.g., virus cases with higher variability), where substantial gains are observed (e.g., 87 vs.\ 36). In contrast, ties typically occur on simpler instances with very low objective values.
+	\item The advantage of  LIMSBS-ensemble is particularly pronounced on more difficult instances (e.g., virus cases with higher variability), where substantial gains are observed (e.g., 87 vs.\ 36). In contrast, ties typically occur on simpler instances with very low objective values.
 	
 	\item Regarding computational time, IMSBS is generally faster, achieving an average runtime of 36.9 seconds compared to 32.6 seconds for the ensemble LIMSBS. However, this difference is not consistent across all instances, and in several cases LIMSBS is competitive or even faster.
 \end{itemize}
 The results again demonstrate that the ensemble LIMSBS provides a substantial and consistent improvement in solution quality over IMSBS on real-world instances, at the cost of a comparable computational effort. This makes the LIMSBS and especially its ensemble variant a preferable choice when solution quality is the primary objective.
 %The paper should be 12-15 pages long written in English. Authors should consult Springer’s authors’ guidelines
-\textcolor{red}{TODO: Marko: Came up to here!!!}
+
  
  \section{Conclusions}\label{sec:conclusions}
-   TODO 
+   This study tackles a variant of the longest common subsequence problem which involves gap constraints per each input sequence. It has  applications in comparison of biological molecules and time-series analysis. We design a learned heuristic for the tackled problem, represented by a neural network of predefined structure, whose weights are automatically set up by a biased random key genetic algorithm in the process of wights evolution. Moreover, more advances heuristic is made by combining the learned heuristic and the best performed hand-crafted heuristic for the tackled problem, designing an ensemble-designed heuristic, incorporated into the  best heuristic methodology, the iterative multi-source beam search approach. This heuristic outperforms all other heuristics on the known synthetic problem instances from literature as well as newly introduced real problem instances that simulate energy-aware context between successive nucleotides to relate on gap constraint and its values. 
+   
+   Future work could involve the testing scenario for protein molecules, and instances with much larger sequence lengths to further asses scalability od the designed approaches. Another task aims at training the NN-based heuristic  by some other meta-heuristic involving different fitness evaluators besides the utilized mean value.   \\
+   
    
    \footnotesize{\textbf{Acknowledgments.}   This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
 	
