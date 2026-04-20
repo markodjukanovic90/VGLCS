@@ -337,7 +337,7 @@ In this section we compare the performance of the following methods are compared
 
 All approaches are implemented in C++ and compiled via GCC compiler,  evaluated on the VEGA HPC system which is hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped the AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.  
 
-\textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}, where for each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are comprised. A total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances are here proposed. \textcolor{red}{TODO: Marko: Explaining the way of generating the instances from benchmark set \textsc{Real}!!!}
+\textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}, where for each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are comprised. A total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances are here proposed. \\
 
 In the context of real instances,  we will be modeling context-dependent importance of positions of sequences.  It aligns with  sequence alignment scoring, attention mechanisms, and   weighted subsequence problems. Interpretation of these context is that more stable weights on positions refer to  stronger influence of these acids in forming reliable connections with other (neighboring) acids in common subsequences. 
 Stability ranking between pairs of acids is picked from the fundamental works in~\cite{santalucia1998unified,watkins2005nearest}: 
@@ -436,6 +436,14 @@ $
 	\item $\sigma$: noise level
 \end{itemize}
 
+
+ By linking gap constraints directly to structural influence, the generator produces instances with controllable heterogeneity and realistic dependency patterns. The resulting benchmarks enable systematic evaluation of multi-sequence gapped LCS algorithms under diverse and challenging conditions.\\ 
+ 
+ To demonstrate effectiveness of the designed approaches on real-world instances, we have used well-known LCS benchmark sets \textsc{Rat} and \textsc{Virus}~\cite{DJUKANOVIC2020106499}. For each input sequence of each instance, we have generated a respective gap constraint by the introduced  methodology.
+  We consider only the instances with $|\Sigma|=4$ in both datasets, as the gap involvement for the instance with  $|\Sigma|=20$ induced a rather short solutions---therefore hardly relevant from the biological context.  
+ The generated dataset, denoted by \textsc{Real},  comprises $2\cdot 10=20$ problem instances. All sequences are with a length of 600, and, as already mentioned, defined over an alphabet set of size 4. Their differentiate by $m$, ranging from 10 to 200. 
+
+
 %\textit{Noise Injection}. 
 
 %$
@@ -443,23 +451,17 @@ $
 %$
 %followed by clipping to $[w_{\min}, w_{\max}]$.
 
-
-
-\textcolor{red}{TODO:} \\
-
-
-
  All benchmark sets are freely available at   
-\url{XX}.
+\url{XX}. \textcolor{red}{TODO: Revise } \\
 
  
  \input{results_random.tex}
  
  \input{results_real.tex}
  
-\textbf{Tuning process.}  IMSBS parameters are tuned by employing \texttt{irace}~\cite{perez2014analysis}, producing the following IMSBS as the best configuration witin allowed training budget of 5000 runs (each run is limited to an execution time of 30 minutes):   $\beta=3000$, $h=h5$, $\#imbs\_iters=5000$.
+\textbf{Tuning process.}  IMSBS parameters are tuned on benchmark set \textsc{Random}  by employing \texttt{irace}~\cite{perez2014analysis}, producing the following IMSBS as the best configuration within allowed training budget of 5000 runs (each run is limited to an execution time of 30 minutes):   $\beta=3000$, $h=h5$, $\#imbs\_iters=5000$. One instance from each group has been used for training test, thus 32 problem instances in overall. 
  
- All other (less sensible) parameters are set to the values reported in~\cite{djukanovic2026_eurocast}.  Concerning the learning IMSBS setting, it uses the same setting, to be completely fair with the comparison. For the training process, we experimented with different architectures for NN:  2-layer structures with 5 and 10 nodes per layer, and 3-layer configurations    with  5 and 10 neurons. 
+ All other (less sensible) parameters are set to the values reported in~\cite{djukanovic2026_eurocast}.  Concerning the learning IMSBS-ensemble approach, it uses the same setting, to be completely fair with the comparison. For the learning process, we experimented with different architectures for NN:  2-layer structures with 5 and 10 nodes per layer, and 3-layer configurations    with  5 and 10 neurons. 
  
 In order to reduce time for tuning neural networks, we set up the same activation function in all layers, selecting among three (most) known: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$.  After exhaustive experimental evaluations, We opt to chose the following configurations for the architecture of neural networks, one per different $m$ on benchmark set \textsc{Random}:
 \begin{itemize}
@@ -471,7 +473,8 @@ In order to reduce time for tuning neural networks, we set up the same activatio
 The parameter  $\alpha = 0.45$ in our ensemble approach except for $m=3$ where $\alpha=0.5$ as the results of grid search.  
 
 
-For the benchmark set \textsc{Real}, the architecture of neural network employed here is the one used for the benchmark set \textsc{Random} and the case of the largest $m=10$   to verify the robustness of the learned heuristic also for different from random instances distributions with large $m$. (Note that here for all 20 instances $m$ is larger than 10). 
+For the benchmark set \textsc{Real}, the architecture of neural network employed here is the one used for the benchmark set \textsc{Random} and the case of the largest $m=10$   to verify the robustness of the learned heuristic also for non-random instance distributions with large $m$. (Note that here for all 20 instances $m$ is larger than 10). The remaining parameters of \textsc{Imsbs} on benchmark set \textsc{Real} follows the settings utilized on benchmark set \textsc{Random}.  
+
 
 
 \textbf{Numerical results on benchmark set \textsc{Random}}. 
