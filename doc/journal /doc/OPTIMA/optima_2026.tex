@@ -339,16 +339,17 @@ All approaches are implemented in C++ and compiled via GCC compiler,  evaluated 
 
 \textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}, where for each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are comprised. A total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances are here proposed. \\
 
-In the context of real instances,  we will be modeling context-dependent importance of positions of sequences.  It aligns with  sequence alignment scoring, attention mechanisms, and   weighted subsequence problems. Interpretation of these context is that more stable weights on positions refer to  stronger influence of these acids in forming reliable connections with other (neighboring) acids in common subsequences. 
-Stability ranking between pairs of acids is picked from the fundamental works in~\cite{santalucia1998unified,watkins2005nearest}: 
+In the context of real instances,  we will be modeling context-dependent importance of positions of sequences.  It aligns with  sequence alignment scoring and %, attention mechanisms, and  
+ weighted subsequence problems. Interpretation of these context relies on the fact that more stable weights on positions refer to  stronger influence of these acids in forming reliable connections with other (neighboring) acids in common subsequences. 
+Stability ranking between pairs of acids is picked from the fundamental works in~\cite{santalucia1998unified,watkins2005nearest} and here used in
 %\begin{itemize}
 %	\item   $GC>CG>GG>GA \approx GT \approx CA>CT>AA>AT>TA
 %	GC>CG>GG>GA \approx GT \approx CA>CT>AA>AT>TA$
 %\end{itemize} %This exact trend is experimentally confirmed.  \\
-We will created energy-aware LCS based on these values:
+creating energy-aware LCS solutions:
 %\textit{Energy-aware LCS / weighted subsequence}.
 
-$DINUC\_WEIGHT = \{
+$\texttt{DINUC\_WEIGHT} = \{
 'AA':1.00, 'TT':1.00,
 'AT':0.88, 'TA':0.58,
 'CA':1.45, 'TG':1.45,
@@ -361,15 +362,15 @@ $DINUC\_WEIGHT = \{
 \}$
 
 %
-creating structure-aware variable-gap sequences (with data-driven constraints).  We state here that ''\textit{gap constraints are proportional to local thermodynamic stability estimated via nearest-neighbor interactions.}  
+These values will be used to create structure-aware variable-gap sequences (with data-driven constraints).  We state that ''\textit{gap constraints are proportional to local thermodynamic stability estimated via nearest-neighbor interactions.}  
 
-\textit{Dinucleotide-Based Structural Model}. We define a dinucleotide weight function by 
+\textit{Dinucleotide-Based Structural Model} is defined as a dinucleotide weight function by 
 $$
 f(s_i, s_{i+1}) = -\Delta G(s_i, s_{i+1}),
 $$
-where $\Delta G$ denotes the nearest-neighbor free energy.
+where $\Delta G$ denotes the nearest-neighbor free energy estimated by \texttt{DINUC\_WEIGHT}. 
 
-To ensure consistency with the directional nature of the gapped LCS constraint, we define a \emph{causal} positional contribution. Each position $k$ is associated only with the interaction formed with its immediate predecessor:
+To ensure consistency with the directional nature of the gapped LCS constraint, a \emph{causal} positional contribution is derived. Each position $k$ is associated only with the interaction formed with its immediate predecessor:
 
 $
 f^{(j)}_k =
@@ -379,10 +380,10 @@ f^{(j)}_k =
 \end{cases}
 $
 
- Each position inherits structural influence from the bond linking it to the previous nucleotide (linkage between these considered). First position has no predecessor and is therefore assigned zero contribution.
+ Each position inherits structural influence from the bond linking it to the previous nucleotide. First position has no predecessor and is therefore assigned zero contribution.
   This definition enforces a left-to-right dependency structure, ensuring that all subsequent computations of influence and gap constraints depend only on previously observed positions. This is consistent with the feasibility condition in the gapped LCS problem, where admissibility of extending a subsequence depends on the last selected position.
 
-In order to align the influence model with the semantics of the gapped LCS constraint, we define influence in a \emph{causal} (left-to-right) manner.
+%In order to align the influence model with the semantics of the gapped LCS constraint, we define influence in a \emph{causal} (left-to-right) manner.
 
 The influence at position $i$ is computed using only preceding positions:
 $$
@@ -400,41 +401,30 @@ This formulation reflects the fact that, in the gapped LCS problem, feasibility 
 In order to normalize these values,  we employ the following formula:
 
 $$
-\hat{I}^{(j)}_i = \frac{I^{(j)}_i - \min(I^{(j)})}{\max(I^{(j)}) - \min(I^{(j)}) + \epsilon} \in \left[0, 1 \right].
+\hat{I}^{(j)}_i = \frac{I^{(j)}_i - \min(I^{(j)})}{\max(I^{(j)}) - \min(I^{(j)}) + \epsilon} \in \left[0, 1 \right],
 $$
 
-Gap constraints are obtained via a \emph{direct mapping}:
+and gap constraints are obtained via a \emph{direct mapping}:
 $$
 w^{(j)}_i = w_{\min} + (w_{\max} - w_{\min}) \cdot \hat{I}^{(j)}_i.
 $$
 
-{Interpretation of this mapping:}
+{Interpretation of this mapping is as follows:}
 \begin{itemize}
 	\item high influence refers to large allowed gap,
 	\item low influence refers to restrictive gap.
 \end{itemize}
 
-This mapping reflects the idea that positions with strong structural connectivity can support longer-range dependencies and allow more flexible matching. Values/interval $[w_{\min}, w_{\max}]$ are the parameters.  
+This mapping reflects the idea that positions with strong structural connectivity can support longer-range dependencies and allow more flexible matching. Values/interval $[w_{\min}, w_{\max}]$ are the parameters, for our purposes fixed to 1 and 10, respectively.  
 
 
 
- The generator produces a set of gapped sequences 
+ This generator produces a set of gapped sequences 
 $
 \{(s^{(j)}, w^{(j)}) \mid j = 1,\dots,m\}.
 $
 
- \textit{Difficulty Control Parameters}. The generator is base on the following parameters:
-
-\begin{itemize}
-	\item $m$: number of sequences
-	%	\item $\eta$: entropy level
-	%	\item $\mu$: mutation rate
-	\item $r$: influence radius
-	\item $\lambda$: decay factor
-	\item $[w_{\min}, w_{\max}]$: gap bounds
-	%	\item $\gamma$: nonlinearity
-	\item $\sigma$: noise level
-\end{itemize}
+based on the following parameters: $m$ as number of sequences, $r$ as influence radius, $\lambda$ as decay factor, $[w_{\min}, w_{\max}]$ as gap bounds. 
 
 
  By linking gap constraints directly to structural influence, the generator produces instances with controllable heterogeneity and realistic dependency patterns. The resulting benchmarks enable systematic evaluation of multi-sequence gapped LCS algorithms under diverse and challenging conditions.\\ 
