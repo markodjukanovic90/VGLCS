@@ -335,11 +335,39 @@ The algorithm returns the best solution $w^\ast$, corresponding to the neural ne
    
 In this section we compare the performance of the following methods are compared: (i) \textsc{Imsbs}: a baseline iterative beam search strategy from~\cite{djukanovic2026_eurocast}; (ii) \textsc{Limsbs}: a \textsc{Imsbs} guided by the neural heuristic obtained in the process of learning; and (iii) \textsc{Imsbs}-ensemble: an \textsc{Imsbs} guided by the combined $r(\cdot)$ heuristic.	 
 
-All approaches are implemented in C++ and compiled via GCC compiler,  evaluated on the VEGA HPC system which is hosted at IZUM, Maribor. The cluster consists of 960 compute nodes equipped with AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.  
+All approaches are implemented in C++ and compiled via GCC compiler,  evaluated on the VEGA HPC system which is hostwied at IZUM, Maribor. The cluster consists of 960 compute nodes equipped th AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.  
 
 \textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}, where for each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are comprised. A total of \textit{320 problem instances} is generated. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances are here proposed. \textcolor{red}{TODO: Marko: Explaining the way of generating the instances from benchmark set \textsc{Real}!!!}
 
-All benchmark sets are freely available at   
+In the context of real instances,  we will be modeling context-dependent importance of positions of sequences.  It aligns with  sequence alignment scoring, attention mechanisms, and   weighted subsequence problems. 
+
+Interpretation of these context is that more stable weights on positions refer to  stronger influence of these acids in forming reliable connections with other (neighboring) acids. 
+Stability ranking between pairs of acids is picked from the fundamental works in~\cite{santalucia1998unified,watkins2005nearest}: 
+%\begin{itemize}
+%	\item   $GC>CG>GG>GA \approx GT \approx CA>CT>AA>AT>TA
+%	GC>CG>GG>GA \approx GT \approx CA>CT>AA>AT>TA$
+%\end{itemize} %This exact trend is experimentally confirmed.  \\
+We will created energy-aware LCS based on these values:
+%\textit{Energy-aware LCS / weighted subsequence}.
+
+$DINUC\_WEIGHT = \{
+'AA':1.00, 'TT':1.00,
+'AT':0.88, 'TA':0.58,
+'CA':1.45, 'TG':1.45,
+'GT':1.44, 'AC':1.44,
+'CT':1.28, 'AG':1.28,
+'GA':1.30, 'TC':1.30,
+'CG':2.17,
+'GC':2.24,
+'GG':1.84, 'CC':1.84
+\}$
+
+%
+creating structure-aware variable-gap sequences (with data-driven constraints).  We state here that ''\textit{gap constraints are proportional to local thermodynamic stability estimated via nearest-neighbor interactions.}  TODO: \\
+
+
+
+ All benchmark sets are freely available at   
 \url{XX}.
 
  
@@ -396,12 +424,13 @@ Table~\ref{tab:real_results}.
 	
 	\item Regarding computational time, IMSBS is generally faster, achieving an average runtime of 36.9 seconds compared to 32.6 seconds for the ensemble LIMSBS. However, this difference is not consistent across all instances, and in several cases LIMSBS is competitive or even faster.
 \end{itemize}
-The results again demonstrate that the ensemble LIMSBS provides a substantial and consistent improvement in solution quality over IMSBS on real-world instances, at the cost of a comparable computational effort. This makes LIMSBS a preferable choice when solution quality is the primary objective.
-
+The results again demonstrate that the ensemble LIMSBS provides a substantial and consistent improvement in solution quality over IMSBS on real-world instances, at the cost of a comparable computational effort. This makes the LIMSBS and especially its ensemble variant a preferable choice when solution quality is the primary objective.
+%The paper should be 12-15 pages long written in English. Authors should consult Springer’s authors’ guidelines
 \textcolor{red}{TODO: Marko: Came up to here!!!}
  
  \section{Conclusions}\label{sec:conclusions}
- 
+   TODO 
+   
    \footnotesize{\textbf{Acknowledgments.}   This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
 	
 	\vspace{-0.5cm}
