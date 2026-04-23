@@ -76,7 +76,7 @@
 	
 	 Formally, for each input sequence $s_i \in S$, a gap function $G_{s_i}\colon \{1,\ldots,|s_i|\}\mapsto \mathbb{N}$ defines the maximum distance allowed between the positions of appearances of consecutive characters in the resulting common subsequence for each $s_i, i=1, \ldots, m$. Symbolically, if the characters of a solution $s$ appear at the positions $i^1_i < \ldots <  i^{{|s|}}_i \leq |s_i|$ in $s_i$,  the gap constraint is fulfilled iff $i^x_i - i^{x-1}_i \le G_{s_i}[i^x_i] + 1$ holds for each $x=2,\ldots,|s|$. A common subsequence $s$ is considered feasible if the corresponding gap constraints hold across all $s_i \in S$. The problem aims at finding the longest such subsequence. The VGLCSP represents a flexible and realistic model of sequence alignment, which is particularly useful in comparing DNA or protein sequences with variable structural distances, but also in time series analysis, especially in settings where events are required to occur within specified temporal delays~\cite{lainscsek2015delay}. 
 	 
-	 Although several exact dynamic programming approaches exist for two-sequence case ($m=2$) scenario~\cite{peng2014finding}, the computational complexity of the problem becomes prohibitive for larger $m$; when $m$ is arbitrarily large, the problem is NP-hard. To the best of our knowledge, there is no effective exact approach for general $m$, with just one approximate approach in the literature. This approach is an iterative beam search~\cite{djukanovic2026_eurocast}, whose methodology is built on the state-space problem representation and the derived space of rooted nodes. Each such candidate node is explored via beam search in a two-step process: (i) the node refinement where non-rooted nodes are fixed to a (partial) solution constructed via a series of extensions towards a proven ancestor root node, and (ii) further feasible expansions of the node  letter-by-letter selected from the subproblem assigned to that node. At each iterations, new candidate root nodes are detected and added in the queue of candidates. Both steps are performed by the beam search. Given that the methodology provides a scalable alternative to inefficient exact methods, this was the first approach providing experimental evaluations for arbitrary number of input sequences $m$. It relies on the use of several known hand-crafted (upper bound) LCS heuristics for which it is known from the literature about their misguidance when $m$ is large of $\Sigma$ is small~\cite{DJUKANOVIC2020106499}. In the presence of gap constraints, this is even worsen.  The second detected research gap concerns lack of real instances for the tackled problem as the synthetic instances are the only generated so far.  Driven by these issues, the first gap is filled by designing a learning iterative beam search, which combines hand-crafted search guidance and the learned guidance into a superior heuristic. The learned search guidance is produced  as the outcome of a multi-layer neural network obtained in the forward propagation of this model. The weights of neural network model are evolved by a genetic algorithm and the configurations of neural networks are evaluated by the best heuristic method of the VGLCSP, the iterative beam search approach guided by the heuristic induced from this network. 
+	 Although several exact dynamic programming approaches are proposed for two-sequence case ($m=2$) scenario~\cite{peng2014finding}, the computational complexity of the problem becomes prohibitive for larger $m$; when $m$ is arbitrarily large, the problem is NP-hard. To the best of our knowledge, there is no effective exact approach for general $m$, with just one approximate approach in the literature. This approach is an iterative beam search~\cite{djukanovic2026_eurocast}, whose methodology is built on the state-space problem representation and the derived space of rooted nodes. Each such candidate node is explored via beam search in a two-step process: (i) the node refinement where non-rooted nodes are fixed to a (partial) solution constructed via a series of extensions towards a proven ancestor root node, and (ii) further feasible expansions of the node  letter-by-letter selected from the subproblem assigned to that node. At each iterations, new candidate root nodes are detected and added in the queue of candidates. Both steps are performed by the beam search. Given that the methodology provides a scalable alternative to inefficient exact methods, this was the first approach providing experimental evaluations for arbitrary number of input sequences $m$. It relies on the use of several known hand-crafted (upper bound) LCS heuristics for which it is known from the literature about their misguidance when $m$ is large of $\Sigma$ is small~\cite{DJUKANOVIC2020106499}. In the presence of gap constraints, this is even worsen.  The second detected research gap concerns lack of real instances for the tackled problem as the synthetic instances are the only generated so far.  Driven by these issues, the first gap is filled by designing a learning iterative beam search, which combines hand-crafted search guidance and the learned guidance into a superior heuristic. The learned search guidance is produced  as the outcome of a multi-layer neural network obtained in the forward propagation of this model. The weights of neural network model are evolved by a genetic algorithm and the configurations of neural networks are evaluated by the best heuristic method of the VGLCSP, the iterative beam search approach guided by the heuristic induced from this network. 
 	  The COP literature is known by utilizing similar (hybrid) methodology when learning heuristics, for example in~\cite{djukanovic2025learning} for the restricted LCS, \cite{reixach2024neural} for the square LCS problem, or~\cite{wu2021learning} for routing problems, as some notable example. The difference between our and this approach is that learned heuristics are not further leveraged with other heuristics to design more superior ensemble heuristics, as approached here. To address the second research gap, we have derived real problem instances by using (two) biologically-motivated benchmark sets from LCS literature,  generating data-driven gap constraints.
  \paragraph{Contributions.} This work utilizes a learning framework to construct heuristics which are induced by the learned neural network to guide the iterative beam search, specifically designed in the context of the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP). In details, a feed-forward neural network (FFNN) is used to parameterize the heuristic score of each node in the beam search. Instead of relying on gradient-based training, which is shown effective for (constrained) continuous problems,  weights of the networks are optimized using a Genetic Algorithm (GA), in particular the popular biased RKGA (BRKGA) approach.  Note that here we deal with a fully non-differentiable search space when training this ML model. Two complementary scores, the learned heuristics and a hand-crafted heuristic, are combined into a novel ensemble heuristic, providing a new state-of-the-art guidance, according to the exhaustive experimental evaluation.  The second contribution introduces the first real-world benchmark set for the tackled problem. In this case-scenario, gap constraints are designed to reflect on local thermodynamic stability estimated via nearest-neighbor interaction around each nucleotide of DNA sequences. In this way, the purpose is to obtain a solution with more stable molecular structure, driven by generated gap  constraints. 
 
@@ -113,11 +113,10 @@ The paper is organized as follows. In Section~\ref{sec:imsbs}, the iterative mul
  
   
 \textbf{Predefined Architecture of NN}. The heuristic score is represented by a \textit{multi-layer perceptron} with an number of hidden layers and user-defined units per layer, the common input and output layer.  The input layer received a set of numerical values associated to subproblem to be evaluated, and the output consists of one (real) value, referring to how much the considered subproblem is ``important''. 
-At each layer, to catch up  non-linearity between input features,  we support the use of following activation functions: \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}. For each layer $l$, forward propagation is defined as:
- \[
+At each layer, to catch up  non-linearity between input features,  we support the use of following activation functions: \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}. For each layer $l$, forward propagation is defined as $
  \mathbf{z}^{(l+1)} = W^{(l)} \mathbf{a}^{(l)} + b^{(l)}, \quad
  \mathbf{a}^{(l+1)} = \phi(\mathbf{z}^{(l+1)}),
- \]
+ $
  where $W^{(l)}$ and $b^{(l)}$ are the weight matrix and bias vector, respectively, and $\phi$ denotes the activation function.  All weights and biases are flattened into a \textbf{single vector} $w=\texttt{flatten}(W)$, which forms the chromosome of a GA individual. \\
  
  \textbf{Fitness Evaluation of NN configurations}. Given a candidate weight vector $w$, we perform:  1) Load of the weights into a FFNN architecture $\mathcal{N}(w)$ of fixed architecture;
@@ -279,7 +278,7 @@ The algorithm returns the best solution $w^\ast$, corresponding to the neural ne
    
 In this section we compare the performance of the two methods: (i) \textsc{Imsbs}: a baseline state-of-the-art iterative beam search strategy from~\cite{djukanovic2026_eurocast}, and  (ii) \textsc{Limsbs}-ensamble: a \textsc{Imsbs} guided by ~(\ref{eq:ensemble_heuristic}).  All approaches are implemented in C++ and compiled via GCC compiler,  evaluated on the VEGA HPC system, hosted at IZUM, Maribor, Slovenia. The cluster consists of 960 compute nodes equipped with the AMD EPYC 7H12 CPUs operating at 2.35\,GHz. All experiments were conducted in a single-threaded setting.  
 
-\textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}. For each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are randomly generated, a total of   \textit{320 problem instances}. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances are introduced here. \\
+\textbf{Benchmark instances}. For the evaluation purposes, two type of benchmark sets are used. The first set of synthetic instances is proposed in~\cite{djukanovic2026_eurocast}. For each combination of  $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 random problem instances are randomly generated, a total of   \textit{320 problem instances}. The benchmark set is denoted as \textsc{Random}. Apart from these, a set of biologically-motivated VGLCSP instances are introduced here.  
 
 In the context of real instances,  we will be modeling context-dependent importance of positions of sequences that represents gap values.  It aligns with  sequence alignment scoring and %, attention mechanisms, and  
  weighted subsequence problems. Interpretation of these context relies on the fact that higher weights on positions refer to  stronger influence of these nucleotides in forming reliable connections with other (neighboring) acids in common subsequences. 
@@ -322,10 +321,7 @@ $
 
 The influence at position $i$ is computed using only preceding positions:
 $
-I^{s}(i) = \sum_{k=\max(1,i-r)}^{i} e^{-\lambda (i-k)} \cdot f^{s}_k.
-$
-
-This formulation reflects the fact that, in the gapped LCS problem, feasibility of selecting position $i$ depends on the previously selected position. %Therefore, the structural context relevant to $i$ must be derived exclusively from preceding positions. 
+I^{s}(i) = \sum_{k=\max(1,i-r)}^{i} e^{-\lambda (i-k)} \cdot f^{s}_k$.  This formulation reflects the fact that, in the gapped LCS problem, feasibility of selecting position $i$ depends on the previously selected position. %Therefore, the structural context relevant to $i$ must be derived exclusively from preceding positions. 
 Note that $r$ is a parameter.  The resulting influence values induce \emph{directional structure} in the sequence: (i) regions preceded by strong interactions accumulate high influence, (ii) regions following weak or irregular segments exhibit lower influence.
 
 In order to normalize these values,  we employ the following formula:
@@ -361,11 +357,6 @@ The resulting benchmark enable systematic evaluation of multi-sequence gapped LC
 
  All benchmark sets are freely available at   
 \url{XX}. \textcolor{red}{TODO: Revise } \\
-
- 
- \input{results_random.tex}
- 
- \input{results_real.tex}
  
 \textbf{Tuning process.}   \textsc{Imsbs} parameters are tuned on benchmark set \textsc{Random}  by employing \texttt{irace}~\cite{perez2014analysis},  with an allowed training budget of 5000 runs (each run is limited to an execution time of 30 minutes) producing the following \textsc{Imsbs} configuration:   $\beta=3000$, $h=\text{UB}_2$, and   $\#imbs\_iters=5000$. One instance from each group has been used for the training, thus 32 problem instances in overall. 
  
@@ -381,18 +372,22 @@ In order to reduce time for tuning different neural network architecture, we all
 The parameter  $\alpha = 0.45$ in our ensemble approach except for $m=3$ where $\alpha=0.5$ as the results of grid search.   We employed 32 instances for the training instances $\mathcal{T}$ and the same amount for the validation instances $\mathcal{V}$, one instance is selected randomly per each (32) group from benchmark set \textsc{Random}.  
 
 
-For the benchmark set \textsc{Real}, the employed architecture of neural network is the one used for the benchmark set \textsc{Random} on the  largest $m=10$ case, to verify the robustness of the learned heuristic on                                                             non-random instance distributions with a large number of sequences ($m$). Note that  all 20 instances have 10 or more sequences. The remaining parameters of \textsc{Imsbs} on benchmark set \textsc{Real} follows the setting from the benchmark set \textsc{Random}.  
+For the benchmark set \textsc{Real}, the employed architecture of neural network is the one used for the benchmark set \textsc{Random} on the  largest $m=10$ case, to verify the robustness of the learned heuristic on  non-random instance distributions with a large number of sequences ($m$). Note that  all 20 instances have 10 or more sequences. The remaining parameters of \textsc{Imsbs} on benchmark set \textsc{Real} follows the setting from the benchmark set \textsc{Random}.  
 
 
-
+  \input{results_random.tex}
+  
 \textbf{Numerical results on benchmark set \textsc{Random}} are presented in Table~\ref{tab:preliminary_results} which consists of two blocks: the first gives an instance group description, the  next block is reserved for the results of \textsc{Limsbs}-ensemble and \textsc{Imsbs} approaches, reporting the average results of each group (over 10 instances). 
+  
+  
  Additionally, we evaluated the difference in solution quality between \textsc{Limsbs}-ensemble and \textsc{Imsbs} using the Wilcoxon signed-rank test on paired instances, reported in Table~\ref{tab:statistical_test}. 
  
- \begin{table}[t]
+ 
+ \begin{table}[!ht]
  	\centering
  	\caption{Statistical comparison between \textsc{Limsbs}-ensemble and \textsc{Imsbs} using the Wilcoxon signed-rank test (one-sided).}
  	\label{tab:statistical_test}
- 	\vspace{0.2cm}
+ 	\scalebox{0.85}{
  	\begin{tabular}{lccc}
  		\hline
  		\textbf{Comparison} & \textbf{Wins / Ties / Losses} & \textbf{p-value} & \textbf{Conclusion} \\
@@ -401,13 +396,18 @@ For the benchmark set \textsc{Real}, the employed architecture of neural network
  		Small instances ($m = 2,3$)    & 10 / 4 / 2  & $<0.01$ & Significant difference \\
  		Large instances ($m = 5,10$)   & 10 / 3 / 3 & $< 0.05$ & LIMSBS significantly better \\
  		\hline
- 	\end{tabular}
+ 	\end{tabular}}
+    \vspace{-0.5cm}
  \end{table}
 
 The test reveals a statistically significant difference in favor of \textsc{Limsbs}-ensemble, indicating that the learned approach achieves superior performance overall. Out of 32 instances, \textsc{Limsbs}-ensemble outperforms \textsc{Imsbs} in 20 cases, while 7 instances result in ties and only 5 favor \textsc{Imsbs}. 
 
-\textbf{Numerical results on benchmark set \textsc{Real}}.  The following conclusions can be made from the obtained results, reported in
-Table~\ref{tab:real_results}, organized in a similar manner as Table~\ref{tab:preliminary_results} (with two additional columns, reporting on the runtimes of each approach per instance). 
+\textbf{Numerical results on benchmark set \textsc{Real}}.  The results are reported in
+Table~\ref{tab:real_results}, organized in a similar manner as Table~\ref{tab:preliminary_results} (with additional columns, reporting the runtimes of each approach per instance ($t[s]$) and lengths of the best LCS from the literature~\cite{DJUKANOVIC2020106499} (LCS$^*$)).  The following conclusions are drawn. 
+
+ \input{results_real.tex}
+ 
+
 \begin{itemize}
 	\item  Overall, \textsc{Limsbs}-ensemble outperforms \textsc{Imsbs} in 15 out of 20 instances, while 5 instances result in ties and none favor \textsc{Imsbs}. This demonstrates a consistent dominance of \textsc{Limsbs}-ensemble across the tested dataset.
 	
@@ -416,8 +416,11 @@ Table~\ref{tab:real_results}, organized in a similar manner as Table~\ref{tab:pr
 	\item The advantage of  \textsc{Limsbs}-ensemble is particularly pronounced on more difficult instances (e.g., virus cases with higher variability), where substantial gains are observed (e.g., 87 vs.\ 36). In contrast, ties typically occur on simpler instances with very low objective values.
 	
 	\item Regarding computational time, \textsc{Imsbs} is generally faster, but achieving an average runtime of 36.9 seconds compared to 32.6 seconds for the ensemble \textsc{Limsbs}-ensemble. However, this difference is not consistent across all instances, and in several cases \textsc{Limsbs}-ensemble is competitive or even faster.
+	\item When comparing the lengths of best (constrained-free) LCS from the literature, it is obvious that gap constraints, and specifically those included in this work, affecting final solutions significantly. For the instances with $m\geq 60$ in many cases found solutions are even trivial indicating the strong influence of a huge number of gap constraints in restricting search space of common subsequences fulfilling these. 
+	
 \end{itemize}
-The results demonstrate that the \textsc{Limsbs}-ensemble provides a substantial and consistent improvement in solution quality over \textsc{Imsbs} on real-world instances, at the cost of a comparable computational effort. This makes the \textsc{Limsbs}-ensemble   a preferable choice when solution quality is the main objective.
+The results demonstrate that the \textsc{Limsbs}-ensemble provides a substantial and consistent improvement in solution quality over \textsc{Imsbs} on real-world instances.  %, at the cost of a comparable computational effort.
+ This makes it  a preferable choice when solution quality is the main objective.
 %The paper should be 12-15 pages long written in English. Authors should consult Springer’s authors’ guidelines
 
  
@@ -425,7 +428,7 @@ The results demonstrate that the \textsc{Limsbs}-ensemble provides a substantial
    This study tackled a variant of the longest common subsequence problem which involves gap constraints for each input sequence, with applications in comparison of biological molecules and time-series analysis. We designed a learned heuristic, represented by the outputs of a neural network of predefined structure, whose weights are automatically set up by a biased random key genetic algorithm in the process of wights evolution. More advances heuristic is designed by combining the learned heuristic and the best performed hand-crafted heuristic from the literature, designing an ensemble heuristic. Further, this heuristic is incorporated into the  best heuristic methodology, the iterative multi-source beam search, to guide the search. The experimental evaluation demonstrated that this approach outperformed all other competing approaches on the known synthetic problem instances from literature as well as newly introduced real problem instances that simulate energy-aware context between successive nucleotides via the data-driven gap constraints.   Future work could involve the testing scenario for protein molecules, and instances with much larger sequence lengths to further asses the scalability od the designed approaches. Another task aims at learning the NN-based heuristic by some other meta-heuristic involving different fitness evaluators besides the utilized mean value while employing different stopping criteria in the training to prevent from over-fitting.  
    
    
-   \footnotesize{\textbf{Acknowledgments.}   This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
+   \footnotesize{\textbf{Acknowledgments.}    This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
 	
 	\vspace{-0.5cm}
 	
