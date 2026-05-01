@@ -73,39 +73,60 @@
 
 \keywords{Beam search; Neural networks; Neuro-Evolved heuristics; Gap constraints}
 
-	\section{Introduction} 
-	The \textit{Longest Common Subsequence Problem} (LCSP)~\cite{DJUKANOVIC2020106499} is a well-known combinatorial optimization problem with numerous applications in   computational biology, particularly in the analysis of molecular  sequences. Given an arbitrary   set  of input sequences $S=\{s_1,\ldots,s_m\}$ over an alphabet $\Sigma$, the goal is to determine the longest possible subsequence common to all $s_i \in S$. In recent decades, many practically motivated variants of the LCSP have been proposed by involving additional structural or biological constraints, defining  the constrained, arc-preserving, repetition-free LCSP~\cite{lafond2023longest,lin2002longest}, etc. In this work we study the \textit{Variable Gapped} LCSP (VGLCSP), introduced in~\cite{penga2011longest}, theoretically examined in~\cite{adamson2023longest}, and experimentally in~\cite{djukanovic2026_eurocast}.  This problem extends the standard LCSP by imposing flexible distance limits (gaps) between consecutive symbols in the resulting subsequence, allowing them to vary along the input sequences.
-	
-	 Formally, for each input sequence $s_i \in S$, a gap function $G_{s_i}\colon \{1,\ldots,|s_i|\}\mapsto \mathbb{N}$ defines the maximum distance allowed between the positions of appearances of consecutive characters in the resulting common subsequence for each $s_i, i=1, \ldots, m$. Symbolically, if the characters of a solution $s$ appear at the positions $i^1_i < \ldots <  i^{{|s|}}_i \leq |s_i|$ in $s_i$,  the gap constraint is fulfilled iff $i^x_i - i^{x-1}_i \le G_{s_i}[i^x_i] + 1$ holds for each $x=2,\ldots,|s|$. A common subsequence $s$ is considered feasible if the corresponding gap constraints hold across all $s_i \in S$. The problem aims at finding the longest such subsequence. The VGLCSP represents a flexible and realistic model of sequence alignment, which is particularly useful in comparing DNA or protein sequences with variable structural distances, but also in time series analysis, especially in settings where events are required to occur within specified temporal delays~\cite{lainscsek2015delay}. 
-	 
-	 Although several exact dynamic programming approaches are proposed for two-sequence case ($m=2$) scenario~\cite{peng2014finding}, the computational complexity of the problem becomes prohibitive for larger $m$; when $m$ is arbitrarily large, the problem is NP-hard. To the best of our knowledge, there is no effective exact approach for general $m$, with just one approximate approach in the literature---an iterative beam search~\cite{djukanovic2026_eurocast}---built on the state-space problem representation and the derived space of rooted nodes. Each such candidate node is explored via beam search in a two-step process: (i) the node refinement where non-rooted nodes are fixed to a (partial) solution constructed via a series of extensions towards a proven ancestor root node, and (ii)  feasible expansions of the node in letter-by-letter manner selecting these from the associated subproblem assigned to the node. At each iterations, new candidate root nodes are detected and added in the queue of candidates. Both steps are performed by the beam search. Given that the methodology provides a scalable alternative to inefficient exact methods, this was the first approach providing experimental evaluations for arbitrary number of input sequences $m$. It relies on the use of several known hand-crafted (upper bound) LCS heuristics known from the literature as under-performers  when $m$ is large of $\Sigma$ is small~\cite{DJUKANOVIC2020106499}. In the presence of gap constraints, this is even worsen.  The second detected research gap concerns lack of real instances for the tackled problem as the synthetic instances are the only generated so far.  Driven by these issues, the first gap is filled by designing a learning iterative beam search, which combines hand-crafted search guidance and the learned guidance into a superior heuristic. The learned search guidance is produced  as the outcome of a multi-layer neural network whose score is obtained in the forward propagation of the learned model. Weights of neural network model are evolved by a genetic algorithm while these neural network configurations are evaluated by the best heuristic method for the VGLCSP, the iterative beam search approach guided by the heuristic guidance induced from this network. 
-	  The COP literature is known by utilizing similar (hybrid) methodology when learning heuristics, for example in~\cite{djukanovic2025learning} for the restricted LCS, \cite{reixach2024neural} for the square LCS problem, or~\cite{wu2021learning} for routing problems, as some notable example. The difference between these and our approach lies in the fact that learned heuristics are here further combined with other heuristics to design more superior ensemble heuristics. To address the second research gap, we have derived real problem instances by using (two) biologically-motivated benchmark sets from LCS literature,  including data-driven gap constraints.
- 
- %\paragraph{Contributions.} This work utilizes a learning framework to construct heuristics which are induced by the learned neural network to guide the iterative beam search, specifically designed in the context of the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP). In details, a feed-forward neural network (FFNN) is used to parameterize the heuristic score of each node in the beam search. Instead of relying on gradient-based training, which is shown effective for (constrained) continuous problems,  weights of the networks are optimized using a Genetic Algorithm (GA), in particular the popular biased RKGA (BRKGA) approach.  Note that here we deal with a fully non-differentiable search space when training this ML model. Two complementary scores, the learned heuristics and a hand-crafted heuristic, are combined into a novel ensemble heuristic, providing a new state-of-the-art guidance, according to the exhaustive experimental evaluation.  The second contribution introduces the first real-world benchmark set for the tackled problem. In this case-scenario, gap constraints are designed to reflect on local thermodynamic stability estimated via nearest-neighbor interaction around each nucleotide of DNA sequences. In this way, the purpose is to obtain a solution with more stable molecular structure, driven by generated gap  constraints. 
+\section{Introduction}
 
-%TO BE EXPLAINED IN THE TUNING: Each individual in the GA population represents a complete set of neural network weights. The quality of an individual is evaluated by embedding the neural network inside the \textit{Iterative Multi-source Beam Search} (IMSBS) framework (proposed in the paper~\cite{}) to guide the search in the process of forward passes of the BS,  
-%and measuring the average solution quality obtained on a set of training instances. Validation instances are used exclusively to monitor generalization.
- 
-%Formally, the learning problem is defined as:
-% \[
-% \max_{\theta} \; \frac{1}{|T|} \sum_{I \in T} f(\text{IMS\_BeamSearch}(I, h_\theta)),
-% \]
-% where $T$ denotes the training set, $h_\theta$ is the neural heuristic parameterized by weights $\theta$, and $f(\cdot)$ measures solution quality.
+The \textit{Longest Common Subsequence Problem} (LCSP)~\cite{DJUKANOVIC2020106499} is a fundamental combinatorial optimization problem with numerous applications in computational biology, particularly in the analysis of molecular sequences. Given a set of input sequences $S=\{s_1,\ldots,s_m\}$ over an alphabet $\Sigma$, the objective is to determine the longest subsequence common to all sequences $s_i \in S$. Over the past decades, several practically motivated variants of LCSP have been proposed by incorporating additional structural or biological constraints, including the constrained, arc-preserving, and repetition-free variants~\cite{lafond2023longest,lin2002longest}.
+
+In this work, we study the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP), introduced in~\cite{penga2011longest}, theoretically analyzed in~\cite{adamson2023longest}, and recently evaluated experimentally in~\cite{djukanovic2026_eurocast}. This variant extends the classical LCSP by introducing flexible gap constraints between consecutive symbols in the subsequence, allowing these gaps to vary along the input sequences.
+
+Formally, for each sequence $s_i \in S$, a gap function $G_{s_i} : \{1,\ldots,|s_i|\} \rightarrow \mathbb{N}$ specifies the maximum allowed distance between consecutive matched positions. If a solution $s$ appears at positions $i_i^1 < \cdots < i_i^{|s|}$ in $s_i$, the gap constraints are satisfied if
+\[
+i_i^x - i_i^{x-1} \leq G_{s_i}[i_i^x] + 1, \quad \forall x = 2,\ldots,|s|.
+\]
+A subsequence is feasible if these constraints hold for all sequences $s_i \in S$. The objective is to find the longest feasible subsequence. The VGLCSP provides a flexible and realistic model for sequence alignment, particularly relevant for DNA and protein analysis with variable structural distances, as well as for time-series analysis where events must occur within specified temporal delays~\cite{lainscsek2015delay}.
+
+While several exact dynamic programming approaches exist for the two-sequence case ($m=2$)~\cite{peng2014finding}, the problem becomes computationally intractable for larger $m$; in fact, it is NP-hard in the general case. To date, no efficient exact methods are known for arbitrary $m$. The only available scalable approach is an iterative multi-source beam search (IMSBS)~\cite{djukanovic2026_eurocast}, which explores a state-space representation of the problem. The method iteratively refines candidate root nodes and extends them through feasible symbol additions. Despite its scalability, IMSBS relies on hand-crafted heuristics, which tend to degrade in performance as $m$ increases or the alphabet size $|\Sigma|$ decreases~\cite{DJUKANOVIC2020106499}. The presence of gap constraints further exacerbates this issue.
+
+In addition, existing studies are limited to synthetic benchmark instances, leaving a gap in evaluating methods on realistic data.
+
+To address these limitations, we propose a learning-enhanced beam search framework for VGLCSP. Our approach integrates learned and hand-crafted heuristics into a unified search strategy. The learned heuristic is represented by a multi-layer neural network that scores candidate states during the search. The network parameters are optimized through a genetic algorithm in a neuro-evolutionary framework, where each candidate model is evaluated within the IMSBS procedure. Importantly, the neural model does not directly construct solutions but learns to guide the search process.
+
+Furthermore, we design an ensemble heuristic that combines the learned heuristic with the best-performing hand-crafted heuristic, yielding a more robust guidance mechanism. This hybrid approach is inspired by recent advances in learning-guided combinatorial optimization~\cite{djukanovic2025learning,reixach2024neural,wu2021learning}, but differs in explicitly leveraging complementary heuristic signals within an ensemble.
+
+Finally, to address the lack of realistic benchmarks, we introduce new problem instances derived from biologically motivated datasets, augmented with data-driven gap constraints.
+
+\medskip
+\noindent\textbf{Contributions.} The main contributions of this work are:
+\begin{itemize}
+	\item A neuro-evolutionary framework integrated for learning heuristics in VGLCSP.
+	\item An ensemble heuristic combining learned and hand-crafted guidance.
+	\item An enhanced IMSBS algorithm integrating the proposed heuristics.
+	\item A new set of realistic benchmark instances with data-driven gap constraints.
+\end{itemize}
+  
 The paper is organized as follows. In Section~\ref{sec:imsbs}, the iterative multi source beam search approach from the literature is roughly presented. Section~\ref{sec:ffnn_guidance} provides main details on the process of learning heuristic guidance, and the design of ensemble heuristic estimator for the tacked problem. Section~\ref{sec:experiments} reports a rigorous experimental analysis. Finally, Section~\ref{sec:conclusions} concludes the paper highlighting several future research directions. 
  
  
- \section{Iterative Multi-Source Beam Search for GLCS Problem}\label{sec:imsbs}
+\section{Iterative Multi-Source Beam Search for the VGLCSP}\label{sec:imsbs}
+
+The first scalable approach for the VGLCSP with an arbitrary number of sequences ($m$) was introduced in~\cite{djukanovic2026_eurocast} as an \textit{Iterative Multi-Source Beam Search} (IMSBS). In this section, we summarize its main components; interested readers are referred to the original paper for full details.
+
+IMSBS is based on a \textit{state graph} representation of the VGLCSP. Each node represents a partial feasible subsequence, characterized by a vector of positions defining a subproblem and the length of the constructed subsequence. Formally, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix $s_i[1]\cdots s_i[p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all gap constraints $G_{s_i}$ are satisfied by $s^v$. 
+
+A directed arc $\alpha=(v_1, v_2)$ labeled by $lett(\alpha)=a \in \Sigma$ exists if $l^{v_2}=l^{v_1}+1$ and $s^{v_2}=s^{v_1}\cdot a$. To expand a state $v$, all letters occurring in the suffixes $S[\mathbf{p}^{L,v}]$ are considered. For each letter $a$, the smallest feasible positions $p^{L,a}_i \geq p^{L,v}_i$ are identified such that the gap constraints are satisfied, i.e., $p^{L,a}_i - p^{L,v}_i \leq G_{s_i}(p^{L,a}_i)$. The resulting child state (if not dominated) is $w=(\mathbf{p}^{L,a}+1, l^v+1)$. Terminal states correspond to non-extendable feasible subsequences.
+
+Unlike the classical LCSP, the VGLCSP admits multiple (potentially exponentially many) root nodes, since starting positions are unconstrained. This may lead to disconnected regions in the state graph. For instance, consider $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$. The root node $((1,1),0)$ cannot reach states with position vector $(5,5)$, thus missing the optimal subsequence $\texttt{AAAA}$. This phenomenon is illustrated in Fig.~\ref{fig:state_graph_vglcs_example}, where the state graph decomposes into disconnected components.
+
+This observation motivates the IMSBS framework, which operates over a dynamically generated set of root nodes explored iteratively. At each iteration, beam search (BS) is applied to selected root nodes. BS is a breadth-first heuristic search strategy~\cite{wiseman2016sequence} that expands a limited number of nodes per level, controlled by the beam width $\beta$, and guided by a heuristic function $h$.
+
+In IMSBS, node selection relies on an upper-bound heuristic defined as
+\[
+\texttt{UB}(v)= l^v + \sum_{a \in \Sigma} \min_{i=1,\ldots,m} |s_i[p^{L,v}_i, |s_i|]|_a,
+\]
+which estimates the maximum achievable extension from state $v$. For each letter $a \in \Sigma$, the heuristic evaluates its remaining occurrences in each suffix and aggregates these values to derive an upper bound on the achievable subsequence length.
+
+Despite its scalability, IMSBS relies on hand-crafted heuristics whose effectiveness degrades in challenging settings (e.g., large $m$ or small alphabets), especially under gap constraints. {On top of IMSBS, we develop a learning-based methodology that enhances the search process of the IMSBS through learned heuristic guidance and its integration with existing IMSBS.}
  
- The first methodology  for arbitrary $m$-case was introduced by Iterative multi-source beam search (IMSBS)  in~\cite{djukanovic2026_eurocast}. We only present it at certain details while interested readers are advised to consult the above-mentioned paper. \\
- 
-	IMSBS is derived from the general \textit{state graph} formulation for the VGLCSP. Each node represents a partial feasible subsequence, characterized by the vector of positions referring to a subproblem to be further solved,  and the subsequence length. Symbolically, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix string $s_i[1]\cdots s_i[p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all the gaps $G_{s_i}$ are preserved with $s^v$. A directed arc $\alpha=(v_1 v_2)$, labeled $lett(\alpha)={a} \in \Sigma$, exists between states $v_1$ and $v_2$ if $l^{v_2} = l^{v_1} + 1$ and $s^{v_2} = s^{v_1} \cdot {a}$. To expand a state $v$, all letters that occur in each (suffix)  $S[\mathbf{p}^{L,v}]$  are considered. For each such letter $a$, the smallest positions $p^{L,a}_i \geq p^{L,v}_i$ of its appearance are identified fulfilling gap constraint at the position $p^{L,a}_i$ in $s_i$, i.e.,  $p^{L,a}_i - p^{L,v}_i \le G_{s_i}(p^{L,a}_i)$. The resulting child node---if not suboptimal---is given by $w=(p^{L,a}+1, l^v+1)$. %The root node  $r:=((1,\ldots,1),0)$ represents the empty subsequence, 
-	 Goal/target states correspond to non-extendable feasible subsequences.\\
-	 
-	 
-	 
-	 Unlike the classical LCSP, the VGLCSP admits multiple (possibly exponentially many) root nodes as the starting position of a root node is constrained-free.  For example, in sequences $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$, the (root) state $r=((1,1),0)$ cannot reach any state with the position vector $(5,5)$ via feasible transitions, missing an opportunity to reach optimal subsequence $\texttt{AAA}$ if the search from $r$ is initiated. 
-	 %TODO: plot showing full complete graph of an instance: 
-	 
 \begin{figure}[!ht]
 	\centering
 	\scalebox{0.6}{
@@ -156,8 +177,6 @@ The paper is organized as follows. In Section~\ref{sec:imsbs}, the iterative mul
 	\label{fig:state_graph_vglcs_example}
 \end{figure}
 	 
-	 This  motivates the development of  IMSBS approach that works on a space of rooted nodes, which are dynamically generated over iterations and explored based on its priority. BS is a popular meta-heuristic approach~\cite{wiseman2016sequence} that performs in a breadth-first-search manner by expanding up to certain number of nodes at each level until the bottom is reached, returning the longest found path and its associated partial solution.  
-	 The amount of nodes to further pursue is controlled by  beam width ($\beta$)---the level of greediness---and a heuristic guidance ($h$) to select candidate nodes---as especially sensible algorithmic parameter. The heuristic used in~\cite{djukanovic2026_eurocast} is given as $\texttt{UB}(v)= l^v + \sum_{a \in \Sigma }  \min_{i=1,\ldots, m} |s_i[p^{L}_i, |s_i|]|_a$. For each letter $a\in \Sigma$, it first evaluates an upper bound on the number of its appearance in each residual sequence that corresponds to node $v$. These values are then sum up to generate a real upper bound value for the length of the LCS of the subproblem associated to node $v$. 
 	 
 	% In the IMSBS, BS is iteratively executed on a set of promising candidate root nodes as an initial beam, selected from a dynamically maintained global priority queue of candidate root nodes, controlling the diversification of the approach.	
 	 
@@ -167,95 +186,107 @@ The paper is organized as follows. In Section~\ref{sec:imsbs}, the iterative mul
 	returning an approximate solution $s_{imsbs}$.  %with three additional strategic parameters following~\cite{djukanovic2026_eurocast}.  
  
    
- \section{Learning to Guide the Search} \label{sec:ffnn_guidance}
- 
-% \textcolor{red}{TODO: To adapt the content; it should be more clear from the beginning what to be optimized and what means a learning heuristics here ... mentioning F1, F2, F3 feature configurations only in Experimental section ...}
- 
- Neural networks (NNs) present a well-known machine learning model~\cite{gurney2018introduction} that has shown its applicability in a wast majority of fields~\cite{bishop1994neural}. These models include basic multi-layer perceptron towards more complex constitutional and recurrent neural networks of different architectures~\cite{mienye2024recurrent}.  To  keep it simple but efficient, we will consider only the fully-connected (multi-)layer NNs  to derive an alternative heuristic to the known hand-crafted versions  for guiding the search process of the IMSBS, see~\cite{djukanovic2026_eurocast}.  For doing so, the major issue is to properly parameterize the neural network, represented by set of weights assigned to its edges to induce a data-driven neural heuristic. It will  be learned to predict a score for each node based on a set of extracted features extracted for associated partial solution and its subproblem.
- 
- In the context of classical neural networks, this learning process is performed by alternating between forward and backward propagation, where the later is used to weights adaptation\  w.r.t.\  error minimization (of a loss function) on a training dataset. The process of adapting weights is usually executed by employing iterative numerical procedures such as (stochastic) gradient descent~\cite{amari1993backpropagation} or the versions thereof. % using the power of gradient direction in quickly reaching local optima thus decreasing the overall loss w.r.t. known target values, hoping to generalize well.  %on unseen data. \\
- As we operate in the combinatorial space of an \textsc{NP}-hard problem, we do not expect the target values are known in advance, or there will be known to some extent but only for small-to-middle sized instances. This limits the application of gradient descent algorithms in training weights on such environments.  We approach here differently by employing population-based meta-heuristic approach dealing with various NN configurations, which are evolved towards local optima.   Fitness values of specific NN configurations are evaluated in a training instances by solving each of them using a robust (beam search) approach guided by the induced data-driven heuristic. As next we give details on the learning process. \\
- 
-  
-\textbf{Predefined Architecture of NN}. The heuristic is represented by a \textit{multi-layer perceptron} built of input of multiple neurons,  output layer of one node, and a number of hidden layers with user-defined units per layer.  The input layer received a set of numerical values associated to the features of  subproblem to be processed. The output of NN refers to how much the considered subproblem is ``promising''. 
-In each layer, to catch up  non-linearity between input features, the following activation functions are tested: \texttt{hyperbolic tangent}, \texttt{ReLU}, and \texttt{sigmoid}. For each layer $l$, forward propagation is defined as $
- \mathbf{z}^{(l+1)} = W^{(l)} \mathbf{a}^{(l)} + b^{(l)}, \quad
- \mathbf{a}^{(l+1)} = \phi(\mathbf{z}^{(l+1)}),
- $
- where $W^{(l)}$ and $b^{(l)}$ are the weight matrix and bias vector, respectively, and $\phi$ denotes the activation function. The final \textbf{z}-value represents the heuristic score.    All weights and biases are flattened into a {single vector} $w=\texttt{flatten}(W)$, which forms the chromosome of a GA individual. \\
-  \textbf{Fitness Evaluation of NN configurations}. Given a candidate weight vector $w$, we perform:  1) Load of the weights into a FFNN architecture $\mathcal{N}$ of predefined architecture;
- 	2) Executing the IMSBS on each instance from a training set $\mathcal{T}$ utilizing the neural heuristic to guide the search of IMSBS in the most sensitive forward iterations of BS; and 3)  Recording size of the best sequence obtained for each instance. The fitness value of candidate vector $w$ over the pre-defined NN architecture $\mathcal{N}$ 
-  is computed as the average solution quality over all training instances. Formally, the learning problem is defined as:
- \begin{equation} \label{eq:training_problem_optimization}
-     \max_{w} \; \emph{Fitness}(w)=\frac{1}{|\mathcal T|} \sum_{I \in \mathcal{T}} f(\texttt{IMSBS}(I, h_w)),
- \end{equation}
- where $h_w$ is the heuristic induced by neural network $\mathcal{N}(w)$, and  $f(\cdot)$ is a problem-specific objective function---representing length of longest  solution found by an IMSBS guided by $h_w$. Validation performance score is computed analogously on a separate dataset $\mathcal{V}$. %and is used only for reporting.  
- 
- 
-\textbf{Feature Extraction}. To guide the search process, each node is mapped to a fixed-length numerical feature vector capturing both the current state in construction phase and the structure of induced subproblem to solve. These features are designed to be instance-independent. %and comparable across problem sizes.
- 
- Let $S=\{s_1,\ldots, s_k\}$ denote the set of input sequences, and let $v=(\textbf{p}^v, l^v)$ be  a given node. The vector $\mathbf{p}^L=(\textbf{p}^v_1,\ldots,\textbf{p}^v_m)$ is first normalized by the corresponding sequence lengths $F^{v} = (F^{v})_i \leftarrow \frac{\textbf{p}^v_i}{|s_i|}, i=1, \ldots, m$ 
- so that progress in each sequence lies in $[0,1]$ and becomes independent of absolute input sizes.
- 
- From this normalized position vector, four statistical descriptors are extracted: $\max(\textbf{F})$, $\min(\textbf{F})$, $\texttt{mean}(\textbf{F})$, and standard deviation $\sigma(\textbf{F})$. These quantities characterize, respectively, the most advanced and least advanced sequences, the average depth of the search, and the imbalance of progress among sequences. In addition, {the  length of currently constructed partial subsequence} $l^v$ is included as another feature. 
- To capture the feasibility of future extensions, gap-related features are computed from the positions of remaining sequences. That is, for each $v$,  we determine $G^{\min} = \min\{ G_i(j) \mid j=\textbf{p}_i^v, i=1, \ldots, m \}$,  $G^{\max} =\max\{ G_i(j) \mid j=\textbf{p}_i^v, i=1, \ldots, m \}$,  $G^{avg}_i = \texttt{mean}\{ G_i(j) \mid j=\textbf{p}_i^v, i=1, \ldots, m \}$, and  
- $G^{\texttt{std}}_i = \texttt{std}\{ G_i(j) \mid j=\textbf{p}_i^v, i=1, \ldots, m \}$, where $G_1, \ldots, G_m$ are corresponding gap constraints associated to $s_1, \ldots, s_m$ respectively.  
- These statistics for gap constrains summarize the remaining flexibility of the instance: large average or maximum gaps indicate greater freedom for future matches, whereas small minimum gaps and large variability typically signal tighter constraints and increased difficulty.
- Additional features involved are  $|\Sigma|$ and the value of $m$ (number of input sequences), providing global structural information about the instance and help the learning model adapt to varying problem scales. Note that we additionally probed with involving more features such as length of input sequences, however with a negative impact on solution quality.  %of the learning approach. 
- 
- Finally, all features are standardized to zero mean and unit variance prior to being passed to the learning component. The utilization of normalization is know to contribute decreased sensibility of learning process in the process of training ML models.  
- Overall, the resulting representation combines information about (i) the current construction progress, (ii) the remaining gap-constraint landscape, and (iii) global instance properties, yielding 11 features. This compact yet expressive encoding enables effective learning-based guidance of the search for high-quality  subsequences. 
- 
- \textbf{Optimize for high-quality configurations}. We opt for a Genetic algorithm, in particular its popular version called the \textit{Biased Random Key Genetic Algorithm} (BRKGA) to solve the problem given in Eq.~(\ref{eq:training_problem_optimization}).  The optimization process follows a population-based evolutionary scheme, described in Algorithm~\ref{alg:learning_mechanism}. Before we briefly explain the main workflow of the algorithm, first a few important notes.  Each individual is initialized by sampling weights uniformly from a predefined interval [$-q, q$] ($q$ is fixed to 1).
-  %\textit{Elitism} is included by copying a fixed number of top-performing individuals into the next generation. \textit{Mutation} is performed so that several weakest individuals  in each generation are generated completely at random (random immigrants). This mechanism promotes exploration and maintains population diversity.  Concerning \textit{offspring generation} in BRKGA, one parent is selected from the elite set and one from the non-elite set. Each gene is inherited from the elite parent with a predefined probability (this is fixed to 0.5).  The new population consists of elites, mutants, and offspring. 
-  
-  %The algorithm terminates once a predefined time limit is reached (in this case we used 2 hours). The best individual encountered during training is continuously tracked and stored. Once the new incumbent is reached, its validation score is also determined. If its validation score is decreased in comparison to the best so far validation value, over-fitting is detected and the learning process is immediately terminated. 
- 
+\section{Learning to Guide the Search} \label{sec:ffnn_guidance}
 
- \begin{algorithm}[!ht]
- 	\caption{GA-Based Learning of a BS Heuristic} \label{alg:learning_mechanism}
- 	\begin{algorithmic}[1]
- 		\STATE \textbf{Input}: NN architecture $\mathcal{N}$, values of IMSBS parameters, values of BRKGA parameters, train set $\mathcal{T}$, validation set $\mathcal{V}$
- 		\STATE \textbf{Output}: best weights for NN  architecture
- 		\STATE Initialize population $P$ with random neural network weights
- 		\STATE Evaluate all individuals on training set $\mathcal{T}$
- 		\STATE Store best solution $w^\ast$
- 		\STATE $start \leftarrow$ current time
- 		\WHILE{time limit $t_{\max}$ has not exceeded}
- 		\STATE Sort $P$ by \emph{Fitness}($\cdot$) value (descending)
- 		\STATE Initialize empty population $P'$
- 		\STATE Copy top $n_{elites}$ individuals from $P$ to $P'$
- 		\FOR{$i = 1$ to $n_{mutants}$}
- 		\STATE Create random individual $x$
- 		\STATE Evaluate $x$ on $\mathcal{T},$ add $x$ to $P'$
- 		\STATE Update $w^\ast$ if improved \& validation score not decreased 
- 		\ENDFOR
- 		\STATE $P \gets P[: |P| - n_{mutants}]$
- 		\FOR{$i = 1$ to $n_{offspring}$}
- 		\STATE Select parents from the elite set $P[: n_{elite}]$ and the  rest of individuals  $P[n_{elite} : ]$
- 		\STATE Generate offspring by crossover based on the inherited probability $p_{bias}$
- 		\STATE Evaluate offspring on $\mathcal{T}$
- 		\STATE Add offspring to $P'$
- 		\STATE Update $w^\ast$ if improved \& validation score not decreased
- 		\ENDFOR
- 		\STATE $P \leftarrow P'$
- 		\ENDWHILE
- 		\STATE \textbf{return} $w^\ast$
- 	\end{algorithmic}
- \end{algorithm}
+Neural networks (NNs) are well-established machine learning models~\cite{gurney2018introduction,bishop1994neural} that have demonstrated strong performance across a wide range of domains. They range from simple multi-layer perceptrons (MLPs) to more complex convolutional and recurrent architectures~\cite{mienye2024recurrent}. In this work, we focus on fully connected multi-layer perceptrons to design an alternative, data-driven heuristic for guiding the IMSBS procedure~\cite{djukanovic2026_eurocast}. 
+
+The key challenge lies in parameterizing the neural model such that it provides meaningful guidance during the search. Specifically, the network is trained to assign a score to each node (i.e., subproblem), based on features extracted from the corresponding partial solution and its associated residual problem.
+
+In standard neural network training, parameters are optimized via forward and backward propagation, typically using gradient-based methods such as (stochastic) gradient descent~\cite{amari1993backpropagation}. However, in our setting—characterized by a combinatorial \textsc{NP}-hard problem—target values are not readily available, especially for large instances. This limits the applicability of supervised learning approaches. Instead, we adopt a population-based metaheuristic approach, where candidate NN configurations are evaluated indirectly through their impact on the performance of the IMSBS algorithm. 
+
+\medskip
+\noindent\textbf{Predefined NN Architecture.}
+The heuristic is modeled as a multi-layer perceptron consisting of an input layer, several hidden layers with user-defined sizes, and a single output neuron. The input layer receives a vector of numerical features describing the current search state, while the output represents the estimated promise of expanding that state.
+
+For each layer $l$, forward propagation is defined as
+\[
+\mathbf{z}^{(l+1)} = W^{(l)} \mathbf{a}^{(l)} + b^{(l)}, \quad
+\mathbf{a}^{(l+1)} = \phi(\mathbf{z}^{(l+1)}),
+\]
+where $W^{(l)}$ and $b^{(l)}$ denote the weights and biases, and $\phi$ is a non-linear activation function (e.g., \texttt{tanh}, \texttt{ReLU}, or \texttt{sigmoid}). The final pre-activation value is used as the heuristic score. All parameters are flattened into a single vector $w=\texttt{flatten}(W,b)$, which represents an individual in the evolutionary process.
+
+\medskip
+\noindent\textbf{Fitness Evaluation.}
+Given a candidate weight vector $w$, the evaluation proceeds as follows: 
+(i) the weights are loaded into the NN architecture $\mathcal{N}$; 
+(ii) IMSBS is executed on each instance from a training set $\mathcal{T}$ using the neural heuristic $h_w$; and 
+(iii) the best solution quality obtained per instance is recorded. 
+The fitness of $w$ is defined as the average solution quality over $\mathcal{T}$:
+\begin{equation} \label{eq:training_problem_optimization}
+	\max_{w} \; \emph{Fitness}(w)=\frac{1}{|\mathcal T|} \sum_{I \in \mathcal{T}} f(\texttt{IMSBS}(I, h_w)),
+\end{equation}
+where $f(\cdot)$ denotes the length of the best subsequence found. Validation performance is computed analogously on a separate dataset $\mathcal{V}$.
+
+\medskip
+\noindent\textbf{Feature Extraction.}
+To guide the search effectively, each node $v=(\mathbf{p}^v, l^v)$ is mapped to a fixed-length feature vector capturing both the construction progress and the structure of the induced subproblem. The design is instance-independent and robust across varying problem sizes.
+
+Let $S=\{s_1,\ldots,s_m\}$ denote the input sequences. The position vector $\mathbf{p}^v$ is first normalized by sequence lengths:
+\[
+F^v_i = \frac{p^v_i}{|s_i|}, \quad i=1,\ldots,m,
+\]
+ensuring scale invariance. From this normalized vector, we extract four statistics: $\max(\mathbf{F}^v)$, $\min(\mathbf{F}^v)$, $\texttt{mean}(\mathbf{F}^v)$, and $\texttt{std}(\mathbf{F}^v)$, capturing the progress and imbalance across sequences. The current subsequence length $l^v$ is also included.
+
+To reflect future feasibility, we compute gap-related statistics:
+\[
+G^{\min}, \; G^{\max}, \; G^{\texttt{avg}}, \; G^{\texttt{std}},
+\]
+evaluated over the remaining positions in all sequences. These features quantify the flexibility of future extensions: larger gaps indicate more freedom, while smaller or highly variable gaps suggest tighter constraints.
+
+Finally, two global features—alphabet size $|\Sigma|$ and the number of sequences $m$—are included. All features are standardized to zero mean and unit variance prior to training. The resulting 11-dimensional representation provides a compact yet expressive description of each search state.
+
+\medskip
+\noindent\textbf{Optimization of NN Parameters.}
+To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Algorithm} (BRKGA), a population-based evolutionary method. Each individual encodes a candidate weight vector $w$, initialized uniformly at random in the interval $[-q,q]$ with $q=1$. The evolutionary process iteratively refines the population toward high-quality heuristics $h_w=\mathcal{N}(w)$, where $\mathcal{N}$ is a predefined NN architecture, based on the fitness defined in Eq.~(\ref{eq:training_problem_optimization}). The overall learning mechanism is summarized in Algorithm~\ref{alg:learning_mechanism}.
+
+
+\begin{algorithm}[!ht]
+	\caption{GA-Based Learning of a Beam Search Heuristic} \label{alg:learning_mechanism}
+	\begin{algorithmic}[1]
+		\STATE \textbf{Input}: NN architecture $\mathcal{N}$, IMSBS parameters, BRKGA parameters, training set $\mathcal{T}$, validation set $\mathcal{V}$
+		\STATE \textbf{Output}: optimized weight vector $w^\ast$
+		\STATE Initialize population $P$ with random weight vectors
+		\STATE Evaluate all individuals on $\mathcal{T}$
+		\STATE $w^\ast \leftarrow$ best individual in $P$
+		\WHILE{time limit $t_{\max}$ not exceeded}
+		\STATE Sort $P$ in descending order of \emph{Fitness}
+		\STATE Initialize new population $P'$
+		\STATE Copy top $n_{\text{elite}}$ individuals from $P$ to $P'$
+		
+		\FOR{$i = 1$ to $n_{\text{mutants}}$}
+		\STATE Generate random individual $x$
+		\STATE Evaluate $x$ on $\mathcal{T}$ and add to $P'$
+		\STATE Update $w^\ast$ if improved and validation does not degrade
+		\ENDFOR
+		
+		\FOR{$i = 1$ to $n_{\text{offspring}}$}
+		\STATE Select one elite parent and one non-elite parent
+		\STATE Generate offspring via biased crossover ($p_{\text{bias}}$)
+		\STATE Evaluate offspring on $\mathcal{T}$ and add to $P'$
+		\STATE Update $w^\ast$ if improved and validation does not degrade
+		\ENDFOR
+		
+		\STATE $P \leftarrow P'$
+		\ENDWHILE
+		\STATE \textbf{return} $w^\ast$
+	\end{algorithmic}
+\end{algorithm}
+
+
  
  
-  \textbf{Overall Learning Procedure}. The learning process alternates between evolutionary optimization of network weights and evaluation through (iterative multi-source) Beam Search. Importantly, the neural network does not directly predict solutions; instead, it learns how to \textit{guide} the search procedure. This places the method within the class of neuro-evolutionary hyper-heuristics. \\
-
-Given are multi-layer perception architecture $\mathcal{N}$, parameters of IMSBS, and parameters of BRKGA to be involved in the fitness calculation of NN configurations.  %weights that induce high-quality heuristics.
- The procedure starts by generating an initial population $P$ of individuals, representing random weights to embed into the predefined neural network architecture. All individuals are evaluated on the training set $\mathcal{T}$, yielding a fitness value to reflect the quality of the corresponding heuristic/individual. The best-performing individual  is stored as $w^\ast$.   Note that the fitness evaluation for each individual has been obtained by employing \textsc{Imsbs} approach  presented in Section~\ref{sec:imsbs},  on each instance from $\mathcal{T}$. We here opt for the following parameters of \textsc{Imsbs}: $\beta=500$, $beam\_iters=100$, while remaining parameters, therefore less sensible, are used from~\cite{djukanovic2026_eurocast}. This provides a reasonable trade-off between solution quality in the learning process and the robustness of the training mechanism. 
- The main iteration of the learning process executes the following steps. First, initial population of individuals  $P$ is sorted  in descending order of their fitness values. The worst $n_{mutants}$ individuals by to the fitness values are removed from $P$, and the same amount of  individuals is randomly generated and added to the newly generated population $P'$ along with the $n_{elite}$ (elite) individuals from $P$ (which are copied to $P'$). The $n_{offspring}$ offsprings are generated by randomly selecting one parent from the pool of elite individuals, and other parent randomly from the remaining individuals in $P$. These two are subsequently combined for generating new offspring--inheriting the $i$-th component of first parent with probability $p_{bias} \geq 0.5$, otherwise  the $i$-th component of the second parent with the probability $1-p_{bias}$. 
- Offsprings are passed to new generation   $P'$ after its fitness valuation. 
- In case a new incumbent has reached on the set of training instances $\mathcal{T}$, the fitness is calculated on the set of validation instances $\mathcal{V}$. In particular, we decided to train in an early stopping
- fashion, terminating the process whenever the validation value
- decreases, as a criterion for detecting  over-fitting. Otherwise, after generating all individuals, the population is updated  ($P \leftarrow P'$). The process is repeated until the time limit $t_{\max}$ is reached---here fixed to 2 CPU hours.  
-The algorithm returns the best solution $w^\ast$, corresponding to the neural network weights that induce the most effective search heuristic $h_w=\mathcal{N}(w)$ on the training set.  As a reasonable optimizer, the BRKGA setting used for training takes the values  $n_{pop}=20, n_{elites}=1, p_{bias}=0.5, p_{mutants}=7$. Visualization of the learning process is depicted in Fig.~\ref{fig:ga_imsbs}.  
-
+ \textbf{Overall Learning Procedure.}
+ The proposed learning framework alternates between evolutionary optimization of neural network parameters and their evaluation within the IMSBS procedure. Importantly, the neural network does not directly construct solutions; instead, it learns to \emph{guide} the search process. This places the approach within the class of neuro-evolutionary hyper-heuristics.
+ 
+ Given a predefined NN architecture $\mathcal{N}$, IMSBS parameters, and BRKGA parameters, the procedure begins by generating an initial population $P$ of candidate weight vectors. Each individual is evaluated on the training set $\mathcal{T}$ using IMSBS guided by the corresponding neural heuristic. The best-performing solution is stored as $w^\ast$. In our implementation, IMSBS is executed with parameters $\beta=500$ and $\texttt{beam\_iters}=100$, while the remaining parameters follow~\cite{djukanovic2026_eurocast}. This configuration provides a suitable balance between computational cost and robustness during training.
+ 
+ The evolutionary process proceeds iteratively as follows. The population is first sorted according to fitness. A new population $P'$ is then constructed by preserving the top $n_{\text{elite}}$ individuals (elitism), introducing $n_{\text{mutants}}$ randomly generated individuals (diversification), and generating $n_{\text{offspring}}$ offspring via biased crossover. In each crossover, one parent is selected from the elite set and the other from the remaining population. Each gene (weight) is inherited from the elite parent with probability $p_{\text{bias}} \geq 0.5$, and from the second parent otherwise.
+ 
+ Each newly generated individual is evaluated on $\mathcal{T}$. Whenever an improved solution is found, its performance is additionally assessed on the validation set $\mathcal{V}$. To mitigate overfitting, we adopt an early stopping strategy: if the validation performance deteriorates, the update is discarded.
+ 
+ The process repeats until a time limit $t_{\max}$ is reached (set to 2 CPU hours). The algorithm returns the best weight vector $w^\ast$, corresponding to the neural network $\mathcal{N}(w^\ast)$ that induces the most effective heuristic $h_w$.
+ 
+ In our experiments, the BRKGA parameters are set to $n_{\text{pop}}=20$, $n_{\text{elite}}=1$, $p_{\text{bias}}=0.5$, and $n_{\text{mutants}}=7$. A visualization of the learning process is provided in Fig.~\ref{fig:ga_imsbs}.
 
 \begin{figure}[!ht]
 	\centering
@@ -315,7 +346,7 @@ The algorithm returns the best solution $w^\ast$, corresponding to the neural ne
     
   \subsection{An ensemble approach}
     
-    According to the preliminary results, the learning heuristics performs in overall better than the competitor hand-crafted heuristic from the literature. However, not for all cases, and especially on the instances with small $m$.  In order to improve the results further, we employ a rank-based ensemble strategy that combines a learned heuristic with an analytical hand-crafted upper bound ($\text{UB}$)~\cite{djukanovic2026_eurocast}. Specifically, each candidate node in beam search is evaluated using two criteria: a neural score obtained from a FFNN $\mathcal{N}(w^*)$, denoted $h_{w^*}=\mathcal{N}({w^*})$,  and  a problem-specific hand-crafted $\text{UB}$. 
+    According to the preliminary results, the learning heuristics performs in overall better than the competitor hand-crafted heuristic from the literature. However, not for all cases, and especially on the instances with small $m$.  In order to improve the results further, we employ a rank-based ensemble strategy that combines a learned heuristic with an analytical hand-crafted upper bound ($\text{UB}$)~\cite{djukanovic2026_eurocast}, see Section~\ref{sec:imsbs}.  Specifically, each candidate node in beam search is evaluated using two criteria: a neural score obtained from a FFNN $\mathcal{N}(w^*)$, denoted $h_{w^*}=\mathcal{N}({w^*})$,  and  a problem-specific hand-crafted $\text{UB}$. 
     
     Instead of combining the raw scores directly, which may differ in scale and distribution, we adopt a rank aggregation approach. First, candidate nodes are sorted independently according to each criterion, producing two rankings. Each node is then assigned a rank based on its position in each sorted list.   The final ranking score is computed as a weighted combination of the two ranks:
     \begin{equation}\label{eq:ensemble_heuristic}
