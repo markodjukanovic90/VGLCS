@@ -100,9 +100,12 @@ Finally, to address the lack of realistic benchmarks, we introduce new problem i
 \begin{itemize}
 	\item A neuro-evolutionary framework integrated for learning heuristics in VGLCSP.
 	\item An ensemble heuristic combining learned and hand-crafted guidance.
-	\item An enhanced IMSBS algorithm integrating the proposed heuristics.
+	\item An enhanced IMSBS algorithm integrating the proposed ensemble heuristics.
 	\item A new set of realistic benchmark instances with data-driven gap constraints.
 \end{itemize}
+
+\paragraph{Preliminaries.}	Let $|s|$ denote the length of a sequence $s$, and let $s[i]$ refers to the character of $s$ at position $i$, where indexing starts at $i = 1$. The substring of $s$ that begins at position $i$ and ends at position $j$ is denoted by $s[i,j]$. If $i = j$, this corresponds to the single character $s[i]$; if $j < i$, then $s[i,j] = \varepsilon$, where $\varepsilon$ denotes the empty string.	Given two sequences $s_1$ and $s_2$, by $s_1 \cdot s_2$ we denote the sequence obtained by concatenating the given two sequence. 
+The number of occurrences of $a \in \Sigma$ in $s$ is denoted by $|s|_a$.	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, $m \in \mathbb{N}$ the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$.  Given a positional vector $\mathbf{p}^L \in \mathbb{N}^m$,  the subproblem related to these positions is given by $S[\mathbf{p}^L]=\{ s_i[\mathbf{p}^L_i, |s_i|] \mid i=1, \ldots, m\}$. \\
   
 The paper is organized as follows. In Section~\ref{sec:imsbs}, the iterative multi source beam search approach from the literature is roughly presented. Section~\ref{sec:ffnn_guidance} provides main details on the process of learning heuristic guidance, and the design of ensemble heuristic estimator for the tacked problem. Section~\ref{sec:experiments} reports a rigorous experimental analysis. Finally, Section~\ref{sec:conclusions} concludes the paper highlighting several future research directions. 
  
@@ -111,9 +114,9 @@ The paper is organized as follows. In Section~\ref{sec:imsbs}, the iterative mul
 
 The first scalable approach for the VGLCSP with an arbitrary number of sequences ($m$) was introduced in~\cite{djukanovic2026_eurocast} as an \textit{Iterative Multi-Source Beam Search} (IMSBS). In this section, we summarize its main components; interested readers are referred to the original paper for full details.
 
-IMSBS is based on a \textit{state graph} representation of the VGLCSP. Each node represents a partial feasible subsequence, characterized by a vector of positions defining a subproblem and the length of the constructed subsequence. Formally, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix $s_i[1]\cdots s_i[p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all gap constraints $G_{s_i}$ are satisfied by $s^v$. 
+IMSBS is based on a \textit{state graph} representation of the VGLCSP. Each node represents a partial feasible subsequence, characterized by a vector of positions defining a subproblem and the length of the constructed subsequence. Formally, a state $v=(\mathbf{p}^{L,v}, l^v)$ is induced by a partial solution $s^v$ if: (i) $p^{L,v}_i-1$ is the smallest index such that $s^v$ is a subsequence of the prefix $s_i[1, p^{L,v}_i-1]$; (ii) $l^v=|s^v|$; and (iii) all gap constraints $G_{s_i}$ are satisfied by $s^v$. 
 
-A directed arc $\alpha=(v_1, v_2)$ labeled by $lett(\alpha)=a \in \Sigma$ exists if $l^{v_2}=l^{v_1}+1$ and $s^{v_2}=s^{v_1}\cdot a$. To expand a state $v$, all letters occurring in the suffixes $S[\mathbf{p}^{L,v}]$ are considered. For each letter $a$, the smallest feasible positions $p^{L,a}_i \geq p^{L,v}_i$ are identified such that the gap constraints are satisfied, i.e., $p^{L,a}_i - p^{L,v}_i \leq G_{s_i}(p^{L,a}_i)$. The resulting child state (if not dominated) is $w=(\mathbf{p}^{L,a}+1, l^v+1)$. Terminal states correspond to non-extendable feasible subsequences.
+A directed arc $\alpha=(v_1, v_2)$ labeled by $lett(\alpha)=a \in \Sigma$ exists if $l^{v_2}=l^{v_1}+1$ and $s^{v_2}=s^{v_1}\cdot a$. To expand a state $v$, all letters occurring in the suffixes $S[\mathbf{p}^{L,v}]$ are considered. For each letter $a$, the smallest feasible positions $p^{L,a}_i \geq p^{L,v}_i$ are identified such that the gap constraints are satisfied, i.e., $p^{L,a}_i - p^{L,v}_i \leq G_{s_i}(p^{L,a}_i)$. The resulting child state (if not dominated) is $w=(\mathbf{p}^{L,a}+\mathbf{1}, l^v+1)$. Terminal states correspond to non-extendable feasible subsequences.
 
 Unlike the classical LCSP, the VGLCSP admits multiple (potentially exponentially many) root nodes, since starting positions are unconstrained. This may lead to disconnected regions in the state graph. For instance, consider $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$. The root node $((1,1),0)$ cannot reach states with position vector $(5,5)$, thus missing the optimal subsequence $\texttt{AAAA}$. This phenomenon is illustrated in Fig.~\ref{fig:state_graph_vglcs_example}, where the state graph decomposes into disconnected components.
 
@@ -123,9 +126,9 @@ In IMSBS, node selection relies on an upper-bound heuristic defined as
 \[
 \texttt{UB}(v)= l^v + \sum_{a \in \Sigma} \min_{i=1,\ldots,m} |s_i[p^{L,v}_i, |s_i|]|_a,
 \]
-which estimates the maximum achievable extension from state $v$. For each letter $a \in \Sigma$, the heuristic evaluates its remaining occurrences in each suffix and aggregates these values to derive an upper bound on the achievable subsequence length.
+which estimates the maximum achievable extension from state $v$. The heuristic evaluates remaining occurrences of each letter $a\in\Sigma$ in each  suffix sequences of the related subproblem and aggregates these values to derive an upper bound on the achievable subsequence length.
 
-Despite its scalability, IMSBS relies on hand-crafted heuristics whose effectiveness degrades in challenging settings (e.g., large $m$ or small alphabets), especially under gap constraints. {On top of IMSBS, we develop a learning-based methodology that enhances the search process of the IMSBS through learned heuristic guidance and its integration with existing IMSBS.}
+Despite its scalability, IMSBS relies on hand-crafted heuristics whose effectiveness degrades in challenging settings (e.g., large $m$ or small alphabets), especially under gap constraints. {To resolve the issue, we will develop a learning-based methodology that enhances the search process of the IMSBS through the integrated learned heuristic guidances. }
  
 \begin{figure}[!ht]
 	\centering
@@ -182,17 +185,17 @@ Despite its scalability, IMSBS relies on hand-crafted heuristics whose effective
 	 
 	 %Each iteration performs a complete BS on a few  ($num\_root\_nodes$) top candidate root nodes, which are, beforehand, refined by the beam search with a small beam width $\beta'$ and heuristic guidance $h'$, as not all candidate nodes will represent real root nodes. This process intensifies the search and permits it from returning proven suboptimal solutions. During each BS call, new candidate root nodes are generated from the complete (non-expandable) nodes and have been subsequently added to the priority queue. This approach provides a balance the intensification and diversification by involving several parameters. The stopping criteria utilized for the IMSBS are the number of allowed beam search iterations ($bs\_iters$), and the time limit of 30 minutes per each run.
 	
-	In the subsequent part of the paper, we refer to the algorithm as \texttt{IMSBS},  %($\beta, h, \beta'$, $h', num\_root\_nodes$), 
-	returning an approximate solution $s_{imsbs}$.  %with three additional strategic parameters following~\cite{djukanovic2026_eurocast}.  
+	In the subsequent part of the paper, we refer to the algorithm as \texttt{IMSBS}($\mathcal{I}$, $\mathcal{C}$),  %($\beta, h, \beta'$, $h', num\_root\_nodes$), 
+	returning an approximate solution $s_{imsbs}$ for an instance $\mathcal{I}$ under the parameter configuration $\mathcal{C}$.  %with three additional strategic parameters following~\cite{djukanovic2026_eurocast}.  
  
    
 \section{Learning to Guide the Search} \label{sec:ffnn_guidance}
 
 Neural networks (NNs) are well-established machine learning models~\cite{gurney2018introduction,bishop1994neural} that have demonstrated strong performance across a wide range of domains. They range from simple multi-layer perceptrons (MLPs) to more complex convolutional and recurrent architectures~\cite{mienye2024recurrent}. In this work, we focus on fully connected multi-layer perceptrons to design an alternative, data-driven heuristic for guiding the IMSBS procedure~\cite{djukanovic2026_eurocast}. 
 
-The key challenge lies in parameterizing the neural model such that it provides meaningful guidance during the search. Specifically, the network is trained to assign a score to each node (i.e., subproblem), based on features extracted from the corresponding partial solution and its associated residual problem.
+The key challenge lies in parameterizing the neural model such that it provides meaningful guidance during the search. Specifically, the network is trained to assign a score to each node, based on features extracted from the corresponding partial solution and the associated subproblem.
 
-In standard neural network training, parameters are optimized via forward and backward propagation, typically using gradient-based methods such as (stochastic) gradient descent~\cite{amari1993backpropagation}. However, in our setting—characterized by a combinatorial \textsc{NP}-hard problem—target values are not readily available, especially for large instances. This limits the applicability of supervised learning approaches. Instead, we adopt a population-based metaheuristic approach, where candidate NN configurations are evaluated indirectly through their impact on the performance of the IMSBS algorithm. 
+In standard neural network training, parameters are optimized via forward and backward propagation, typically using gradient-based methods such as  gradient descent~\cite{amari1993backpropagation}. However, in our setting---characterized by a combinatorial \textsc{NP}-hard problem---target values are not readily available, especially for large instances. This limits the applicability of supervised learning approaches. Instead, we adopt a population-based metaheuristic approach, where the parameters of NN (as configurations) are evaluated indirectly through their impact on the performance of the IMSBS algorithm. 
 
 \medskip
 \noindent\textbf{Predefined NN Architecture.}
@@ -203,13 +206,14 @@ For each layer $l$, forward propagation is defined as
 \mathbf{z}^{(l+1)} = W^{(l)} \mathbf{a}^{(l)} + b^{(l)}, \quad
 \mathbf{a}^{(l+1)} = \phi(\mathbf{z}^{(l+1)}),
 \]
-where $W^{(l)}$ and $b^{(l)}$ denote the weights and biases, and $\phi$ is a non-linear activation function (e.g., \texttt{tanh}, \texttt{ReLU}, or \texttt{sigmoid}). The final pre-activation value is used as the heuristic score. All parameters are flattened into a single vector $w=\texttt{flatten}(W,b)$, which represents an individual in the evolutionary process.
+where $W^{(l)}$ and $b^{(l)}$ denote the weights and biases associated with layer $l$, and $\phi$ is a non-linear activation function (e.g., \texttt{tanh}, \texttt{ReLU}, or \texttt{sigmoid}). The final value is used as the heuristic score. All parameters are flattened into a single vector $w$ %=\texttt{flatten}(W,b)$, 
+  which represents an individual in the evolutionary process.
 
 \medskip
 \noindent\textbf{Fitness Evaluation.}
 Given a candidate weight vector $w$, the evaluation proceeds as follows: 
-(i) the weights are loaded into the NN architecture $\mathcal{N}$; 
-(ii) IMSBS is executed on each instance from a training set $\mathcal{T}$ using the neural heuristic $h_w$; and 
+(i) the weights are loaded into the pre-defined NN architecture $\mathcal{N}$; 
+(ii) IMSBS is executed on each instance from a training set $\mathcal{T}$ incorporating the induced neural heuristic $h_w$ to guide the search (other parameters of IMSBS are fixed, see Section~\ref{sec:experiments}); and 
 (iii) the best solution quality obtained per instance is recorded. 
 The fitness of $w$ is defined as the average solution quality over $\mathcal{T}$:
 \begin{equation} \label{eq:training_problem_optimization}
@@ -219,7 +223,7 @@ where $f(\cdot)$ denotes the length of the best subsequence found. Validation pe
 
 \medskip
 \noindent\textbf{Feature Extraction.}
-To guide the search effectively, each node $v=(\mathbf{p}^v, l^v)$ is mapped to a fixed-length feature vector capturing both the construction progress and the structure of the induced subproblem. The design is instance-independent and robust across varying problem sizes.
+To guide the search effectively, each node $v=(\mathbf{p}^v, l^v)$ is mapped to a fixed-length feature vector capturing both the construction progress and the structure of the related subproblem. The design is instance-independent and robust across varying problem sizes.
 
 Let $S=\{s_1,\ldots,s_m\}$ denote the input sequences. The position vector $\mathbf{p}^v$ is first normalized by sequence lengths:
 \[
@@ -231,7 +235,7 @@ To reflect future feasibility, we compute gap-related statistics:
 \[
 G^{\min}, \; G^{\max}, \; G^{\texttt{avg}}, \; G^{\texttt{std}},
 \]
-evaluated over the remaining positions in all sequences. These features quantify the flexibility of future extensions: larger gaps indicate more freedom, while smaller or highly variable gaps suggest tighter constraints.
+evaluated over the gap values for remaining positions in all sequences. These features quantify the flexibility of future extensions: larger gaps indicate more freedom, while smaller or highly variable gaps suggest tighter constraints.
 
 Finally, two global features—alphabet size $|\Sigma|$ and the number of sequences $m$—are included. All features are standardized to zero mean and unit variance prior to training. The resulting 11-dimensional representation provides a compact yet expressive description of each search state.
 
@@ -280,9 +284,7 @@ To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Alg
  
  Given a predefined NN architecture $\mathcal{N}$, IMSBS parameters, and BRKGA parameters, the procedure begins by generating an initial population $P$ of candidate weight vectors. Each individual is evaluated on the training set $\mathcal{T}$ using IMSBS guided by the corresponding neural heuristic. The best-performing solution is stored as $w^\ast$. In our implementation, IMSBS is executed with parameters $\beta=500$ and $\texttt{beam\_iters}=100$, while the remaining parameters follow~\cite{djukanovic2026_eurocast}. This configuration provides a suitable balance between computational cost and robustness during training.
  
- The evolutionary process proceeds iteratively as follows. The population is first sorted according to fitness. A new population $P'$ is then constructed by preserving the top $n_{\text{elite}}$ individuals (elitism), introducing $n_{\text{mutants}}$ randomly generated individuals (diversification), and generating $n_{\text{offspring}}$ offspring via biased crossover. In each crossover, one parent is selected from the elite set and the other from the remaining population. Each gene (weight) is inherited from the elite parent with probability $p_{\text{bias}} \geq 0.5$, and from the second parent otherwise.
- 
- Each newly generated individual is evaluated on $\mathcal{T}$. Whenever an improved solution is found, its performance is additionally assessed on the validation set $\mathcal{V}$. To mitigate overfitting, we adopt an early stopping strategy: if the validation performance deteriorates, the update is discarded.
+ The evolutionary process proceeds iteratively as follows. The population is first sorted according to fitness. A new population $P'$ is then constructed by preserving the top $n_{\text{elite}}$ individuals (elitism), introducing $n_{\text{mutants}}$ randomly generated individuals (diversification), and generating $n_{\text{offspring}}$ offspring via biased crossover. In each crossover, one parent is selected from the elite set and the other from the remaining population. Each gene (weight) is inherited from the elite parent with probability $p_{\text{bias}} \geq 0.5$, and from the second parent otherwise. Each newly generated individual is evaluated on $\mathcal{T}$. Whenever an improved solution is found, its performance is additionally assessed on the validation set $\mathcal{V}$. To mitigate overfitting, we adopt an early stopping strategy: if the validation performance deteriorates, the update is discarded.
  
  The process repeats until a time limit $t_{\max}$ is reached (set to 2 CPU hours). The algorithm returns the best weight vector $w^\ast$, corresponding to the neural network $\mathcal{N}(w^\ast)$ that induces the most effective heuristic $h_w$.
  
@@ -366,35 +368,33 @@ In this section, we evaluate the performance of two approaches:
 All methods are implemented in C++ and compiled using the GCC compiler. Experiments are conducted on the VEGA HPC system (IZUM, Maribor, Slovenia), consisting of 960 compute nodes equipped with AMD EPYC 7H12 CPUs at 2.35\,GHz. All experiments are executed in a single-threaded setting.
 
 \medskip
-\noindent\textbf{Benchmark Instances.}
-We consider two types of benchmark sets.
+\subsection{Benchmark Instances}
 
-\emph{Synthetic instances.}
-The first set, denoted \textsc{Random}, is borrowed from~\cite{djukanovic2026_eurocast}. For each combination of parameters $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 instances are generated, resulting in a total of 320 problem instances.
+We consider two types of benchmark sets. {Synthetic instances}, denoted by \textsc{Random}, are generated in ~\cite{djukanovic2026_eurocast}. For each combination of $n \in \{50, 100, 200, 500\}$, $m \in \{2, 3, 5, 10\}$, and $|\Sigma| \in \{2, 4\}$, 10 instances are generated, resulting in a total of 320 problem instances.
 
-\emph{Biologically motivated instances.}
-To complement synthetic data, we introduce a new set of instances with data-driven gap constraints derived from biological sequence properties. The goal is to model context-dependent positional importance using thermodynamic stability information, inspired by sequence alignment scoring and weighted subsequence models.
+{Biologically motivated instances} are generated to
+ complement synthetic data. These instances involve data-driven gap constraints derived from biological sequence properties. The goal is to model context-dependent positional importance using thermodynamic stability information, inspired by sequence alignment scoring and weighted subsequence models.
 
 We employ a dinucleotide-based structural model derived from nearest-neighbor thermodynamic interactions~\cite{santalucia1998unified,watkins2005nearest}. The stability of adjacent nucleotides is captured by the function
 \[
 f(s[i], s[i+1]) = -\Delta G(s[i], s[i+1]),
 \]
-where $\Delta G$ denotes the free energy associated with the dinucleotide pair. The corresponding weights are given by:
+where $\Delta G$ denotes the free energy associated with the dinucleotide pair. According to~\cite{santalucia1998unified}, the corresponding weights are estimated by the following values:
 
-\[
+\begin{align*}
 \texttt{DINUC\_WEIGHT} = \{
-\text{AA}:1.00, \text{TT}:1.00,\\
-\text{AT}:0.88, \text{TA}:0.58,\\ \newline
-\text{CA}:1.45, \text{TG}:1.45,\\
-\text{GT}:1.44, \text{AC}:1.44,\\ \newline
-\text{CT}:1.28, \text{AG}:1.28,\\
-\text{GA}:1.30, \text{TC}:1.30,\\ \newline
-\text{CG}:2.17, \text{GC}:2.24,\\
-\text{GG}:1.84, \text{CC}:1.84\\
-\}.
-\]
+\text{AA}:1.00, \text{TT}:1.00,&\\
+\text{AT}:0.88, \text{TA}:0.58,&\\ 
+\text{CA}:1.45, \text{TG}:1.45,&\\
+\text{GT}:1.44, \text{AC}:1.44,&\\  
+\text{CT}:1.28, \text{AG}:1.28,&\\
+\text{GA}:1.30, \text{TC}:1.30,&\\  
+\text{CG}:2.17, \text{GC}:2.24,&\\
+\text{GG}:1.84, \text{CC}:1.84&\\
+\}
+\end{align*}
 
-To ensure consistency with the directional nature of gap constraints, we define a \emph{causal} positional contribution:
+To ensure consistency with the directional nature of gap constraints, we define a \emph{causal} positional contribution by
 \[
 f^s_k =
 \begin{cases}
@@ -411,42 +411,41 @@ I^s(i) = \sum_{k=\max(1,i-r)}^{i} e^{-\lambda (i-k)} \cdot f^s_k,
 \]
 where $r$ is the influence radius and $\lambda$ is a decay factor. This captures the cumulative structural context preceding each position.
 
-To normalize influence values, we apply:
+To normalize influence values, we apply
 \[
 \hat{I}^{(j)}_i = \frac{I^{(j)}_i - \min(I^{(j)})}{\max(I^{(j)}) - \min(I^{(j)}) + \epsilon} \in [0,1],
 \]
-and derive gap constraints via:
+and derive gap constraints via
 \[
-w^{(j)}_i = w_{\min} + (w_{\max} - w_{\min}) \cdot \hat{I}^{(j)}_i.
+\text{Gap}_i[j] = w_{\min} + (w_{\max} - w_{\min}) \cdot \hat{I}^{(j)}_i.
 \]
 
 This mapping assigns larger gaps to structurally stable regions and smaller gaps to less stable ones, reflecting their differing flexibility for matching. In our experiments, we set $w_{\min}=1$, $w_{\max}=10$, $r=10$, and $\lambda=0.5$.
 
-The resulting generator produces instances with realistic structural dependencies and controlled heterogeneity.
+%The resulting generator produces instances with realistic structural dependencies and controlled heterogeneity.
 
 \medskip
 \noindent
 To evaluate performance on real-world data, we use the well-known LCS benchmark sets \textsc{Rat} and \textsc{Virus}~\cite{DJUKANOVIC2020106499}. For each sequence in these datasets, gap constraints are generated using the above procedure. We restrict attention to instances with $|\Sigma|=4$, as larger alphabets (e.g., $|\Sigma|=20$) lead to trivial solutions under gap constraints and are less informative.
 
-The resulting dataset, denoted \textsc{Real}, consists of 20 instances (10 from each benchmark). All sequences have length 600, while the number of sequences varies from $m=10$ to $m=200$.
+The resulting dataset, denoted \textsc{Real}, consists of 20 instances (10 from each benchmark set). All sequences have length 600, while the number of sequences varies from $m=10$ to $m=200$.
 
 
  All benchmark sets are freely available at   
 \url{XX}. \textcolor{red}{TODO: Revise } \\
  
-\textbf{Tuning Process.}
-The parameters of \textsc{Imsbs} are tuned on the benchmark set \textsc{Random} using \texttt{irace}~\cite{perez2014analysis}, with a total budget of 5000 runs (each limited to 30 minutes). The resulting configuration is: $\beta=3000$, $h=\text{UB}$, and $\#\texttt{imbs\_iters}=5000$. For tuning, one instance from each group is selected, resulting in 32 training instances in total. All remaining (less sensitive) parameters are set according to~\cite{djukanovic2026_eurocast}.
+\subsection{Tuning Process}
 
-For a fair comparison, the proposed \textsc{Limsbs-ensemble} inherits the same \textsc{Imsbs} parameter configuration. The learning component is tuned by exploring different neural network architectures, including two-layer and three-layer multi-layer perceptrons with 5 or 10 neurons per layer.
-
-To reduce the computational burden, we restrict the activation function to be identical across all layers, selecting from $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. To analyze the sensitivity with respect to feature design, we define three feature configurations:
+The parameters of \textsc{Imsbs} are tuned on the benchmark set \textsc{Random} using \texttt{irace}~\cite{perez2014analysis}, with a total budget of 5000 runs (each limited to 30 minutes). For tuning, one instance from each group is selected, resulting in 32 training instances in total. All remaining (less sensitive) parameters are fixed to the values reported  in~\cite{djukanovic2026_eurocast}. The produced configuration for \textsc{Imsbs} is $\beta=3000$, $h=\text{UB}$, and $\#\texttt{imbs\_iters}=5000$.
+ 
+For a fair comparison, the proposed \textsc{Limsbs-ensemble} inherits the same parameter configuration obtained for \textsc{Imsbs}. The learning process is tuned by exploring different neural network architectures, including two-layer and three-layer multi-layer perceptrons with 5 or 10 neurons per layer. One learning process per each pre-defined architecture is executed. To reduce the computational burden, we restrict the activation function to be identical across all layers, chosen from the following three: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. To analyze the sensitivity with respect to feature design, we define three feature configurations:
 \begin{itemize}
 	\item $F_1$: 4 features from sequence positions, 4 features from gap constraints, and the subsequence length;
 	\item $F_2$: $F_1$ extended with the alphabet size $|\Sigma|$;
 	\item $F_3$: $F_2$ extended with the number of sequences $m$.
 \end{itemize}
 
-After extensive empirical evaluation, the following configurations are selected for the \textsc{Random} benchmark:
+After extensive empirical evaluation, the following NN configurations are selected for the \textsc{Random} benchmark:
 \begin{itemize}
 	\item $m=2$: architecture (10, 5, 5), activation \texttt{ReLU}, features $F_2$;
 	\item $m=3$: architecture (10, 10, 5), activation \texttt{ReLU}, features $F_2$;
@@ -454,11 +453,9 @@ After extensive empirical evaluation, the following configurations are selected 
 	\item $m=10$: architecture (10, 5, 5), activation \texttt{ReLU}, features $F_2$.
 \end{itemize}
 
-The ensemble parameter is set to $\alpha = 0.45$, except for $m=3$ where $\alpha=0.5$, based on grid search.
+For training the neural heuristic, we use 32 instances for the training $\mathcal{T}$ and 32 for the validation set $\mathcal{V}$, selecting one instance per each group. For each value of $m$, this results in 8 instances used for the learning process in the training phase and 8 instances in the validation phase.   After the heuristic $h_w$ is learned, the ensemble parameter is set to $\alpha = 0.45$, except for $m=3$ where $\alpha=0.5$, based on grid search.
 
-For training the neural heuristic, we use 32 instances for the training set $\mathcal{T}$ and 32 for the validation set $\mathcal{V}$, selecting one instance per group. For each value of $m$, this results in 8 instances used in the learning process (for both, training and validation purposes).
-
-For the \textsc{Real} benchmark, we employ the same NN architecture as in the $m=10$ case from \textsc{Random}. This choice allows us to evaluate the robustness of the learned heuristic on structurally different instances with a larger number of sequences ($m \geq 10$). The \textsc{Imsbs} parameters remain unchanged, and follows those used to test on the set \textsc{Random}.  
+For the \textsc{Real} benchmark, we employ the same NN architecture as in the $m=10$ case for the \textsc{Random} benchmark set. This choice allows us to evaluate the robustness of the learned heuristic on structurally different instances with a larger number of sequences ($m \geq 10$). The \textsc{Imsbs} parameters remain unchanged, and follows those used to test on the set \textsc{Random}.  
 
 \medskip
 \subsection{Results on Benchmark Set \textsc{Random}}
