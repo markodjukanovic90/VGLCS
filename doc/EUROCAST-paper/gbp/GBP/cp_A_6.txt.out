@@ -1,0 +1,21 @@
+Status: Optimal
+Burning number: 3.0
+Ignitions:
+  Time 1: ignite vertex 12
+  Time 2: ignite vertex 9
+  Time 3: ignite vertex 17
+  Time 4: ignite vertex 11
+  Time 5: ignite vertex 11
+  Time 6: ignite vertex 11
+  Time 7: ignite vertex 14
+  Time 8: ignite vertex 9
+  Time 9: ignite vertex 3
+  Time 10: ignite vertex 10
+  Time 11: ignite vertex 16
+  Time 12: ignite vertex 1
+  Time 13: ignite vertex 2
+  Time 14: ignite vertex 14
+  Time 15: ignite vertex 6
+  Time 16: ignite vertex 8
+  Time 17: ignite vertex 6
+  Time 18: ignite vertex 2

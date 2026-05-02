@@ -12,6 +12,8 @@
 \usetikzlibrary{shapes.geometric}
 \usepackage{graphicx}
 
+
+
 \tikzset{
 box/.style={
 draw,
@@ -80,7 +82,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 }%slo_ministry.png
 
 \date{}
+
+% Make 
+
+
 \begin{document}
+ 
+	
 \begin{frame}[plain]
     \maketitle
 \end{frame}
@@ -110,7 +118,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         \item \textbf{One of central tasks in computational biology:} 
         \begin{itemize}
         	\item  sequence comparison, finding common motifs between sequences
-          \item compare structurally $\Rightarrow$ something about functionality 
+          \item compare structurally, referring to functionality 
           %\item sequence alignment problems 
        \end{itemize} \vspace{0.4cm}
        
@@ -185,13 +193,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     
    \begin{definition}[The multiple (variable) gapped LCS problem -- MVGLCSP]
         \textbf{Input}: Given is a set of gapped sequences $\{ (s_1, G_{s_1}), \ldots, (s_m, G_{s_m}) \}$. \\
-        \textbf{Task}: Find the longest  subsequence $\tilde{s}$ so that 
+        \textbf{Task}: Find the longest  sequence $\tilde{s}$ so that 
         \begin{itemize}
             \item  $\tilde{s}$ is common subusequence of each $s_i$
             \item $\tilde{s}$ fulfills all gap constraints $G_{s_i}$ ($i=1, \ldots, m$)
         \end{itemize}
     \end{definition}
-    \textbf{Note}: when $G_{s_i}=n$ (the length of longest sequence) $\Rightarrow$ VGLCSP = LCSP.
+    \textbf{Note}: When $G_{s_i}=n$ (length of longest sequence) $\Rightarrow$ VGLCSP = LCSP.
 \end{frame}
 
 \begin{frame}{Literature \& Motivation for VGLCSP}
@@ -457,13 +465,13 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		
 	 		\node[block, below=of init] (expandR) {Initial generation of sources:\\ detect \textbf{closest matches} for each $a \in \Sigma$ from the top positions};
 	 		
-	 		\node[decision, below=of expandR] (while) {A termination criterion has fulfilled};
+	 		\node[decision, below=of expandR] (while) {A termination criterion not met};
 	 		
 	 		\node[block, below=of while] (selectL) {Select subset $\mathcal{L} \subseteq \mathcal{R}$\\
 	 			(priority by $h'$)};
 	 		
 	 		\node[block, below=of selectL] (backward) {\textbf{Refinement} of $v \in \mathcal{L}$\\
-	 			(Rooted BS on reversed subproblem w.r.t.\ $p^{L,v}$)};
+	 			(Rooted BS on reversed prefixes w.r.t.\ $p^{L,v}$)};
 	 		
 	 		\node[block, below=of backward] (forward) {\textbf{Forward} BS from $\mathcal{L}$ as initial beam\\
 	 			(Rooted Beam Search)};
@@ -480,7 +488,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		\draw[arrow] (init) -- (expandR);
 	 		\draw[arrow] (expandR) -- (while);
 	 		
-	 		\draw[arrow] (while) -- node[right] {no} (selectL);
+	 		\draw[arrow] (while) -- node[right] {yes} (selectL);
 	 		\draw[arrow] (selectL) -- (backward);
 	 		\draw[arrow] (backward) -- (forward);
 	 		\draw[arrow] (forward) -- (updateBest);
@@ -494,7 +502,7 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	 		% Exit arrow
 	 		\draw[arrow]
 	 		(while.west) -- ++(-1.8,0)
-	 		node[left] {yes}
+	 		node[left] {no}
 	 		|- (end.west);
 	 		
 	 	\end{tikzpicture}
@@ -528,9 +536,9 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         	%\end{equation}
         	\vspace{0.3cm}
     	  	\item   $\textrm{UB}_2$: \textit{Character Frequency Alignment} score
-    	  	\begin{itemize}
-    	  		\item sum up the maximum possible occurrences of each  letters in remaining subsequences
-    	  	\end{itemize}
+    	  %	\begin{itemize}
+    	  %		\item sum up the maximum possible occurrences of each  letters in remaining subsequences
+    	  %	\end{itemize}
     	   
     	   %\begin{equation}
     	   %	    \textrm{UB}_2(\mathbf{v}) =  l^v + \sum_{\sigma \in \Sigma} 
@@ -619,8 +627,8 @@ $^6$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	\begin{itemize}
 		\item  $ \textbf{\text{(Baseline)}}\ \textsc{Bs} \Longrightarrow  \textcolor{red}{\beta = 10,000}$ and $\textcolor{red}{h = h_{\text{prob}}}$
 	    \vspace{0.3cm}
-	    \item $ {\textsc{Imsbs}} \Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$,  $\textcolor{red}{\beta = 500},$ and $\textcolor{red}{\#iter\_imsbs = 100}$ \\ \vspace{0.3cm}
-	    \item {\textsc{Imsbs-Greedy}}:  $\textcolor{red}{\beta=1}$, $\textcolor{red}{\#iter\_imsbs=10,000}$ %(comparable or a bit larger avg. runtime to that of \textsc{Imsbs})
+	    \item $ {\textsc{Imsbs}} \Longrightarrow \textcolor{red}{h = \textrm{UB}_2}$,  $\textcolor{red}{\beta = 500},$  $\textcolor{red}{\#iter\_imsbs = 100}$ \\ \vspace{0.3cm}
+	    \item {\textsc{Imsbs-Greedy}}:  $\textcolor{red}{\beta=1}$, $\textcolor{red}{h=\text{UB}_2}$,  $\textcolor{red}{\#iter\_imsbs=10,000}$ %(comparable or a bit larger avg. runtime to that of \textsc{Imsbs})
    \end{itemize} 
 \end{frame}
 

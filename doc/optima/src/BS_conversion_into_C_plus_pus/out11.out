@@ -1,0 +1,17 @@
+BS parameters:
+ input       = mglcs_3_200_2_9.txt
+ beam_width  = 10
+ heuristic   = h5
+ max_iters   = 1000
+ time_limit  = 100 s
+
+=== Beam Search Result ===
+Best sequence: ATA
+Length       : 3
+Runtime (s)  : 0.000193444
+Feasible     : YES
+Steps:
+( 0 6 1 ) ( 1 7 2 ) ( 2 8 3 ) 
+ Steps backward :
+( 0 6 1 ) ( 1 7 2 ) 
+BS backward sequence: AT

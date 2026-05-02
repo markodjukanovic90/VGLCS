@@ -1,0 +1,98 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{adamson2023longest}
+Adamson, D., Kosche, M., Ko{\ss}, T., Manea, F., Siemer, S.: Longest common
+  subsequence with gap constraints. In: International Conference on
+  Combinatorics on Words. pp. 60--76. Springer (2023)
+
+\bibitem{amari1993backpropagation}
+Amari, S.i.: Backpropagation and stochastic gradient descent method.
+  Neurocomputing  \textbf{5}(4-5),  185--196 (1993)
+
+\bibitem{bishop1994neural}
+Bishop, C.M.: Neural networks and their applications. Review of scientific
+  instruments  \textbf{65}(6),  1803--1832 (1994)
+
+\bibitem{djukanovic2026_eurocast}
+Djukanovic, M., Balaban, N., Blum, C., Kartelj, A., Dzeroski, S., Zebec, Z.: On
+  solving a generalized variable gapped longest common subsequence problem. In:
+  Proceedings of the 20th International Conference on Computer Aided Systems
+  Theory. Springer, 2026. Accepted
+
+\bibitem{DJUKANOVIC2020106499}
+Djukanovic, M., Raidl, G., Blum, C.: Finding longest common subsequences: New
+  anytime {A*} search results. Applied Soft Computing  \textbf{95},  106499
+  (2020)
+
+\bibitem{djukanovic2025learning}
+Djukanovi{\'c}, M., Reixach, J., Nikolikj, A., Eftimov, T., Kartelj, A., Blum,
+  C.: A learning search algorithm for the restricted longest common subsequence
+  problem. Expert Systems with Applications  \textbf{284},  127731 (2025)
+
+\bibitem{gurney2018introduction}
+Gurney, K.: An introduction to neural networks. CRC press (2018)
+
+\bibitem{lafond2023longest}
+Lafond, M., Lai, W., Liyanage, A., Zhu, B.: The longest subsequence-repeated
+  subsequence problem. In: International Conference on Combinatorial
+  Optimization and Applications. pp. 446--458. Springer (2023)
+
+\bibitem{lainscsek2015delay}
+Lainscsek, C., Sejnowski, T.J.: Delay differential analysis of time series.
+  Neural computation  \textbf{27}(3),  594--614 (2015)
+
+\bibitem{lin2002longest}
+Lin, G., Chen, Z.Z., Jiang, T., Wen, J.: The longest common subsequence problem
+  for sequences with nested arc annotations. Journal of Computer and System
+  Sciences  \textbf{65}(3),  465--480 (2002)
+
+\bibitem{mienye2024recurrent}
+Mienye, I.D., Swart, T.G., Obaido, G.: Recurrent neural networks: A
+  comprehensive review of architectures, variants, and applications.
+  Information  \textbf{15}(9), ~517 (2024)
+
+\bibitem{peng2014finding}
+Peng, Y.H., Yang, C.B.: Finding the gapped longest common subsequence by
+  incremental suffix maximum queries. Information and Computation
+  \textbf{237},  95--100 (2014)
+
+\bibitem{penga2011longest}
+Penga, Y.H., Yangb, C.B.: The longest common subsequence problem with variable
+  gapped constraints. In: Proceedings of the 28th Workshop on Combinatorial
+  Mathematics and Computation Theory, Penghu, Taiwan. pp. 17--23 (2011)
+
+\bibitem{perez2014analysis}
+P{\'e}rez~C{\'a}ceres, L., L{\'o}pez-Ib{\'a}{\~n}ez, M., St{\"u}tzle, T.: An
+  analysis of parameters of irace. In: European Conference on Evolutionary
+  Computation in Combinatorial Optimization. pp. 37--48. Springer (2014)
+
+\bibitem{reixach2024neural}
+Reixach, J., Blum, C., Djukanovi{\'c}, M., Raidl, G.R.: A neural network based
+  guidance for a brkga: An application to the longest common square subsequence
+  problem. In: European Conference on Evolutionary Computation in Combinatorial
+  Optimization (Part of EvoStar). pp. 1--15. Springer (2024)
+
+\bibitem{santalucia1998unified}
+SantaLucia~Jr, J.: A unified view of polymer, dumbbell, and oligonucleotide dna
+  nearest-neighbor thermodynamics. Proceedings of the National Academy of
+  Sciences  \textbf{95}(4),  1460--1465 (1998)
+
+\bibitem{watkins2005nearest}
+Watkins~Jr, N.E., SantaLucia~Jr, J.: Nearest-neighbor thermodynamics of
+  deoxyinosine pairs in dna duplexes. Nucleic acids research  \textbf{33}(19),
+  6258--6267 (2005)
+
+\bibitem{wiseman2016sequence}
+Wiseman, S., Rush, A.M.: Sequence-to-sequence learning as beam-search
+  optimization. In: Proceedings of the 2016 conference on empirical methods in
+  natural language processing. pp. 1296--1306 (2016)
+
+\bibitem{wu2021learning}
+Wu, Y., Song, W., Cao, Z., Zhang, J., Lim, A.: Learning improvement heuristics
+  for solving routing problems. IEEE transactions on neural networks and
+  learning systems  \textbf{33}(9),  5057--5069 (2021)
+
+\end{thebibliography}

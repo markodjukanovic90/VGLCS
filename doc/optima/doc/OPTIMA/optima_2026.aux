@@ -1,0 +1,80 @@
+\relax 
+\citation{DJUKANOVIC2020106499}
+\citation{lafond2023longest,lin2002longest}
+\@writefile{toc}{\contentsline {title}{Neuro-Evolved Heuristics for Variable Gapped Common Subsequence Identification}{1}{}\protected@file@percent }
+\@writefile{toc}{\authcount {5}}
+\@writefile{toc}{\contentsline {author}{Marko Djukanović \and Christian Blum \and Aleksandar Kartelj \and Sašo Džeroski \and Žiga Zebec }{1}{}\protected@file@percent }
+\citation{penga2011longest}
+\citation{adamson2023longest}
+\citation{djukanovic2026_eurocast}
+\citation{lainscsek2015delay}
+\citation{peng2014finding}
+\citation{djukanovic2026_eurocast}
+\citation{DJUKANOVIC2020106499}
+\citation{djukanovic2025learning,reixach2024neural,wu2021learning}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{}\protected@file@percent }
+\citation{djukanovic2026_eurocast}
+\@writefile{toc}{\contentsline {paragraph}{Preliminaries.}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Iterative Multi-Source Beam Search for the VGLCSP}{3}{}\protected@file@percent }
+\newlabel{sec:imsbs}{{2}{3}}
+\citation{wiseman2016sequence}
+\citation{gurney2018introduction,bishop1994neural}
+\citation{mienye2024recurrent}
+\citation{djukanovic2026_eurocast}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Learning to Guide the Search}{4}{}\protected@file@percent }
+\newlabel{sec:ffnn_guidance}{{3}{4}}
+\citation{amari1993backpropagation}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces State graph for $s_1=\texttt  {ATGGAAAA}$ and $s_2=\texttt  {ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$. The state graph consists of two disconnected components. Starting from $(1,1)$ leads to a suboptimal solution, while starting from $(5,5)$ yields the optimal subsequence $\texttt  {AAAA}$.}}{5}{}\protected@file@percent }
+\newlabel{fig:state_graph_vglcs_example}{{1}{5}}
+\citation{djukanovic2026_eurocast}
+\newlabel{eq:training_problem_optimization}{{1}{6}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces GA-Based Learning of a Beam Search Heuristic}}{7}{}\protected@file@percent }
+\newlabel{alg:learning_mechanism}{{1}{7}}
+\citation{djukanovic2026_eurocast}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Enhanced learning framework integrating a Genetic Algorithm with IMSBS. The GA evolves neural network weights, which define a heuristic used within the beam search. Training instances guide optimization, while validation instances monitor generalization. The feedback loop updates the population based on solution quality.}}{8}{}\protected@file@percent }
+\newlabel{fig:ga_imsbs}{{2}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}An ensemble approach}{8}{}\protected@file@percent }
+\citation{djukanovic2026_eurocast}
+\citation{djukanovic2026_eurocast}
+\citation{santalucia1998unified,watkins2005nearest}
+\citation{santalucia1998unified}
+\newlabel{eq:ensemble_heuristic}{{2}{9}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experimental Evaluation}{9}{}\protected@file@percent }
+\newlabel{sec:experiments}{{4}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Benchmark Instances}{9}{}\protected@file@percent }
+\citation{DJUKANOVIC2020106499}
+\citation{perez2014analysis}
+\citation{djukanovic2026_eurocast}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Tuning Process}{11}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Results on Benchmark Set \textsc  {Random}}{11}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Comparison of objective values between \textsc  {Imsbs} and \textsc  {Limsbs}-ensemble on benchmark set \textsc  {Random}. Best results per instance category are displayed in bold.}}{12}{}\protected@file@percent }
+\newlabel{tab:preliminary_results}{{1}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Statistical comparison between \textsc  {Limsbs-ensemble} and \textsc  {Imsbs} using the Wilcoxon signed-rank test (one-sided).}}{12}{}\protected@file@percent }
+\newlabel{tab:statistical_test}{{2}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Results on Benchmark Set \textsc  {Real}}{12}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Comparison of \textsc  {Limsbs}-ensemble and \textsc  {Imsbs} on benchmark set \textsc  {Real}.}}{13}{}\protected@file@percent }
+\newlabel{tab:real_results}{{3}{13}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusions}{13}{}\protected@file@percent }
+\newlabel{sec:conclusions}{{5}{13}}
+\bibstyle{splncs04}
+\bibdata{bib}
+\bibcite{adamson2023longest}{1}
+\bibcite{amari1993backpropagation}{2}
+\bibcite{bishop1994neural}{3}
+\bibcite{djukanovic2026_eurocast}{4}
+\bibcite{DJUKANOVIC2020106499}{5}
+\bibcite{djukanovic2025learning}{6}
+\bibcite{gurney2018introduction}{7}
+\bibcite{lafond2023longest}{8}
+\bibcite{lainscsek2015delay}{9}
+\bibcite{lin2002longest}{10}
+\bibcite{mienye2024recurrent}{11}
+\bibcite{peng2014finding}{12}
+\bibcite{penga2011longest}{13}
+\bibcite{perez2014analysis}{14}
+\bibcite{reixach2024neural}{15}
+\bibcite{santalucia1998unified}{16}
+\bibcite{watkins2005nearest}{17}
+\bibcite{wiseman2016sequence}{18}
+\bibcite{wu2021learning}{19}
+\gdef \@abspage@last{15}

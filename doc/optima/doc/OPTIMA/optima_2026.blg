@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: optima_2026.aux
+The style file: splncs04.bst
+Database file #1: bib.bib
+Name 3 in "Djukanovic, Marko and Balaban, Nikola and Blum, Christian, and Kartelj, Aleksandar, and Dzeroski, Saso and Zebec, Ziga" has a comma at the end for entry djukanovic2026_eurocast
+while executing---line 1503 of file splncs04.bst
+Name 4 in "Djukanovic, Marko and Balaban, Nikola and Blum, Christian, and Kartelj, Aleksandar, and Dzeroski, Saso and Zebec, Ziga" has a comma at the end for entry djukanovic2026_eurocast
+while executing---line 1503 of file splncs04.bst
+Name 3 in "Djukanovic, Marko and Balaban, Nikola and Blum, Christian, and Kartelj, Aleksandar, and Dzeroski, Saso and Zebec, Ziga" has a comma at the end for entry djukanovic2026_eurocast
+while executing---line 1540 of file splncs04.bst
+Name 4 in "Djukanovic, Marko and Balaban, Nikola and Blum, Christian, and Kartelj, Aleksandar, and Dzeroski, Saso and Zebec, Ziga" has a comma at the end for entry djukanovic2026_eurocast
+while executing---line 1540 of file splncs04.bst
+Warning--empty year in djukanovic2026_eurocast
+You've used 19 entries,
+            2850 wiz_defined-function locations,
+            723 strings with 8421 characters,
+and the built_in function-call counts, 11905 in all, are:
+= -- 1029
+> -- 323
+< -- 28
++ -- 141
+- -- 114
+* -- 735
+:= -- 1454
+add.period$ -- 30
+call.type$ -- 19
+change.case$ -- 128
+chr.to.int$ -- 0
+cite$ -- 20
+duplicate$ -- 1052
+empty$ -- 1064
+format.name$ -- 129
+if$ -- 2655
+int.to.chr$ -- 0
+int.to.str$ -- 19
+missing$ -- 200
+newline$ -- 63
+num.names$ -- 38
+pop$ -- 362
+preamble$ -- 1
+purify$ -- 95
+quote$ -- 0
+skip$ -- 380
+stack$ -- 0
+substring$ -- 770
+swap$ -- 631
+text.length$ -- 28
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 74
+warning$ -- 1
+while$ -- 104
+width$ -- 21
+write$ -- 197
+(There were 4 error messages)

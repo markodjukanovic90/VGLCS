@@ -1,0 +1,5 @@
+Time	Generations	Validation value
+0.705074	0	27
+0.939617	0	28
+7.72186	7	29
+13.5492	12	29
