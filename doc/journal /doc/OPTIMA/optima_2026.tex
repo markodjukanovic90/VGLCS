@@ -96,7 +96,7 @@ Furthermore, we design an ensemble heuristic that combines the learned heuristic
 Finally, to address the lack of realistic benchmarks, we introduce new problem instances derived from biologically motivated datasets, augmented with data-driven gap constraints.
 
 \medskip
-\noindent\textbf{Contributions.} The main contributions of this work are:
+\noindent\textit{Contributions.} The main contributions of this work are:
 \begin{itemize}
 	\item A neuro-evolutionary framework integrated for learning heuristics in VGLCSP.
 	\item An ensemble heuristic combining learned and hand-crafted guidance.
@@ -122,7 +122,7 @@ Unlike the classical LCSP, the VGLCSP admits multiple (potentially exponentially
 
 This observation motivates the IMSBS framework, which operates over a dynamically generated set of root nodes explored iteratively. At each iteration, beam search (BS) is applied to selected root nodes. BS is a breadth-first heuristic search strategy~\cite{wiseman2016sequence} that expands a limited number of nodes per level, controlled by the beam width $\beta$, and guided by a heuristic function $h$.
 
-In IMSBS, node selection relies on an upper-bound heuristic defined as
+In the original IMSBS, node selection relies on an upper-bound heuristic defined as
 \[
 \texttt{UB}(v)= l^v + \sum_{a \in \Sigma} \min_{i=1,\ldots,m} |s_i[p^{L,v}_i, |s_i|]|_a,
 \]
@@ -292,7 +292,7 @@ To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Alg
 
 \begin{figure}[!ht]
 	\centering
-	\scalebox{0.55}{
+	\scalebox{0.65}{
 		\begin{tikzpicture}[
 			box/.style={draw, rounded corners=2mm, align=center, minimum width=3.4cm, minimum height=1cm, fill=blue!5},
 			smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.8cm, minimum height=0.9cm, fill=green!5},
@@ -322,7 +322,7 @@ To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Alg
 			
 			% --- Arrows ---
 			\draw[arrow] (ga) -- node[right]{weights} (nn);
-			\draw[arrow] (nn) -- node[right]{heuristic} (bs);
+			\draw[arrow] (nn) -- node[right]{heuristic guidance} (bs);
 			
 			\draw[arrow] (train) -- (bs);
 			\draw[dashedarrow] (val) -- node[above]{monitoring} (bs);
@@ -390,8 +390,7 @@ where $\Delta G$ denotes the free energy associated with the dinucleotide pair. 
 \text{CT}:1.28, \text{AG}:1.28,&\\
 \text{GA}:1.30, \text{TC}:1.30,&\\  
 \text{CG}:2.17, \text{GC}:2.24,&\\
-\text{GG}:1.84, \text{CC}:1.84&\\
-\}
+\text{GG}:1.84, \text{CC}:1.84&\}
 \end{align*}
 
 To ensure consistency with the directional nature of gap constraints, we define a \emph{causal} positional contribution by
@@ -462,7 +461,7 @@ For the \textsc{Real} benchmark, we employ the same NN architecture as in the $m
 
 \input{results_random.tex}
 
-Table~\ref{tab:preliminary_results} reports the average results over 10 instances per group. The table is organized into two parts: instance characteristics and performance metrics for \textsc{Limsbs-ensemble} and \textsc{Imsbs}.
+Table~\ref{tab:preliminary_results} reports the average results over 10 instances per group for both competitor algorithms. The table is organized into two parts: instance characteristics given by the first three columns followed by two columns reporting the performance metrics of \textsc{Limsbs-ensemble} and \textsc{Imsbs}, respectively.
 
 To assess statistical significance, we perform a one-sided Wilcoxon signed-rank test on paired instances (Table~\ref{tab:statistical_test}).
 
@@ -470,7 +469,7 @@ To assess statistical significance, we perform a one-sided Wilcoxon signed-rank 
 	\centering
 	\caption{Statistical comparison between \textsc{Limsbs-ensemble} and \textsc{Imsbs} using the Wilcoxon signed-rank test (one-sided).}
 	\label{tab:statistical_test}
-	\scalebox{0.85}{
+	\scalebox{0.9}{
 		\begin{tabular}{lccc}
 			\hline
 			\textbf{Comparison} & \textbf{Wins / Ties / Losses} & \textbf{p-value} & \textbf{Conclusion} \\
@@ -480,28 +479,32 @@ To assess statistical significance, we perform a one-sided Wilcoxon signed-rank 
 			Large instances ($m = 5,10$)   & 10 / 3 / 3 & $< 0.05$ & Significant improvement \\
 			\hline
 	\end{tabular}}
-	\vspace{-0.4cm}
+
 \end{table}
 
-The results indicate a statistically significant improvement of \textsc{Limsbs-ensemble} over \textsc{Imsbs}. Out of 32 instances, \textsc{Limsbs-ensemble} achieves better performance in 20 cases, ties in 7 cases, and is outperformed in only 5 cases.
+The following conclusions are drawn from these results. 
+\begin{itemize}
+	\item  Out of 32 instances, \textsc{Limsbs-ensemble} achieves better performance over \textsc{Imsbs} in 20 cases, ties are occurred in 7 cases, and in only 5 cases the winner is \textsc{Imsbs}.
+	\item The performed statistical evaluation suggests that there is a statistically significant improvement of \textsc{Limsbs-ensemble} over \textsc{Imsbs}.
+\end{itemize}
 
 \medskip
 \subsection{Results on Benchmark Set \textsc{Real}}
 
 \input{results_real.tex}
 
-Table~\ref{tab:real_results} summarizes the results, including solution quality, runtime ($t$ in seconds), and reference LCS values from the literature (LCS$^*$). The following observations can be made:
+Table~\ref{tab:real_results} summarizes the results, including solution quality and runtime ($t$ in seconds) for both approaches; additionally, reference LCS values from the literature (LCS$^*$) is also reported. The following observations are drawn from these results.
 
 \begin{itemize}
-	\item \textbf{Solution quality.} \textsc{Limsbs-ensemble} outperforms \textsc{Imsbs} in 15 out of 20 instances, with the remaining 5 resulting in ties. No instance favors \textsc{Imsbs}, indicating consistent superiority of the proposed method.
+	\item \textit{Solution quality.} \textsc{Limsbs-ensemble} outperforms \textsc{Imsbs} in 15 out of 20 instances, with the remaining 5 resulting in ties. No instance favors \textsc{Imsbs}, indicating consistent superiority of the proposed method.
 	
-	\item \textbf{Magnitude of improvement.} The average solution quality increases from 9.9 (\textsc{Imsbs}) to 11.8 (\textsc{Limsbs-ensemble}), corresponding to an average improvement of approximately 19\%. Median values (5 vs.\ 4) confirm that gains are not driven by outliers.
+	\item \textit{Magnitude of improvement.} The average solution quality increases from 9.9 (\textsc{Imsbs}) to 11.8 (\textsc{Limsbs-ensemble}), corresponding to an average improvement of approximately 19\%. Median values (5 vs.\ 4) confirm that gains are not driven by outliers.
 	
-	\item \textbf{Instance difficulty.} The improvements are more pronounced on challenging instances (e.g., virus datasets), where substantial gains are observed. Ties typically occur on simpler instances with low objective values.
+	\item \textit{Instance difficulty.} The improvements are more pronounced on challenging instances (e.g., \textsc{Virus} datasets), where substantial gains are observed. Ties typically occur on simpler instances with low objective values.
 	
-	\item \textbf{Runtime.} The computational effort of both approaches is comparable. While \textsc{Imsbs} is slightly faster on average, the differences are not consistent, and \textsc{Limsbs-ensemble} is competitive in most cases.
+	\item \textit{Runtime.} The computational effort of both approaches is comparable. While \textsc{Imsbs} is slightly faster on average, the differences are not consistent, and \textsc{Limsbs-ensemble} is competitive in most cases.
 	
-	\item \textbf{Impact of gap constraints.} Compared to unconstrained LCS values from the literature, the introduction of gap constraints significantly reduces achievable subsequence lengths. This effect is particularly strong for large $m$ (e.g., $m \geq 60$), where feasible solutions become highly restricted.
+	\item \textit{Impact of gap constraints.} Compared to unconstrained LCS values from the literature, the introduction of gap constraints significantly reduces achievable subsequence lengths. This effect is particularly strong for large $m$ (e.g., $m \geq 60$), where feasible solutions become highly restricted, the search space reduced, while the number of root nodes quickly  increases. 
 \end{itemize}
 
 Overall, the results demonstrate that \textsc{Limsbs-ensemble} provides a consistent and substantial improvement in solution quality over \textsc{Imsbs}, while maintaining comparable computational efficiency. This makes it a preferable choice when solution quality is the primary objective.
@@ -513,8 +516,7 @@ This paper addressed the Variable Gapped Longest Common Subsequence Problem (VGL
 
 The heuristic is represented by a neural network with a predefined architecture, whose parameters are optimized via a biased random-key genetic algorithm in a neuro-evolutionary setting. To further enhance robustness, we introduced an ensemble heuristic that combines the learned heuristic with the best-performing hand-crafted heuristic from the literature. This hybrid guidance mechanism is integrated into IMSBS to improve search efficiency and solution quality. Experimental results on both synthetic benchmarks and newly introduced biologically motivated instances demonstrate that the proposed ensemble heuristic consistently outperforms the baseline hand-crafted heuristics integrated into \textsc{IMSBS}. In particular, the improvements are most pronounced on challenging instances with complex gap structures, confirming the effectiveness of learning-guided search in this domain.
 
-Future work will focus on extending the approach to protein sequence datasets and larger-scale instances to further assess scalability. Additionally, alternative learning strategies will be explored, including different evolutionary schemes, fitness evaluation criteria beyond mean performance, and improved stopping mechanisms to better control overfitting.
-   
+Future work will focus on extending the approach to protein sequence datasets and larger-scale instances to further assess scalability. Additionally, alternative learning strategies will be explored, including different evolutionary schemes, fitness evaluation criteria beyond mean performance, and improved stopping mechanisms to better control overfitting.\\
    
    \footnotesize{\textbf{Acknowledgments.}    This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
 	
