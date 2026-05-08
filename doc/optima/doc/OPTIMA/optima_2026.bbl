@@ -32,6 +32,16 @@ Djukanovi{\'c}, M., Reixach, J., Nikolikj, A., Eftimov, T., Kartelj, A., Blum,
   C.: A learning search algorithm for the restricted longest common subsequence
   problem. Expert Systems with Applications  \textbf{284},  127731 (2025)
 
+\bibitem{elsaid2019ant}
+ElSaid, A.A., Ororbia, A.G., Desell, T.J.: The ant swarm neuro-evolution
+  procedure for optimizing recurrent networks. arXiv preprint arXiv:1909.11849
+  (2019)
+
+\bibitem{galvan2021neuroevolution}
+Galv{\'a}n, E., Mooney, P.: Neuroevolution in deep neural networks: Current
+  trends and future challenges. IEEE Transactions on Artificial Intelligence
+  \textbf{2}(6),  476--493 (2021)
+
 \bibitem{gurney2018introduction}
 Gurney, K.: An introduction to neural networks. CRC press (2018)
 
@@ -53,6 +63,11 @@ Lin, G., Chen, Z.Z., Jiang, T., Wen, J.: The longest common subsequence problem
 Mienye, I.D., Swart, T.G., Obaido, G.: Recurrent neural networks: A
   comprehensive review of architectures, variants, and applications.
   Information  \textbf{15}(9), ~517 (2024)
+
+\bibitem{ortiz2016neuro}
+Ortiz-Bayliss, J.C., Terashima-Mar{\'\i}n, H., Conant-Pablos, S.E.: A
+  neuro-evolutionary hyper-heuristic approach for constraint satisfaction
+  problems. Cognitive Computation  \textbf{8}(3),  429--441 (2016)
 
 \bibitem{peng2014finding}
 Peng, Y.H., Yang, C.B.: Finding the gapped longest common subsequence by

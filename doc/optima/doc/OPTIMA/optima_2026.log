@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  2 MAY 2026 08:31
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  8 MAY 2026 00:00
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -673,7 +673,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 433--435
 Overfull \hbox (13.71057pt too wide) in paragraph at lines 438--439
 \T1/cmr/m/n/10 The pa-ram-e-ters of \T1/cmr/m/sc/10 Imsbs \T1/cmr/m/n/10 are tu
 ned on the bench-mark set \T1/cmr/m/sc/10 Ran-dom \T1/cmr/m/n/10 us-ing \T1/cmt
-t/m/n/10 irace \T1/cmr/m/n/10 [14],
+t/m/n/10 irace \T1/cmr/m/n/10 [17],
  []
 
 [10] (./results_random.tex
@@ -686,63 +686,69 @@ Overfull \hbox (5.76427pt too wide) in paragraph at lines 63--64
  [][] 
  []
 
-) [11] (./results_real.tex) [12] [13]
-Overfull \hbox (0.7674pt too wide) in paragraph at lines 519--520
+[11]) (./results_real.tex) [12] [13]
+Overfull \hbox (0.7674pt too wide) in paragraph at lines 521--522
 []\T1/cmr/m/n/10 Future work will fo-cus on ex-tend-ing the ap-proach to pro-te
 in se-quence datasets
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 519--520
+Underfull \hbox (badness 10000) in paragraph at lines 521--522
 
  []
 
-(./optima_2026.bbl [14]) [15] (./optima_2026.aux) ) 
+(./optima_2026.bbl [14]
+Underfull \hbox (badness 4001) in paragraph at lines 68--71
+[]\T1/cmr/m/n/9 Ortiz-Bayliss, J.C., Terashima-Marín, H., Conant-Pablos, S.E.: 
+A neuro-
+ []
+
+) [15] (./optima_2026.aux) ) 
 Here is how much of TeX's memory you used:
- 14659 strings out of 479648
- 290533 string characters out of 5886115
- 584312 words of memory out of 5000000
- 32341 multiletter control sequences out of 15000+600000
+ 14662 strings out of 479648
+ 290590 string characters out of 5886115
+ 584318 words of memory out of 5000000
+ 32344 multiletter control sequences out of 15000+600000
  490418 words of font info for 76 fonts, out of 8000000 for 9000
  475 hyphenation exceptions out of 8191
  84i,13n,89p,1100b,848s stack positions out of 5000i,500n,10000p,200000b,80000s
- </home/marko/.texlive2021/t
-exmf-var/fonts/pk/ljfour/jknappen/ec/eccc0900.600pk> </home/marko/.texlive2021/
-texmf-var/fonts/pk/ljfour/jknappen/ec/ecxc1000.600pk> </home/marko/.texlive2021
-/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0700.600pk> </home/marko/.texlive202
-1/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0600.600pk> </home/marko/.texlive20
-21/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti0900.600pk> </home/marko/.texlive2
-021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0800.525pk> </home/marko/.texlive
-2021/texmf-var/fonts/pk/ljfour/jknappen/ec/eccc1000.600pk> </home/marko/.texliv
-e2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk> </home/marko/.texli
-ve2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1000.600pk> </home/marko/.texl
-ive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/marko/.tex
-live2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/marko/.te
-xlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx0900.600pk> </home/marko/.t
-exlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/marko/.
-texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0900.600pk> </home/marko/
-.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </home/marko
-/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk></usr/share/
-texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
-5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></
-usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
-sfonts/symbols/msbm10.pfb>
-Output written on optima_2026.pdf (15 pages, 369450 bytes).
+ </home/marko/.texlive2021/texmf-var/fonts/pk/ljfou
+r/jknappen/ec/ecxc1000.600pk> </home/marko/.texlive2021/texmf-var/fonts/pk/ljfo
+ur/jknappen/ec/eccc0900.600pk> </home/marko/.texlive2021/texmf-var/fonts/pk/ljf
+our/jknappen/ec/ecrm0700.600pk> </home/marko/.texlive2021/texmf-var/fonts/pk/lj
+four/jknappen/ec/ecrm0600.600pk> </home/marko/.texlive2021/texmf-var/fonts/pk/l
+jfour/jknappen/ec/ecti0900.600pk> </home/marko/.texlive2021/texmf-var/fonts/pk/
+ljfour/jknappen/ec/ectt0800.525pk> </home/marko/.texlive2021/texmf-var/fonts/pk
+/ljfour/jknappen/ec/eccc1000.600pk> </home/marko/.texlive2021/texmf-var/fonts/p
+k/ljfour/jknappen/ec/ectt1000.600pk> </home/marko/.texlive2021/texmf-var/fonts/
+pk/ljfour/jknappen/ec/ecti1000.600pk> </home/marko/.texlive2021/texmf-var/fonts
+/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/marko/.texlive2021/texmf-var/font
+s/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/marko/.texlive2021/texmf-var/fon
+ts/pk/ljfour/jknappen/ec/ecbx0900.600pk> </home/marko/.texlive2021/texmf-var/fo
+nts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/marko/.texlive2021/texmf-var/f
+onts/pk/ljfour/jknappen/ec/ecrm0900.600pk> </home/marko/.texlive2021/texmf-var/
+fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </home/marko/.texlive2021/texmf-var
+/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7
+.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.p
+fb>
+Output written on optima_2026.pdf (15 pages, 370679 bytes).
 PDF statistics:
- 717 PDF objects out of 1000 (max. 8388607)
+ 719 PDF objects out of 1000 (max. 8388607)
  156 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)

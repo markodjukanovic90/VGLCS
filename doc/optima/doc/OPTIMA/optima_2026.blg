@@ -12,45 +12,45 @@ while executing---line 1540 of file splncs04.bst
 Name 4 in "Djukanovic, Marko and Balaban, Nikola and Blum, Christian, and Kartelj, Aleksandar, and Dzeroski, Saso and Zebec, Ziga" has a comma at the end for entry djukanovic2026_eurocast
 while executing---line 1540 of file splncs04.bst
 Warning--empty year in djukanovic2026_eurocast
-You've used 19 entries,
+You've used 22 entries,
             2850 wiz_defined-function locations,
-            723 strings with 8421 characters,
-and the built_in function-call counts, 11905 in all, are:
-= -- 1029
-> -- 323
-< -- 28
-+ -- 141
-- -- 114
-* -- 735
-:= -- 1454
-add.period$ -- 30
-call.type$ -- 19
-change.case$ -- 128
+            739 strings with 9019 characters,
+and the built_in function-call counts, 13585 in all, are:
+= -- 1169
+> -- 369
+< -- 32
++ -- 162
+- -- 130
+* -- 842
+:= -- 1662
+add.period$ -- 33
+call.type$ -- 22
+change.case$ -- 145
 chr.to.int$ -- 0
-cite$ -- 20
-duplicate$ -- 1052
-empty$ -- 1064
-format.name$ -- 129
-if$ -- 2655
+cite$ -- 23
+duplicate$ -- 1207
+empty$ -- 1213
+format.name$ -- 148
+if$ -- 3020
 int.to.chr$ -- 0
-int.to.str$ -- 19
-missing$ -- 200
-newline$ -- 63
-num.names$ -- 38
-pop$ -- 362
+int.to.str$ -- 22
+missing$ -- 230
+newline$ -- 72
+num.names$ -- 44
+pop$ -- 414
 preamble$ -- 1
-purify$ -- 95
+purify$ -- 109
 quote$ -- 0
-skip$ -- 380
+skip$ -- 430
 stack$ -- 0
-substring$ -- 770
-swap$ -- 631
-text.length$ -- 28
+substring$ -- 875
+swap$ -- 723
+text.length$ -- 32
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 74
+type$ -- 86
 warning$ -- 1
-while$ -- 104
-width$ -- 21
-write$ -- 197
+while$ -- 119
+width$ -- 24
+write$ -- 226
 (There were 4 error messages)
