@@ -458,7 +458,27 @@ After extensive empirical evaluation, the following NN architectures are selecte
 
 % python3 ../summarize_results.py --results_dir ../runs1/LIMSBS-3000_imbs-iters-5000_num-roots-10\ U10\ 5\ 5\ A2\ F2\ lambdda-0.0 --output LIMSBS-3000_imbs-iters-5000_num-roots-10_U10_5_5_A2_F2_lambdda-0.0.csv
 
-For training the neural heuristic, we use 32 instances for the training $\mathcal{T}$ and 32 for the validation set $\mathcal{V}$, selecting one instance per each group. For each value of $m$, this results in 8 instances used for the learning process in the training phase and 8 instances in the validation phase.   After the heuristic $h_w$ is learned, the ensemble parameter is set to $\alpha = 0.45$, except for $m=3$ where $\alpha=0.5$, based on grid search.
+For training the neural heuristic, we use 32 instances for the training $\mathcal{T}$ and 32 for the validation set $\mathcal{V}$, selecting one instance per each group. For each value of $m$, this results in 8 instances used for the learning process in the training phase and 8 instances in the validation phase.   After the heuristic $h_w$ is learned, the ensemble parameter is set to $\alpha = 0.6$ for $m=2$, $\alpha = 0.5$ for $m=3$, $\alpha = 0.35$ for $m=5$, and $\alpha = 0.15$ for $m=10$, based on grid search, see Figure~\ref{fig:alpha_tuning}.
+
+%alpha_param_m3.png
+
+\begin{figure}[!ht]
+	\centering
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth,height=90pt]{alpha_param_m3.png}
+	%	\caption*{$m=3$}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth,height=90pt]{alpha_param_m10.png}
+		%\caption*{$m=10$}
+	\end{minipage}
+	
+	\caption{Visualization of parameter $\alpha$ tuning for different instance sizes ($m=3$ case (left), and $m=10$ case (right)).}
+	\label{fig:alpha_tuning}
+\end{figure}
 
 For the \textsc{Real} benchmark, we employ the same NN architecture as in the $m=10$ case for the \textsc{Random} benchmark set. This choice allows us to evaluate the robustness of the learned heuristic on structurally different instances with a larger number of sequences ($m \geq 10$). The \textsc{Imsbs} parameters remain unchanged, and follows those used to test on the set \textsc{Random}.  
 
@@ -469,19 +489,19 @@ For the \textsc{Real} benchmark, we employ the same NN architecture as in the $m
 
 Table~\ref{tab:preliminary_results} reports the average results over 10 instances per group for both competitor algorithms. The table is organized into two parts: instance characteristics given by the first three columns followed by two columns reporting the performance metrics of \textsc{Limsbs-ensemble} and \textsc{Imsbs}, respectively.
 
-To assess statistical significance, we perform a one-sided Wilcoxon signed-rank test on paired instances (Table~\ref{tab:statistical_test}).
+To assess statistical significance, we perform a one-sided (one-sided) Wilcoxon signed-rank test on paired instances (Table~\ref{tab:statistical_test}).
 
 \begin{table}[!ht]
 	\centering
-	\caption{Statistical comparison between \textsc{Limsbs-ensemble} and \textsc{Imsbs} using the Wilcoxon signed-rank test (one-sided).}
+	\caption{Statistical comparison between \textsc{Limsbs-ensemble} and \textsc{Imsbs}.}
 	\label{tab:statistical_test}
-	\scalebox{0.9}{
+	\scalebox{0.8}{
 		\begin{tabular}{lccc}
 			\hline
 			\textbf{Comparison} & \textbf{Wins / Ties / Losses} & \textbf{p-value} & \textbf{Conclusion} \\
 			\hline
-			All instances ($m = 2,3,5,10$) & 20 / 7 / 5 & 0.009 & Significant improvement \\
-			Small instances ($m = 2,3$)    & 10 / 4 / 2  & $<0.01$ & Significant improvement \\
+			All instances ($m = 2,3,5,10$) & 20 / 8 / 4 & 0.009 & Significant improvement \\
+			Small instances ($m = 2,3$)    & 10 / 5 / 1  & $<0.01$ & Significant improvement \\
 			Large instances ($m = 5,10$)   & 10 / 3 / 3 & $< 0.05$ & Significant improvement \\
 			\hline
 	\end{tabular}}
@@ -498,7 +518,7 @@ The following conclusions are drawn from these results.
 \subsection{Results on Benchmark Set \textsc{Real}}
 
 \input{results_real.tex}
-
+\textcolor{red}{TODO: update results for LMSBS-ensemble on REAL.}
 Table~\ref{tab:real_results} summarizes the results, including solution quality and runtime ($t$ in seconds) for both approaches; additionally, reference LCS values from the literature (LCS$^*$) is also reported. The following observations are drawn from these results.
 
 \begin{itemize}

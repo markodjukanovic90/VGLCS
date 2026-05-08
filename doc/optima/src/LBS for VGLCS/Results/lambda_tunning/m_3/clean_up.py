@@ -14,7 +14,7 @@ for filepath in glob.glob(os.path.join(input_dir, "*.csv")):
 
     filtered_lines = [
         line for line in lines
-        if "txt_lambda_0" not in line
+        if "txt_lambda_0" in line
     ]
 
     # Overwrite original file
