@@ -472,11 +472,11 @@ For training the neural heuristic, we use 32 instances for the training $\mathca
 	\hfill
 	\begin{minipage}{0.48\textwidth}
 		\centering
-		\includegraphics[width=\linewidth,height=90pt]{alpha_param_m10.png}
+		\includegraphics[width=\linewidth,height=90pt]{alpha_param_m5.png}
 		%\caption*{$m=10$}
 	\end{minipage}
 	
-	\caption{Visualization of parameter $\alpha$ tuning for different instance sizes ($m=3$ case (left), and $m=10$ case (right)).}
+	\caption{Visualization of results for $\alpha$ tuning: $m=3$  (left), and $m=5$ (right).}
 	\label{fig:alpha_tuning}
 \end{figure}
 
@@ -510,7 +510,7 @@ To assess statistical significance, we perform a one-sided (one-sided) Wilcoxon 
 
 The following conclusions are drawn from these results. 
 \begin{itemize}
-	\item  Out of 32 instances, \textsc{Limsbs-ensemble} achieves better performance over \textsc{Imsbs} in 20 cases, ties occur in 7 cases, and in only 5 cases the winner is \textsc{Imsbs}.
+	\item  Out of 32 instances, \textsc{Limsbs-ensemble} achieves better performance over \textsc{Imsbs} in 20 cases, ties occur in 8 cases, and in only 4 cases the winner is \textsc{Imsbs}.
 	\item The performed statistical evaluation suggests that there is a statistically significant improvement of \textsc{Limsbs-ensemble} over \textsc{Imsbs}.
 \end{itemize}
 
@@ -518,22 +518,22 @@ The following conclusions are drawn from these results.
 \subsection{Results on Benchmark Set \textsc{Real}}
 
 \input{results_real.tex}
-\textcolor{red}{TODO: update results for LMSBS-ensemble on REAL.}
+%\textcolor{red}{TODO: update results for LMSBS-ensemble on REAL.}
 Table~\ref{tab:real_results} summarizes the results, including solution quality and runtime ($t$ in seconds) for both approaches; additionally, reference LCS values from the literature (LCS$^*$) is also reported. The following observations are drawn from these results.
 
 \begin{itemize}
-	\item \textit{Solution quality.} \textsc{Limsbs-ensemble} outperforms \textsc{Imsbs} in 15 out of 20 instances, with the remaining 5 resulting in ties. No instance favors \textsc{Imsbs}, indicating consistent superiority of the proposed method.
+	\item \textit{Solution quality.} \textsc{Limsbs-ensemble} outperforms \textsc{Imsbs} in 7 out of 20 instances, with the remaining 13 resulting in ties. No instance favors \textsc{Imsbs}. %, indicating consistent superiority of the proposed method.
 	
-	\item \textit{Magnitude of improvement.} The average solution quality increases from 9.9 (\textsc{Imsbs}) to 11.8 (\textsc{Limsbs-ensemble}), corresponding to an average improvement of approximately 19\%. Median values (5 vs.\ 4) confirm that gains are not driven by outliers.
+	%\item \textit{Magnitude of improvement.} The average solution quality increases from 9.9 (\textsc{Imsbs}) to 11.8 (\textsc{Limsbs-ensemble}), corresponding to an average improvement of approximately 19\%. Median values (5 vs.\ 4) confirm that gains are not driven by outliers.
 	
-	\item \textit{Instance difficulty.} The improvements are more pronounced on challenging instances (e.g., \textsc{Virus} datasets), where substantial gains are observed. Ties typically occur on simpler instances with low objective values.
+	\item \textit{Instance difficulty.} The improvements of \textsc{Limsbs-ensemble} over \textsc{Imsbs} are more pronounced on challenging instances (e.g., \textsc{Virus} datasets), where substantial gains are observed in several occasions. Ties typically occur on more constrained instances (those with a large number of constraints $m$) with low objective values.
 	
 	\item \textit{Runtime.} The computational effort of both approaches is comparable. While \textsc{Imsbs} is slightly faster on average, the differences are not consistent, and \textsc{Limsbs-ensemble} is competitive in most cases.
 	
 	\item \textit{Impact of gap constraints.} Compared to unconstrained LCS values from the literature, the introduction of gap constraints significantly reduces achievable subsequence lengths. This effect is particularly strong for large $m$ (e.g., $m \geq 60$), where feasible solutions become highly restricted, the search space reduced, while the number of root nodes quickly  increases. 
 \end{itemize}
 
-Overall, the results demonstrate that \textsc{Limsbs-ensemble} provides a consistent and substantial improvement in solution quality over \textsc{Imsbs}, while maintaining comparable computational efficiency. This makes it a preferable choice when solution quality is the primary objective.
+Overall, the results demonstrate that \textsc{Limsbs-ensemble} provides a consistent improvement in solution quality over \textsc{Imsbs}, while maintaining comparable computational efficiency. This makes it a preferable choice when solution quality is the primary objective.
 
  
 \section{Conclusions}\label{sec:conclusions}
