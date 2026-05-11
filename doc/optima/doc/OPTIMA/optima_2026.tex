@@ -294,7 +294,7 @@ To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Alg
 
 \begin{figure}[!ht]
 	\centering
-	\scalebox{0.65}{
+	\scalebox{0.67}{
 		\begin{tikzpicture}[
 			box/.style={draw, rounded corners=2mm, align=center, minimum width=3.4cm, minimum height=1cm, fill=blue!5},
 			smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.8cm, minimum height=0.9cm, fill=green!5},
@@ -384,14 +384,14 @@ where $\Delta G$ denotes the free energy associated with the dinucleotide pair. 
 
 \begin{align*}
 \texttt{DINUC\_WEIGHT} = \{
-\text{AA}:1.00, \text{TT}:1.00,&\\
-\text{AT}:0.88, \text{TA}:0.58,&\\ 
-\text{CA}:1.45, \text{TG}:1.45,&\\
-\text{GT}:1.44, \text{AC}:1.44,&\\  
-\text{CT}:1.28, \text{AG}:1.28,&\\
-\text{GA}:1.30, \text{TC}:1.30,&\\  
-\text{CG}:2.17, \text{GC}:2.24,&\\
-\text{GG}:1.84, \text{CC}:1.84&\}
+\texttt{AA}:1.00, \texttt{TT}:1.00,&\\
+\texttt{AT}:0.88, \texttt{TA}:0.58,&\\ 
+\texttt{CA}:1.45, \texttt{TG}:1.45,&\\
+\texttt{GT}:1.44, \texttt{AC}:1.44,&\\  
+\texttt{CT}:1.28, \texttt{AG}:1.28,&\\
+\texttt{GA}:1.30, \texttt{TC}:1.30,&\\  
+\texttt{CG}:2.17, \texttt{GC}:2.24,&\\
+\texttt{GG}:1.84, \text{CC}:1.84&\}
 \end{align*}
 
 To ensure consistency with the directional nature of gap constraints, we define a \emph{causal} positional contribution by
