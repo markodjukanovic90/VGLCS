@@ -430,12 +430,12 @@ Moreover, we used the well-known LCS benchmark sets \textsc{Rat} and \textsc{Vir
 The resulting dataset, denoted \textsc{Real}, consists of 20 instances (10 from each benchmark set). All sequences have length 600, while the number of sequences varies from $m=10$ to $m=200$.
 
 
- All benchmark sets are freely available at   
-\url{XX}. \textcolor{red}{TODO: Revise } \\
+ All benchmark sets with the obtained neural network configurations are freely available at   
+\url{https://github.com/markodjukanovic90/VGLCS\_Neural\_Heuristics}. 
  
 \subsection{Tuning Process}
 
-The parameters of \textsc{Imsbs} are tuned on the benchmark set \textsc{Random} using \texttt{irace}~\cite{perez2014analysis}, with a total budget of 5000 runs (each limited to 30 minutes). For tuning, one instance from each group is selected, resulting in 32 training instances in total. All remaining (less sensitive) parameters are fixed to the values reported  in~\cite{djukanovic2026_eurocast}. The produced configuration for \textsc{Imsbs} is $\beta=3000$, $h=\text{UB}$, and $\#\texttt{imbs\_iters}=5000$.
+The parameters of \textsc{Imsbs} are tuned on the benchmark set \textsc{Random} using \texttt{irace}~\cite{perez2014analysis}, with a total budget of 5000 runs (each limited to 30 minutes). For tuning, one instance from each group is selected, resulting in 32 training instances in total. All remaining (less sensitive) parameters are fixed to the values reported  in~\cite{djukanovic2026_eurocast}. The produced configuration for \textsc{Imsbs} is $\beta=2000$, $h=\text{UB}$, and $\#\texttt{imbs\_iters}=5000$.
  
 For a fair comparison, the proposed \textsc{Limsbs-ensemble} inherits the same parameter configuration obtained for \textsc{Imsbs}. The learning process is tuned by exploring different neural network architectures, including two-layer and three-layer multi-layer perceptrons with 5 or 10 neurons per layer. One learning process per each pre-defined architecture is executed. To reduce the computational burden, we restrict the activation function to be identical across all layers, chosen from the following three: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. To analyze the sensitivity with respect to feature design, we define three feature configurations:
 \begin{itemize}
@@ -539,7 +539,7 @@ The heuristic is represented by a neural network with a predefined architecture,
 
 Future work will focus on extending the approach to protein sequence datasets and larger-scale instances to further assess scalability. Additionally, alternative learning strategies will be explored, including different evolutionary schemes, fitness evaluation criteria beyond mean performance, and improved stopping mechanisms to better control overfitting.\\
    
-   \footnotesize{\textbf{Acknowledgments.}    This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.}
+   \footnotesize{\textbf{Acknowledgments.}    This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.  The authors gratefully acknowledge the SLING consortium for funding this research by providing computing resources of the HPC Vega at the Institute of Information Science (www.izum.si).}
 	
 	\vspace{-0.5cm}
 	
