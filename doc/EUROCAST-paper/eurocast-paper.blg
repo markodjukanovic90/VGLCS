@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: eurocast-paper.aux
+The style file: splncs04.bst
+Database file #1: bib.bib
+I was expecting a `,' or a `}'---line 9 of file bib.bib
+ :  
+ :  @inproceedings{adamson2023longest,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Name 2 in "Djukanovic, Marko and Raidl, Guenther, and Blum, Christian" has a comma at the end for entry DJUKANOVIC2020106499
+while executing---line 1503 of file splncs04.bst
+Name 2 in "Djukanovic, Marko and Raidl, Guenther, and Blum, Christian" has a comma at the end for entry DJUKANOVIC2020106499
+while executing---line 1540 of file splncs04.bst
+You've used 11 entries,
+            2850 wiz_defined-function locations,
+            670 strings with 6756 characters,
+and the built_in function-call counts, 7264 in all, are:
+= -- 616
+> -- 227
+< -- 18
++ -- 97
+- -- 82
+* -- 463
+:= -- 895
+add.period$ -- 16
+call.type$ -- 11
+change.case$ -- 79
+chr.to.int$ -- 0
+cite$ -- 11
+duplicate$ -- 632
+empty$ -- 622
+format.name$ -- 93
+if$ -- 1603
+int.to.chr$ -- 0
+int.to.str$ -- 11
+missing$ -- 126
+newline$ -- 39
+num.names$ -- 22
+pop$ -- 227
+preamble$ -- 1
+purify$ -- 63
+quote$ -- 0
+skip$ -- 223
+stack$ -- 0
+substring$ -- 447
+swap$ -- 389
+text.length$ -- 18
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 42
+warning$ -- 0
+while$ -- 61
+width$ -- 13
+write$ -- 117
+(There were 3 error messages)
