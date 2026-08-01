@@ -1,0 +1,124 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\geometry{margin=2.5cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7em}
+
+\definecolor{reviewbar}{RGB}{70,70,70}
+\renewenvironment{leftbar}{%
+  \def\FrameCommand{\textcolor{reviewbar}{\vrule width 3pt}\hspace{10pt}}%
+  \MakeFramed{\advance\hsize-\width\FrameRestore}%
+}{\endMakeFramed}
+
+\newcommand{\reviewcomment}[1]{%
+\begin{leftbar}
+\textit{#1}
+\end{leftbar} \textbf{Answer.} 
+}
+
+\begin{document}
+
+\begin{center}
+    {\Large\bfseries Response to the Reviewers}\\[0.7em]
+    {\large Neuro-Evolved Heuristics for Variable Gapped Common Subsequence Identification}\\[0.3em]
+    Submission 10, OPTIMA-2026
+\end{center}
+
+\vspace{1em}
+
+Dear Editors and Reviewers,
+
+We sincerely thank the reviewers for their careful reading of the manuscript and for their constructive comments and suggestions. We have revised the manuscript accordingly. Below, we reproduce each reviewer comment and provide our corresponding response. All changes made in the revised manuscript will be described in the final version of this response letter.
+
+\section*{Response to Reviewer 1}
+
+\reviewcomment{The problem statement as a MIP or CP formulations are very desired. It can open a door for some solvers like GUROBI, CPLEX, and CP-SAT. In fact, we see some empirical results but know nothing about the optimal solutions for the test instances. We see that new framework outperforms the previous framework of the same authors. Very nice! But how about the relative error with respect to the global optimum?}
+
+Note that the authors already proposed a MIP model for the LFCSP with two input sequence in the EUROCAST 2026 paper. However, it is applicable only on small-sized instances with lengths up to 100; it turns out two order of magnitude slower than all variants of DP from literature; see the paper at the link: \url{https://arxiv.org/pdf/2604.18645} (preprint of the accepted EUROCAST 2026 paper). We have now added Figure 4 covering what has been asked from the reviewer.
+
+\reviewcomment{In Table 3, we see reference LCS values from the literature ($\mathrm{LCS}^{*}$). Is it the best-known solution for each instance or something else? Why are the values so large? Some comments are needed here.}
+
+Right below Fig. 4 there is the text ``...additionally, the reference (best-known) LCS values from the literature (LCS$^*$) are also reported to reveal the effect of gap constraints on constraint-free problem version ...''. So, these values represent the best known LCS solutions to feel the effect of gap constraints when added in the basic LCS problem to obtain the VGLCS problem. 
+
+\reviewcomment{Pages 7--8, Algorithm 1, ``GA-Based Learning of a Beam Search Heuristic,'' is presented and discussed. We have the parameter $n_{\mathrm{offspring}}$, but its value is unknown. The value of another control parameter, $n_{\mathrm{elite}}$, is 1. Hence, this GA is a variant of the ``Go with the winner'' framework. Why is it equal to 1? Some comments are needed.}
+
+First $n_{\mathrm{offspring}}= n_{\mathrm{pop}}- n_{\mathrm{elite}} - n_{\mathrm{mutants}}$, so it is not a direct parameter. We fixed it in Algorithm 1. 
+$n_{\mathrm{elite}}=1$ as we follow the parameters from the similar paper reported by Jaume et al. (2024). 
+
+
+\section*{Response to Reviewer 2}
+
+\subsection*{Major remark}
+
+\reviewcomment{The use of BRKGA to optimize neural network weights in a black-box setting is appropriate. However, it is important to mention in the abstract and in the introduction that the weights are optimized by a GA on an HPC system. The question of weight tuning by neuroevolution is challenging, so the first impression from this claim is that the authors have found a GA alternative to gradient-based methods. However, the immense computational cost associated with neuroevolution, for just 30 neurons or even fewer, implies that the proposed method is not in the same ``weight category'' as gradient-based methods.}
+
+We agree that gradient-based methods may be more robust methodology for tuning parameter of neural network. However, in our case it turned out not of a particular help according to our preliminary test even for these small-sized NNs. Thus, we switched to GA which did the job. 
+
+\subsection*{Minor remarks}
+
+\reviewcomment{Limited discussion of related work. While the paper cites key references on VGLCSP and beam search, it would benefit from a more thorough discussion of recent neuro-evolutionary hyper-heuristics for combinatorial optimization. In particular, comparisons with other learning-to-search approaches would help contextualize the contribution.}
+
+\reviewcomment{The gap constraints for the REAL benchmark are derived from a dinucleotide-based structural model based on nearest-neighbor thermodynamic interactions. While this is an interesting contribution, the paper does not validate whether these gap constraints are biologically meaningful, for example, by comparison with known sequence-alignment benchmarks. This is a minor concern, as the primary goal is algorithmic evaluation.}
+
+This is a good comment. We decided to mention it as an interesting idea to be exploited in future work. 
+\reviewcomment{Page 2, Line 17, definition of the gap constraint: Why are square brackets used? What do they mean here?}
+
+Just the argument of the function. We replaced it and  using now rounded brackets through all the content. 
+
+\reviewcomment{Page 3, Line 12: ``refers'' should be changed to ``refer.''}
+
+Thanks, fixed now.
+
+\reviewcomment{Page 4, Line 17: The phrase ``non-dominated completes solutions'' is grammatically incorrect.}
+
+Thanks for this observation. We now modified it to ``... seeking for complete solutions''... 
+
+\reviewcomment{Algorithm 1, Line 7: If sorting is performed only to identify the best $n_{\mathrm{elite}}$ individuals, it would be more efficient to search directly for the elite individuals rather than sorting the entire population. For example, if $n_{\mathrm{elite}}$ is constant, this search requires only linear time.}
+
+I agree, but in our case the value of $n_{pop}$ parameter is not large thus the sort function does not represent the main bottleneck of the approach. 
+
+\reviewcomment{Algorithm 1, Line 17: Please indicate which parent solutions are provided as input to the crossover operator.}
+
+We have added proper naming hare and a few lines of pseudocode are updated. 
+
+\reviewcomment{Page 7, Line 8: At this point, it was not clear what $\mathcal{T}$ and $\mathcal{V}$ represent. Are they two sets of problem instances, or two sets of partial solutions associated with the same problem instance being solved?}
+
+\reviewcomment{Page 8, Line 8: ``prevent'' should be changed to ``prevented.''}
+Great, it is fixed now.
+
+\reviewcomment{Page 8, Line 11: Please move the hardware-specific parameter of two CPU hours to the experimental section.}
+
+We moved it now.
+
+
+\reviewcomment{Line 8 of Section 4: Please clarify the HPC execution model. Does this mean that only one node out of 960 was used in single-threaded mode, that each core on the HPC system was used independently to collect statistics for the Wilcoxon test, or that another load-balancing approach was used?}
+
+Yes, exactly! One node out of 960 was used in single-threaded mode; each core on the HPC system was used independently.
+
+\reviewcomment{Page 13, Line 14 from the bottom, in the paragraph entitled ``Runtime'': Please provide a detailed description of the computational effort required by LIMSBS-ENSEMBLE. How many computational resources were spent on neural-network training, and how many resources were assigned to running the heuristic with fixed weights?}
+
+We added the sentence: ``Each execution (either for training NNs or running any algorithm) assigns  32GB of memory resources''.
+
+\reviewcomment{Reference 17: ``irace'' should be changed to ``IRACE.''}
+
+Done, as required.
+
+\section*{Response to Reviewer 3}
+
+Reviewer 3 recommended acceptance and did not provide any specific revision requests or questions requiring an individual response.
+
+\vspace{1em}
+
+We again thank the reviewers for their valuable feedback, which helped us improve the clarity and quality of the manuscript.
+
+\end{document}

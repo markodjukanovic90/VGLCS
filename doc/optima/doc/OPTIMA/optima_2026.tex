@@ -83,10 +83,8 @@ The \textit{Longest Common Subsequence Problem} (LCSP)~\cite{DJUKANOVIC202010649
 
 In this work, we study the \textit{Variable Gapped Longest Common Subsequence Problem} (VGLCSP), introduced in~\cite{penga2011longest}, theoretically examined in~\cite{adamson2023longest}, and recently experimentally evaluated  in~\cite{djukanovic2026_eurocast}. This variant extends the classical LCSP by introducing flexible gap constraints between consecutive symbols in the subsequence, allowing these gaps to vary along the symbols of input sequences.
 
-Formally, for each sequence $s_i \in S$, a gap function $G_{s_i} : \{1,\ldots,|s_i|\} \rightarrow \mathbb{N}$ specifies the maximum allowed distance between consecutive symbols of the resulting sequence and their positions in the input sequences. If a solution $s$ appears at positions $i_i^1 < \cdots < i_i^{|s|}$ in $s_i$ as a subsequence, the gap constraints are satisfied if
-\[
-i_i^x - i_i^{x-1} \leq G_{s_i}[i_i^x] + 1, \quad \forall x = 2,\ldots,|s|.
-\]
+Formally, for each sequence $s_i \in S$, a gap function $G_{s_i} : \{1,\ldots,|s_i|\} \rightarrow \mathbb{N}$ specifies the maximum allowed distance between consecutive symbols of the resulting sequence and their positions in the input sequences. If a solution $s$ appears at positions $j_i^1 < \cdots < j_i^{|s|}$ in $s_i$ as a subsequence, the gap constraints are satisfied if $
+j_i^x - j_i^{x-1} \leq G_{s_i}(j_i^x) + 1, \quad \forall x = 2,\ldots,|s|.$ 
 A subsequence $s$ is feasible if these constraints hold for all sequences $s_i \in S$. The objective is to find the longest feasible subsequence. The VGLCSP provides a flexible and realistic model for sequence alignment, particularly relevant for DNA and protein analysis with variable structural distances, as well as for time-series analysis where events must occur within specified temporal delays~\cite{lainscsek2015delay}.
 
 While several exact dynamic programming approaches exist for the two-sequence case ($m=2$)~\cite{peng2014finding}, the problem becomes computationally intractable for larger $m$; in fact, it is NP-hard for arbitrary $m$; no efficient exact method is known. The only available reasonably scalable approach is an iterative multi-source beam search (IMSBS)~\cite{djukanovic2026_eurocast}, which explores a state-space representation of the problem. The method iteratively refines candidate root nodes and extends them through feasible symbol additions. Despite its scalability, IMSBS relies on hand-crafted heuristics, which tend to degrade in performance as $m$ increases or the alphabet size $|\Sigma|$ decreases~\cite{DJUKANOVIC2020106499}. The presence of gap constraints further exacerbates this issue.  In addition, existing studies are limited to synthetic benchmark instances only, leaving a gap in evaluating methods on realistic data.
@@ -104,7 +102,7 @@ Finally, to address the lack of realistic benchmarks, we introduce new problem i
 	\item A new set of realistic benchmark instances with data-driven gap constraints.
 \end{itemize}
 
-\paragraph{Preliminaries.}	Let $|s|$ denote the length of a sequence $s$, and let $s[i]$ refers to the character of $s$ at position $i$, where indexing starts at $i = 1$. The substring of $s$ that begins at position $i$ and ends at position $j$ is denoted by $s[i,j]$. If $i = j$, this corresponds to the single character $s[i]$; if $j < i$, then $s[i,j] = \varepsilon$, where $\varepsilon$ denotes the empty string.	Given two sequences $s_1$ and $s_2$, by $s_1 \cdot s_2$ we denote the sequence obtained by concatenating the given two sequences. 
+\paragraph{Preliminaries.}	Let $|s|$ denotes the length of a sequence $s$, and let $s[i]$ refers to the character of $s$ at position $i$, where indexing starts at $i = 1$. The substring of $s$ that begins at position $i$ and ends at position $j$ is denoted by $s[i,j]$. If $i = j$, this corresponds to the single character $s[i]$; if $j < i$, then $s[i,j] = \varepsilon$, where $\varepsilon$ denotes the empty string.	Given two sequences $s_1$ and $s_2$, by $s_1 \cdot s_2$ we denote the sequence obtained by concatenating the given two sequences. 
 The number of occurrences of letter $a \in \Sigma$ in $s$ is denoted by $|s|_a$.	We denote by $S = \{s_1, \ldots, s_m\}$ the set of input sequences, $m \in \mathbb{N}$ the number of input sequences (and, correspondingly, the number of gap constraints), and $n$ denotes the length of the longest sequence in $S$.  Given a positional vector $\mathbf{p}^L \in \mathbb{N}^m$, where $1 \leq p^L_i \leq |s_i|$ for all $s_i \in S$, the subproblem related to these positions is given by $S[\mathbf{p}^L]=\{ s_i[\mathbf{p}^L_i, |s_i|] \mid i=1, \ldots, m\}$. \\
   
 The paper is organized as follows. In Section~\ref{sec:imsbs}, the iterative multi-source beam search approach from the literature is roughly presented. Section~\ref{sec:ffnn_guidance} provides the main details on the process of learning heuristic guidance and the design of an ensemble heuristic estimator for the tackled problem. Section~\ref{sec:experiments} reports a rigorous experimental analysis. Finally, Section~\ref{sec:conclusions} concludes the paper, highlighting several future research directions. 
@@ -120,12 +118,10 @@ A directed arc $\alpha=(v_1, v_2)$ labeled by $lett(\alpha)=a \in \Sigma$ exists
 
 Unlike the classical LCSP, the VGLCSP admits multiple (potentially exponentially many) root nodes, since starting positions are unconstrained. This may lead to disconnected regions in the state graph. For instance, consider $s_1=\texttt{ATGGAAAA}$ and $s_2=\texttt{ATCCAAAA}$ with $G_{s_1}=G_{s_2}=1$. The root node $((1,1),0)$ cannot reach states with position vector $(5,5)$, thus missing the optimal subsequence $\texttt{AAAA}$, generated from $(5,5)$. This phenomenon is illustrated in Fig.~\ref{fig:state_graph_vglcs_example}, where the state graph decomposes into (two) disconnected components.
 
-This observation motivates the IMSBS framework, which operates over a dynamically generated set of root nodes explored iteratively. At each iteration, beam search (BS) is applied to selected root nodes, seeking for non-dominated completes solutions. BS is a breadth-first heuristic search strategy~\cite{wiseman2016sequence} that expands a limited number of nodes per level, controlled by the beam width $\beta$, and guided by a heuristic function $h$.
+This observation motivates the IMSBS framework, which operates over a dynamically generated set of root nodes explored iteratively. At each iteration, beam search (BS) is applied to a set of selected root nodes, seeking for complete solutions. BS is a breadth-first heuristic search strategy~\cite{wiseman2016sequence} that expands a limited number of nodes per level, controlled by the beam width $\beta$, and guided by a heuristic function $h$.
 
-In the original IMSBS, node selection relies on an upper-bound heuristic defined as
-\[
-\texttt{UB}(v)= l^v + \sum_{a \in \Sigma} \min_{i=1,\ldots,m} |s_i[p^{L,v}_i, |s_i|]|_a,
-\]
+In the original IMSBS, node selection relies on an upper-bound heuristic defined as $
+\texttt{UB}(v)= l^v + \sum_{a \in \Sigma} \min_{i=1,\ldots,m} |s_i[p^{L,v}_i, |s_i|]|_a,$ 
 which estimates the maximum achievable extension from state $v$. The heuristic evaluates remaining occurrences of each letter $a\in\Sigma$ in each suffix sequence of the related subproblem and aggregates these values to derive an upper bound on the achievable subsequence length.
 
 Despite its scalability, IMSBS relies on hand-crafted heuristics whose effectiveness degrades in challenging settings (e.g., large $m$ or small alphabets), especially under gap constraints. {To resolve the issue, we will develop a learning-based methodology that enhances the search process of the IMSBS through the integrated learned heuristic guidance. }
@@ -226,16 +222,12 @@ h_w$. Validation performance is computed analogously on a separate dataset $\mat
 \noindent\textbf{Feature Extraction.}
 To guide the search effectively, each node $v=(\mathbf{p}^v, l^v)$ is mapped to a fixed-length feature vector capturing both the construction progress and the structure of the related subproblem. The design is instance-independent and robust across varying problem sizes.
 
-Let $S=\{s_1,\ldots,s_m\}$ denote the input sequences. The position vector $\mathbf{p}^v$ is first normalized by sequence lengths:
-\[
-F^v_i = \frac{p^v_i}{|s_i|}, \quad i=1,\ldots,m,
-\]
+Let $S=\{s_1,\ldots,s_m\}$ denote the input sequences. The position vector $\mathbf{p}^v$ is first normalized by sequence lengths: $
+F^v_i = \frac{p^v_i}{|s_i|}, \quad i=1,\ldots,m,$ 
 ensuring scale invariance. From this normalized vector, we extract four statistics: $\max(\mathbf{F}^v)$, $\min(\mathbf{F}^v)$, $\texttt{mean}(\mathbf{F}^v)$, and $\texttt{std}(\mathbf{F}^v)$, capturing the progress and imbalance across sequences. The current subsequence length $l^v$ is also included.
 
-To reflect future feasibility, we compute gap-related statistics:
-\[
-G^{\min}, \; G^{\max}, \; G^{\texttt{avg}}, \; G^{\texttt{std}},
-\]
+To reflect future feasibility, we compute gap-related statistics: $
+G^{\min}, \; G^{\max},$ $G^{\texttt{avg}}, \; G^{\texttt{std}}, $
 evaluated over the gap values for the remaining positions in all sequences. These features quantify the flexibility of future extensions: larger gaps indicate more freedom, while smaller or highly variable gaps suggest tighter constraints.
 
 Finally, two global features—alphabet size $|\Sigma|$ and the number of sequences $m$—are included. All features are standardized to zero mean and unit variance prior to training. The resulting 11-dimensional representation provides a compact yet expressive description of each search state.
@@ -264,13 +256,13 @@ To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Alg
 		\STATE Update $w^\ast$ if improved and validation does not degrade
 		\ENDFOR
 		
-		\FOR{$i = 1$ to $n_{\text{offspring}}$}
-		\STATE Select one elite parent and one non-elite parent
-		\STATE Generate offspring via biased crossover ($p_{\text{bias}}$)
+		\FOR{$i = 1$ to $n_{\text{offspring}}= n_{\text{pop}}- n_{\text{elite}} - n_{\text{mutants}}$}
+		\STATE  Select one elite parent $x$ and one non-elite parent $y$ from $P[:n_{\textrm{pop}} - n_{\textrm{mutants}}]$
+		\STATE Generate offspring between $x$ and $y$ via biased crossover ($p_{\text{bias}}$)
 		\STATE Evaluate offspring on $\mathcal{T}$ and add to $P'$
 		\STATE Update $w^\ast$ if improved and validation does not degrade
 		\ENDFOR
-		\IF{all candidates in $P$ with better fitness than $w^*$ have a degraded validation score }
+		\IF{all candidates in $P'$ with better fitness than $w^*$ have a degraded validation score }
 		    \STATE \textbf{break} \# over-fitting detected
 		\ENDIF
 		\STATE $P \leftarrow P'$
@@ -288,13 +280,13 @@ To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Alg
  
  Given a predefined NN architecture $\mathcal{N}$, IMSBS parameters, and BRKGA parameters, the procedure begins by generating an initial population $P$ of candidate weight vectors. Each individual is evaluated on the training set $\mathcal{T}$ using IMSBS guided by the induced neural heuristic. The best-performing solution is stored as $w^\ast$. In our implementation, IMSBS is executed with parameters $\beta=500$ and $\texttt{beam\_iters}=100$, and the time limit is set to 60 seconds, while the remaining parameters follow~\cite{djukanovic2026_eurocast}. This configuration provides a suitable balance between computational cost and robustness during training.
  
- The evolutionary process proceeds iteratively as follows. The population is first sorted according to the fitness values. A new population $P'$ is then constructed by preserving the top $n_{\text{elite}}$ individuals (elitism), introducing $n_{\text{mutants}}$ randomly generated individuals (diversification), and generating $n_{\text{offspring}}$ offspring via biased crossover. In each crossover, one parent is selected from the elite set and the other from the remaining population. Each gene (node weight) is inherited from the elite parent with probability $p_{\text{bias}} \geq 0.5$, and from the second parent otherwise. Each newly generated individual is evaluated on $\mathcal{T}$. Whenever an improved solution is found, its performance is additionally assessed on the validation set $\mathcal{V}$. To mitigate overfitting, we adopt an early stopping strategy: if the validation performance deteriorates for an individual with better fitness value than the current incumbent, it is prevent from becoming a new incumbent. Additionally, if the validation scores of each such individual deteriorate at an iteration of BRKGA, the search is terminated earlier due to the detected overfitting; otherwise the process repeats until a time limit $t_{\max}$ is reached (set to 2 CPU hours). The algorithm returns the best weight vector $w^\ast$, corresponding to the neural network $\mathcal{N}(w^\ast)$ that induces the heuristic $h_{w^\ast}$.
+ The evolutionary process proceeds iteratively as follows. The population is first sorted according to the fitness values. A new population $P'$ is then constructed by preserving the top $n_{\text{elite}}$ individuals (elitism), introducing $n_{\text{mutants}}$ randomly generated individuals (diversification), and generating $n_{\text{offspring}}$ offspring via biased crossover. In each crossover, one parent is selected from the elite set and the other from the remaining population. Each gene (node weight) is inherited from the elite parent with probability $p_{\text{bias}} \geq 0.5$, and from the second parent otherwise. Each newly generated individual is evaluated on $\mathcal{T}$. Whenever an improved solution is found, its performance is additionally assessed on the validation set $\mathcal{V}$. To mitigate overfitting, we adopt an early stopping strategy: if the validation performance deteriorates for an individual with better fitness value than the current incumbent, it is prevented from becoming a new incumbent. Additionally, if the validation scores of each such individual deteriorate at an iteration of BRKGA, the search is terminated earlier due to the detected overfitting; otherwise the process repeats until a time limit $t_{\max}$ is reached. The algorithm returns the best weight vector $w^\ast$, corresponding to the neural network $\mathcal{N}(w^\ast)$ that induces the heuristic $h_{w^\ast}$.
  
- Our experiments use the following parameters for BRKGA:  $n_{\text{pop}}=20$, $n_{\text{elite}}=1$, $p_{\text{bias}}=0.5$, and $n_{\text{mutants}}=7$. A visualization of the learning process is provided in Fig.~\ref{fig:ga_imsbs}.
+ Our experiments use the following parameters for BRKGA following~\cite{reixach2024neural}:  $n_{\text{pop}}=20$, $n_{\text{elite}}=1$, $p_{\text{bias}}=0.5$, and $n_{\text{mutants}}=7$. A visualization of the learning process is provided in Fig.~\ref{fig:ga_imsbs}.
 
 \begin{figure}[!ht]
 	\centering
-	\scalebox{0.60}{
+	\scalebox{0.50}{
 		\begin{tikzpicture}[
 			box/.style={draw, rounded corners=2mm, align=center, minimum width=3.4cm, minimum height=1cm, fill=blue!5},
 			smallbox/.style={draw, rounded corners=2mm, align=center, minimum width=2.8cm, minimum height=0.9cm, fill=green!5},
@@ -346,7 +338,7 @@ To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Alg
 		The feedback loop updates the population based on solution quality.}
 	\label{fig:ga_imsbs}
 \end{figure}
- \vspace{-0.6cm}
+
     
   \subsection{An ensemble approach}
     
@@ -365,9 +357,8 @@ To optimize the NN parameters, we employ a \textit{Biased Random-Key Genetic Alg
 
 In this section, we evaluate the performance of two approaches: 
 (i) \textsc{Imsbs}, the baseline state-of-the-art iterative multi-source beam search from~\cite{djukanovic2026_eurocast}, and 
-(ii) \textsc{Limsbs-ensemble}, an enhanced version of \textsc{Imsbs} guided by the ensemble heuristic defined in Eq.~(\ref{eq:ensemble_heuristic}). 
-
-All methods are implemented in C++ and compiled using the GCC compiler. Experiments are conducted on the VEGA HPC system (IZUM, Maribor, Slovenia), consisting of 960 compute nodes equipped with AMD EPYC 7H12 CPUs at 2.35\,GHz. All experiments are executed in a single-threaded setting.
+(ii) \textsc{Limsbs-ensemble}, an enhanced version of \textsc{Imsbs} guided by the ensemble heuristic defined in Eq.~(\ref{eq:ensemble_heuristic}). All methods are implemented in C++ and compiled using the GCC compiler. Experiments are conducted on the VEGA HPC system (IZUM, Maribor, Slovenia), consisting of 960 compute nodes equipped with AMD EPYC 7H12 CPUs at 2.35\,GHz. All experiments are executed in a single-threaded setting, meaning one node was used in single-threaded mode. Each execution (either for training NNs or running any algorithm) assigns  32GB of memory resources.
+ The process of  parameters learning for each neural network ($t_{\max}$) is set to 2 CPU hours.
 
 \subsection{Benchmark Instances}
 
@@ -379,16 +370,15 @@ We consider two types of benchmark sets. {Synthetic instances}, denoted by \text
 f(s[i], s[i+1]) = -\Delta G(s[i], s[i+1]),
 \]
 where $\Delta G$ denotes the free energy associated with the dinucleotide pair. According to~\cite{santalucia1998unified}, the corresponding weights are estimated by the following values:
-
 \begin{align*}
 \texttt{DINUC\_WEIGHT} = \{
-\texttt{AA}:1.00, \texttt{TT}:1.00,&\\
+\texttt{AA}:1.00, \texttt{TT}:1.00,
 \texttt{AT}:0.88, \texttt{TA}:0.58,&\\ 
-\texttt{CA}:1.45, \texttt{TG}:1.45,&\\
+\texttt{CA}:1.45, \texttt{TG}:1.45,
 \texttt{GT}:1.44, \texttt{AC}:1.44,&\\  
-\texttt{CT}:1.28, \texttt{AG}:1.28,&\\
+\texttt{CT}:1.28, \texttt{AG}:1.28,
 \texttt{GA}:1.30, \texttt{TC}:1.30,&\\  
-\texttt{CG}:2.17, \texttt{GC}:2.24,&\\
+\texttt{CG}:2.17, \texttt{GC}:2.24,
 \texttt{GG}:1.84, \texttt{CC}:1.84&\}
 \end{align*}
 
@@ -401,18 +391,14 @@ f^s_k =
 \end{cases}
 \]
 
-This formulation enforces a left-to-right dependency structure, aligning with the feasibility condition of the VGLCSP. The positional influence is then computed as:
-\[
-I^s(i) = \sum_{k=\max(1,i-r)}^{i} e^{-\lambda (i-k)} \cdot f^s_k,
-\]
+This formulation enforces a left-to-right dependency structure, aligning with the feasibility condition of the VGLCSP. The positional influence is then computed as: $
+I^s(i) = \sum_{k=\max(1,i-r)}^{i} e^{-\lambda (i-k)} \cdot f^s_k,$
 where $r$ is the influence radius and $\lambda$ is a decay factor. This captures the cumulative structural context preceding each position.  To normalize influence values, we apply
 \[
 \hat{I}^{(j)}_i = \frac{I^{(j)}_i - \min(I^{(j)})}{\max(I^{(j)}) - \min(I^{(j)}) + \epsilon} \in [0,1],
 \]
-and derive gap constraints via
-\[
-\text{Gap}_i[j] = w_{\min} + (w_{\max} - w_{\min}) \cdot \hat{I}^{(j)}_i.
-\]
+and derive gap constraints via $
+\text{Gap}_i[j] = w_{\min} + (w_{\max} - w_{\min}) \cdot \hat{I}^{(j)}_i. $
 
 This mapping assigns larger gaps to structurally stable regions and smaller gaps to less stable ones, reflecting their differing flexibility for matching. For producing instances, we set $w_{\min}=1$, $w_{\max}=10$, $r=10$, and $\lambda=0.5$.
 
@@ -424,19 +410,15 @@ Moreover, we used the well-known LCS benchmark sets \textsc{Rat} and \textsc{Vir
 The resulting dataset, denoted \textsc{Real}, consists of 20 instances (10 from each benchmark set). All sequences have the length of 600, while the number of sequences varies from $m=10$ to $m=200$.
 
 
- All benchmark sets, generated neural network configurations, and source codes  are freely available at   
+ All benchmark sets, neural network configurations, and source codes  are available at   
 \url{https://github.com/markodjukanovic90/VGLCS\_Neural\_Heuristics}. 
  
 \subsection{Tuning Process}
 
 The parameters of \textsc{Imsbs} are tuned on the set \textsc{Random} using \texttt{irace}~\cite{perez2014analysis}, with a total budget of 5000 runs (each limited to 30 minutes). For tuning, one instance from each group is selected, involving 32 training instances in total. All remaining (less sensitive) parameters are fixed to the values reported  in~\cite{djukanovic2026_eurocast}. The produced configuration for \textsc{Imsbs} is $\beta=2000$, $h=\text{UB}$, and $\#\texttt{imbs\_iters}=5000$.
  
-For a fair comparison, the proposed \textsc{Limsbs-ensemble} inherits the same parameter configuration obtained for \textsc{Imsbs}. The learning process is tuned by exploring different neural network architectures: the multi-layer perceptrons which combine two or three layers by  allowing 5 or 10 neurons are considered. One learning process per each such architecture is executed. To reduce the computational burden, we restrict the activation function to be identical across all layers, selecting from the following three: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. To analyze the sensitivity with respect to feature design, we define three feature configurations:
-\begin{itemize}
-	\item $F_1$: 4 features from sequence positions, 4 features from gap constraints, and the subsequence length;
-	\item $F_2$: $F_1$ extended with the alphabet size $|\Sigma|$;
-	\item $F_3$: $F_2$ extended with the number of sequences $m$.
-\end{itemize}
+For a fair comparison, the proposed \textsc{Limsbs-ensemble} inherits the same parameter configuration obtained for \textsc{Imsbs}. The learning process is tuned by exploring different neural network architectures: the multi-layer perceptrons which combine two or three layers by  allowing 5 or 10 neurons are considered. One learning process per each such architecture is executed. To reduce the computational burden, we restrict the activation function to be identical across all layers, selecting from the following three: $\{\texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}\}$. To analyze the sensitivity with respect to feature design, we define three feature configurations: $i$) $F_1$: 4 features from sequence positions, 4 features from gap constraints, and the subsequence length; $ii$) $F_2$: $F_1$ extended with the alphabet size $|\Sigma|$; $iii$) $F_3$: $F_2$ extended with the number of sequences $m$.
+
 
 After extensive empirical evaluation, the following NN architectures are selected for the \textsc{Random} benchmark:
 \begin{itemize}
@@ -498,17 +480,20 @@ To assess statistical significance, we perform a one-sided  Wilcoxon signed-rank
 
 \end{table}
 
-The following conclusions are drawn from these results. 
-\begin{itemize}
-	\item  Out of 32 instances, \textsc{Limsbs-ensemble} achieves better performance over \textsc{Imsbs} in 20 cases, ties occur in 8 cases, and in 4 cases the winner is \textsc{Imsbs}.
-	\item The performed statistical evaluation suggests that there is a statistically significant improvement of \textsc{Limsbs-ensemble} over \textsc{Imsbs}.
-\end{itemize} 
+The following conclusions are drawn from these results: $i)$  Out of 32 instances, \textsc{Limsbs-ensemble} achieves better performance over \textsc{Imsbs} in 20 cases, ties occur in 8 cases, and in 4 cases the winner is \textsc{Imsbs}; $ii$) The performed statistical evaluation suggests that there is a statistically significant improvement of \textsc{Limsbs-ensemble} over \textsc{Imsbs}.
+%TODO: comparison to optimal results for DP approaches for $m=2$ instances. 
+Additionally, in Figure~\ref{fig:limsbs_vs_dp1} we show the relative gaps between the results of \textsc{Limsbs-Ensemble} and the exact solutions of dynamic programming (DP-1) approach from literature~\cite{djukanovic2026_eurocast}. While the results of \textsc{Limsbs-Ensemble} are tight for $|\Sigma|=4$, it seems there is still room for improvements  in the case of instances with $|\Sigma|=2$.
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=300pt,height=140pt]{limsbs_ensemble_vs_dp1.png}
+	\caption{Comparison to known optimal results: $m=2$ case.}\label{fig:limsbs_vs_dp1}
+\end{figure}
 
 \subsection{Results on Benchmark Set \textsc{Real}}
 
 \input{results_real.tex}
 %\textcolor{red}{TODO: update results for LMSBS-ensemble on REAL.}
-Table~\ref{tab:real_results} summarizes the results, including solution quality and runtime ($t$ in seconds) for both approaches; additionally, reference LCS values from the literature (LCS$^*$) is also reported. The following observations are drawn from these results.
+Table~\ref{tab:real_results} summarizes the results, including solution quality and runtime ($t$ in seconds) for both approaches; additionally, the reference (best-known) LCS values from the literature (LCS$^*$) are also reported to reveal the effect of gap constraints on constraint-free problem version. The following observations are drawn.
 
 \begin{itemize}
 	\item \textit{Solution quality.} \textsc{Limsbs-ensemble} outperforms \textsc{Imsbs} in 12 out of 20 instances, with 7 cases resulting in ties, and only one in favor of \textsc{Imsbs}. %, indicating consistent superiority of the proposed method.
@@ -522,7 +507,7 @@ Table~\ref{tab:real_results} summarizes the results, including solution quality 
 	\item \textit{Impact of gap constraints.} Compared to unconstrained LCS values from the literature (reported in the last columns of both tables), introducing gap constraints significantly reduces achievable subsequence lengths. This effect is particularly strong for large $m$ (e.g., $m \geq 60$), where feasible solutions become highly restricted, the search space reduced, while the number of root nodes exponentially  increases with the size of $m$. 
 \end{itemize}
 
-Overall, the results demonstrate that the novel \textsc{Limsbs-ensemble} for the VGLCSP provides a consistent improvement in solution quality over \textsc{Imsbs}, while maintaining comparable computational efficiency. This makes it a preferable choice when solution quality is the primary objective in addressing the tackled problem.
+Overall, the results demonstrate that the novel \textsc{Limsbs-ensemble}   provides a consistent improvement in solution quality over \textsc{Imsbs}, while maintaining comparable computational efficiency. This makes it a preferable choice when solution quality is the primary objective in addressing the tackled problem.
 
  
 \section{Conclusions}\label{sec:conclusions}
@@ -531,11 +516,9 @@ This paper addressed the Variable Gapped Longest Common Subsequence Problem (VGL
 
 The heuristic is represented by a neural network with a predefined architecture, whose parameters are optimized via a biased random-key genetic algorithm in a neuro-evolutionary setting. To further enhance robustness, we introduced an ensemble heuristic that combines the learned heuristic with the best-performing hand-crafted heuristic from the literature. This hybrid guidance mechanism is integrated into \textsc{Imsbs} to improve search efficiency and solution quality. Experimental results on both synthetic benchmarks and newly introduced biologically inspired instances demonstrate that the proposed ensemble heuristic  significantly outperforms the baseline hand-crafted heuristics integrated into \textsc{Imsbs}. In particular, the improvements are most pronounced on challenging instances with complex gap structures, confirming the effectiveness of the learning-guided search.  %in this domain.
 
-Future work will focus on extending the approach to protein sequence datasets and larger-scale instances to further assess the scalability. Additionally, alternative learning strategies will be explored, including different evolutionary schemes, fitness evaluation criteria beyond mean performance, and improved stopping mechanisms to better control overfitting.\\
-   
-   \footnotesize{\textbf{Acknowledgments.}    This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.  The authors gratefully acknowledge the SLING consortium for funding this research by providing computing resources of the HPC Vega at the Institute of Information Science (www.izum.si).}
+Future work will focus on extending the approach to protein sequence datasets and larger-scale instances to further assess the scalability. Another aspect is validation of gap constraints from our real-world generated instances and their biological context. One could compare with known sequence-alignment benchmarks.  Additionally, alternative learning strategies could be explored, including different evolutionary schemes, fitness evaluation criteria beyond mean performance, and improved stopping mechanisms to better control overfitting.\\
+ \footnotesize{\textbf{Acknowledgments.}    This publication is co- funded by the European Union’s Horizon Europe research and innovation program under the Marie Sklodowska-Curie COFUND Postdoctoral Programme grant agreement No.101081355-- SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Co-funded by European Union.  Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or European Research Executive Agency (REA). Neither the European Union nor the REA can be held responsible for them.  The authors gratefully acknowledge the SLING consortium for funding this research by providing computing resources of the HPC Vega at the Institute of Information Science (www.izum.si).}
 	
-	\vspace{-0.5cm}
 	
 	\bibliographystyle{splncs04}
 	\bibliography{bib}

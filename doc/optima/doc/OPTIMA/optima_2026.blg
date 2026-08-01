@@ -14,7 +14,7 @@ while executing---line 1540 of file splncs04.bst
 Warning--empty year in djukanovic2026_eurocast
 You've used 22 entries,
             2850 wiz_defined-function locations,
-            739 strings with 9019 characters,
+            739 strings with 9021 characters,
 and the built_in function-call counts, 13585 in all, are:
 = -- 1169
 > -- 369
