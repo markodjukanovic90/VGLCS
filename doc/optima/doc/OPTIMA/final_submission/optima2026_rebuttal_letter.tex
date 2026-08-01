@@ -70,7 +70,7 @@ We agree that gradient-based methods may be more robust methodology for tuning p
 
 \reviewcomment{The gap constraints for the REAL benchmark are derived from a dinucleotide-based structural model based on nearest-neighbor thermodynamic interactions. While this is an interesting contribution, the paper does not validate whether these gap constraints are biologically meaningful, for example, by comparison with known sequence-alignment benchmarks. This is a minor concern, as the primary goal is algorithmic evaluation.}
 
-This is a good comment. We decided to mention it as an interesting idea to be exploited in future work. 
+This is a good comment. We decided to mention it as a promising idea to be exploited in future work. 
 \reviewcomment{Page 2, Line 17, definition of the gap constraint: Why are square brackets used? What do they mean here?}
 
 Just the argument of the function. We replaced it and  using now rounded brackets through all the content. 
@@ -89,9 +89,11 @@ I agree, but in our case the value of $n_{pop}$ parameter is not large thus the 
 
 \reviewcomment{Algorithm 1, Line 17: Please indicate which parent solutions are provided as input to the crossover operator.}
 
-We have added proper naming hare and a few lines of pseudocode are updated. 
+We have added proper naming hare and a few lines of pseudocode are updated to support the clear presentation. 
 
 \reviewcomment{Page 7, Line 8: At this point, it was not clear what $\mathcal{T}$ and $\mathcal{V}$ represent. Are they two sets of problem instances, or two sets of partial solutions associated with the same problem instance being solved?}
+
+These are two set of different instances, associated with the original instances.
 
 \reviewcomment{Page 8, Line 8: ``prevent'' should be changed to ``prevented.''}
 Great, it is fixed now.
