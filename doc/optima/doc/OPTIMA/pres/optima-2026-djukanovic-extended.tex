@@ -193,7 +193,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Literature \& Motivation for VGLCSP}
    
    \begin{itemize}
-       \item  Peng and Yang (2012, 2014): studied  $m=2$  version by \textbf{three dynamic programming} (DP) approaches (basic and two advanced)
+       \item  Peng and Yang (2012, 2014): studied  $m=2$  version by \textbf{three dynamic programming} (DP) approaches 
        \item  Manea et al. (2024): complexity analysis investigated
        \begin{itemize}
        	\item   \textcolor{red}{NP-hard}  under arbitrary large $m$ 
@@ -220,7 +220,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
         \item \textcolor{red}{\textbf{Many root/source nodes}} in the state graph---the position of leading letter in each common gapped subsequence free to select 
         \begin{itemize}
-        	\item   root state space subgraphs (formulation) w.r.t. starting point (match)...
+        	\item   root state space subgraphs (formulation) w.r.t. starting point (match)
         \end{itemize} 
     \end{itemize}
     
@@ -251,7 +251,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{Root-based state graph formulation: example}
    
-    Given $s_1=$\texttt{\fbox{A}BCA},  $s_2=$\texttt{\fbox{A}CAB}, assuming  $G_1=G_2=1$, match $p^L=(1, 1)$; \\ \vspace{0.3cm} \textsc{SubSpace}($(1, 1)$): partial solutions start with \texttt{A} at $(1, 1)$
+    Given $s_1=$\texttt{\fbox{A}BCA},  $s_2=$\texttt{\fbox{A}CAB}, assuming  $G_1=G_2=1$, match $p^L=(1, 1)$; \\ \vspace{0.3cm} \textsc{SubSpace}($(1, 1)$): \textcolor{red}{\textbf{partial solutions start with \texttt{A} at} $(1, 1)$}
    	
    % U nekom delu LaTeX dokumenta:
    \begin{figure}[h!]
@@ -675,9 +675,9 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
 \begin{column}{0.48\textwidth}
 \begin{block}{Obstacle}
 \begin{itemize}
-  \item No direct target labels for ``good node'' on large VGLCSP instances.
-  \item Search quality is non-differentiable: one ranking decision  affect many later states.
-  \item Exact optimal trajectories are unavailable for the general multi-sequence case.
+  \item No direct target labels for ``good node'' on large VGLCSP instances
+  \item Search quality non-differentiable: one ranking decision  affect many later states
+  \item Exact optimal trajectories unavailable for the general case
 \end{itemize}
 \end{block}
 \end{column}
@@ -816,7 +816,7 @@ $m=5,10$ & 10 & 3 & 3\\
 \toprule
 comparison & wins & ties & losses\\
 \midrule
-LIMSBS-Ensemble vs. IMSBS & 12 & 7 & 1\\
+LIMSBS-Ensemble vs. IMSBS (20) & 12 & 7 & 1\\
 \bottomrule
 \end{tabular}} \\
 \vspace{0.15cm}
