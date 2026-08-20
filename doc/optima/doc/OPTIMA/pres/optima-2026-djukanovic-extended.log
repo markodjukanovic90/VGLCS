@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  20 AUG 2026 10:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  20 AUG 2026 11:29
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1591,11 +1591,6 @@ line 790.
 [20
 
 ]
-Overfull \hbox (2.88467pt too wide) in paragraph at lines 831--831
- [][] 
- []
-
-
 Overfull \hbox (134.09656pt too wide) has occurred while \output is active
  [][][][]  
  []
@@ -1680,10 +1675,10 @@ Package rerunfilecheck Info: File `optima-2026-djukanovic-extended.out' has not
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 28342 strings out of 479648
- 574948 string characters out of 5886115
+ 28345 strings out of 479648
+ 575080 string characters out of 5886115
  823789 words of memory out of 5000000
- 45672 multiletter control sequences out of 15000+600000
+ 45675 multiletter control sequences out of 15000+600000
  501217 words of font info for 105 fonts, out of 8000000 for 9000
  475 hyphenation exceptions out of 8191
  128i,18n,122p,433b,1104s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1720,10 +1715,10 @@ cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/latxfont/line10.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pf
 b>
-Output written on optima-2026-djukanovic-extended.pdf (22 pages, 477649 bytes).
+Output written on optima-2026-djukanovic-extended.pdf (22 pages, 478110 bytes).
 
 PDF statistics:
- 1709 PDF objects out of 1728 (max. 8388607)
+ 1711 PDF objects out of 1728 (max. 8388607)
  969 compressed objects within 10 object streams
  46 named destinations out of 1000 (max. 500000)
  987 words of extra memory for PDF output out of 10000 (max. 10000000)
