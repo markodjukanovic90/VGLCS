@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  21 AUG 2026 14:42
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  21 AUG 2026 17:20
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1528,20 +1528,20 @@ Overfull \hbox (134.09656pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 760.
+Package pdftex.def Info: IFEEL_1.png  used on input line 761.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 760.
+Package pdftex.def Info: cofunded_eu.png  used on input line 761.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 760.
+Package pdftex.def Info: slo_ministry.png  used on input line 761.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 760.
+line 761.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [18
 
@@ -1552,20 +1552,20 @@ Overfull \hbox (134.09656pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 800.
+Package pdftex.def Info: IFEEL_1.png  used on input line 801.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 800.
+Package pdftex.def Info: cofunded_eu.png  used on input line 801.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 800.
+Package pdftex.def Info: slo_ministry.png  used on input line 801.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 800.
+line 801.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [19
 
@@ -1576,20 +1576,20 @@ Overfull \hbox (134.09656pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 841.
+Package pdftex.def Info: IFEEL_1.png  used on input line 842.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 841.
+Package pdftex.def Info: cofunded_eu.png  used on input line 842.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 841.
+Package pdftex.def Info: slo_ministry.png  used on input line 842.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 841.
+line 842.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [20
 
@@ -1601,14 +1601,14 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.874 \end{frame}
+l.875 \end{frame}
                  
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
 
-Overfull \vbox (7.6678pt too high) detected at line 874
+Overfull \vbox (7.6678pt too high) detected at line 875
  []
 
 
@@ -1618,20 +1618,20 @@ Overfull \hbox (134.09656pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 874.
+Package pdftex.def Info: IFEEL_1.png  used on input line 875.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 874.
+Package pdftex.def Info: cofunded_eu.png  used on input line 875.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 874.
+Package pdftex.def Info: slo_ministry.png  used on input line 875.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 874.
+line 875.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [21
 
@@ -1694,10 +1694,10 @@ cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/latxfont/line10.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pf
 b>
-Output written on optima-2026-djukanovic-extended.pdf (21 pages, 468861 bytes).
+Output written on optima-2026-djukanovic-extended.pdf (21 pages, 468966 bytes).
 
 PDF statistics:
- 1672 PDF objects out of 1728 (max. 8388607)
+ 1673 PDF objects out of 1728 (max. 8388607)
  944 compressed objects within 10 object streams
  44 named destinations out of 1000 (max. 500000)
  987 words of extra memory for PDF output out of 10000 (max. 10000000)

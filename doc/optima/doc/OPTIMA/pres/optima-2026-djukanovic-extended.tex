@@ -710,9 +710,9 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.50\textwidth}
 \begin{itemize}
-  \item Individual = complete NN weight vector $w$.
-  \item Initial weights sampled from $[-1,1]$.
-  \item Population refined by elitism, mutants and biased crossover.
+  \item Individual = \textcolor{red}{complete NN weight vector $w$}.
+  %\item Initial weights sampled from $[-1,1]$.
+  %\item Population refined by elitism, mutants and biased crossover.
   %\item Validation set monitors generalization and prevents overfitting.
 \end{itemize}
 \vspace{0.15cm}
@@ -756,7 +756,8 @@ Lower rank $r(v)$ means higher priority in the beam.
 \begin{tabular}{c|c|c|c|c}
 $m$ & 2 & 3 & 5 & 10 \\\hline
 $\alpha$ & 0.60 & 0.50 & 0.35 & 0.15
-\end{tabular}
+\end{tabular} \\ \vspace{0.3cm}
+$\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ensemble-IMSBS approach}}.
 \end{frame}
 
 \begin{frame}{What was tuned? Experimental design}
