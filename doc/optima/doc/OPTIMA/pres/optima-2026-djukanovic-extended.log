@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  21 AUG 2026 10:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  21 AUG 2026 14:42
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1570,11 +1570,6 @@ line 800.
 [19
 
 ]
-Overfull \hbox (12.45796pt too wide) in paragraph at lines 841--841
- [][] 
- []
-
-
 Overfull \hbox (134.09656pt too wide) has occurred while \output is active
  [][][][]  
  []
@@ -1661,7 +1656,7 @@ Package rerunfilecheck Info: File `optima-2026-djukanovic-extended.out' has not
 Here is how much of TeX's memory you used:
  28254 strings out of 479648
  573395 string characters out of 5886115
- 823533 words of memory out of 5000000
+ 822533 words of memory out of 5000000
  45586 multiletter control sequences out of 15000+600000
  501217 words of font info for 105 fonts, out of 8000000 for 9000
  475 hyphenation exceptions out of 8191
@@ -1699,7 +1694,7 @@ cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/latxfont/line10.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pf
 b>
-Output written on optima-2026-djukanovic-extended.pdf (21 pages, 468921 bytes).
+Output written on optima-2026-djukanovic-extended.pdf (21 pages, 468861 bytes).
 
 PDF statistics:
  1672 PDF objects out of 1728 (max. 8388607)

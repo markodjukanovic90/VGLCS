@@ -159,7 +159,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
          Sequence $\tilde{s}$ is a \textcolor{red}{gapped subsequence} of $(s, G_s)$ iff 
          \begin{itemize}
              \item $\tilde{s}$ is a \textbf{subsequence} of $s$
-             \item the gap constraint $G_s$ fulfilled resp. \textit{positions of embedding} $\tilde{s}$ in $s$:
+             \item the gap constraint $G_s$ fulfilled resp. the \textit{positions of embedding} $\tilde{s}$ in $s$:
          \begin{itemize}
              \item  suppose $i_1< \ldots <i_{|\tilde{s}|}$ are those \textbf{positions}  
              \item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, \textcolor{red}{i_{j} - i_{j-1} \leq G_{s}(i_{j})+1}$  (consecutive positions respect gap distances = allowed \textit{number of letters inbetween})
@@ -177,7 +177,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
          \item  $\tilde{s}=\texttt{ATG}$, the embedding: \textcolor{red}{A}A\textcolor{red}{T}T\textcolor{red}{G}C (\textcolor{blue}{valid} gapped subsequence)
          \item  $\tilde{s}=\texttt{ATG}$, the embedding: \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid} gapped subsequence)
       \end{itemize}
-   \end{example} \vspace{0.3cm}
+   \end{example} \vspace{0.5cm}
     
    \begin{definition}[The multiple (variable) gapped LCS problem -- MVGLCSP]
         \textbf{Input}: Given is a set of gapped sequences $\{ (s_1, G_{s_1}), \ldots, (s_m, G_{s_m}) \}$. \\
@@ -713,7 +713,7 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
   \item Individual = complete NN weight vector $w$.
   \item Initial weights sampled from $[-1,1]$.
   \item Population refined by elitism, mutants and biased crossover.
-  \item Validation set monitors generalization and prevents overfitting.
+  %\item Validation set monitors generalization and prevents overfitting.
 \end{itemize}
 \vspace{0.15cm}
 \begin{block}{Parameters used}
@@ -821,7 +821,7 @@ $m=5,10$ & \textbf{10} & 3 & 3\\
 \begin{column}{0.40\textwidth}
 \begin{block}{\textsc{Real} benchmark}
 \centering
-\scalebox{0.55}{
+\scalebox{0.5}{
 \begin{tabular}{lccc}
 \toprule
 comparison & wins & ties & losses\\
@@ -829,7 +829,7 @@ comparison & wins & ties & losses\\
 LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 \bottomrule
 \end{tabular}} \\
-\vspace{0.15cm}
+\vspace{0.7cm}
 \footnotesize{Comparable runtime; larger gains on harder instances such as \textsc{Virus}}.
 \end{block}
 \end{column}
@@ -867,7 +867,7 @@ $(2,500,4)$ & 317.2 & 310.9 & 2.0\%\\ \hline
 	\begin{block}{Conclusion}
 		\begin{itemize}
 			\item 	Learning an improved guidance promising (best-performing heuristic)
-		    \item Low alphabet diversity,  still requires even stronger exploration/richer features.
+		    \item Low alphabet diversity, requires even stronger exploration/richer features.
 		\end{itemize}
 	\end{block}
 
