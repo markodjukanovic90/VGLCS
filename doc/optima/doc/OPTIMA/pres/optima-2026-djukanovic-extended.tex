@@ -145,7 +145,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
   
   \textbf{Problem-related practical variants}:
   \begin{itemize}
-  		\item   Repetition-free, filled LCS problem, \textcolor{red}{Gapped LCS problem}
+  		\item   Repetition-free, Filled LCS problem, \textcolor{red}{Gapped LCS problem}
   \end{itemize}
 \end{frame}
 
@@ -187,7 +187,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
             \item $\tilde{s}$ \textcolor{red}{\textbf{fulfills all gap constraints}} $G_{s_i}$ ($i=1, \ldots, m$)
         \end{itemize}
     \end{definition}
-    \textbf{Note}: When $G_{s_i}=n$ (length of longest sequence) $\Rightarrow$ VGLCSP = LCSP.
+   % \textbf{Note}: When $G_{s_i}=n$ (length of longest sequence) $\Rightarrow$ VGLCSP = LCSP.
 \end{frame}
 
 \begin{frame}{Literature \& Motivation for VGLCSP}
@@ -198,14 +198,14 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
        \begin{itemize}
        	\item   \textcolor{red}{NP-hard}  under arbitrary large $m$ 
         \end{itemize} 
-        \item Djukanovic et al. (2026): the first approach for general VGLCSP ($m$ arbitrary)
+        \item Djukanovic et al. (2026): the first approach for general VGLCSP ($m$ arbitrary): iterative Beam search approach
+        
    \end{itemize} \vspace{0.5cm}
    
    \textbf{Motivation}:
    \begin{itemize}
        \item  \textcolor{blue}{Genetics and molecular biology}: DNA/protein comparison analysis where structural distances between residues must be respected \vspace{0.2cm}
        \item \textcolor{blue}{Time-series analysis}: in settings where events are required to occur within specified temporal delays~(Lainscsek et al. (2015))
-
    \end{itemize}
    
 \end{frame}
@@ -216,11 +216,14 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	
     \begin{itemize}
         \item Based on the \textbf{state space graph formulation} of the problem \vspace{0.3cm}
-        \item \textbf{Nodes} corresp. to partial solutions and resp. subproblems be solved \vspace{0.3cm}
+        \item \textbf{Nodes} corresp. to partial solutions and resp. subproblems be solved
+        \begin{itemize}
+        	\item transitions: valid extension of partial solutions (by one letter)
+        \end{itemize} \vspace{0.3cm}
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
         \item \textcolor{red}{\textbf{Many root/source nodes}} in the state graph---the position of leading letter in each common gapped subsequence free to select 
         \begin{itemize}
-        	\item   root state space subgraphs (formulation) w.r.t. starting point (match)
+        	\item   root state space subgraph (formulation) w.r.t. starting point (match)
         \end{itemize} 
     \end{itemize}
     
@@ -332,8 +335,8 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{An issue with the root-state-space formulation: disconnected components}
 	
 	\begin{itemize}
-		\item  Generation of longest solution for a root (sub-)space is generally hard $\Rightarrow$ need an approx. approach (beam search -- limited BFS)
-		\item  The root-state-space formulation may involve disconnected components generation  $\Rightarrow$ needs iterative beam search to explore all space 
+		\item  Generation of longest solution for a root (sub-)space is generally hard $\Rightarrow$ need an approx. approach (\textbf{Beam search} -- limited BFS)
+		\item  The root-state-space formulation may involve disconnected components generation  $\Rightarrow$ needs \textbf{iterative beam search} to explore all space 
 	\end{itemize} \vspace{0.3cm}
 	
 	$\Longrightarrow$ \textcolor{red}{\textbf{ Iterative Multi Source Beam Search (IMSBS) approach}}. 
@@ -651,20 +654,21 @@ For a state $v=(\mathbf p^v,l^v)$, we build a size-independent feature represent
 \end{frame}
 
 \begin{frame}{How the learned evaluator is used inside IMSBS}
-\begin{enumerate}
-  \item Beam search expands the currently selected states.
-  \item Each feasible extension produces a child node $u$.
-  \item The child is transformed into features $x(u)$.
-  \item The NN score $h_w(u)$ is computed (feed-forward propagation).
-  \item Candidates are sorted and only the best $\beta$ nodes survive.
-\end{enumerate}
+%\begin{enumerate}
+%  \item Beam search expands the currently selected states.
+%  \item Each feasible extension produces a child node $u$.
+%  \item The child is transformed into features $x(u)$.
+%  \item The NN score $h_w(u)$ is computed (feed-forward propagation).
+%  \item Candidates are sorted and only the best $\beta$ nodes survive.
+%\end{enumerate}
+
 \vspace{0.25cm}
 \centering
 \scalebox{0.77}{
 \begin{tikzpicture}[node distance=1.0cm,>=Latex]
 \node[draw,rounded corners,fill=blue!8,align=center] (parent) {Beam level $k$\\candidate states};
 \node[draw,rounded corners,fill=green!8,align=center,right=of parent] (expand) {feasible\\extensions};
-\node[draw,rounded corners,fill=orange!10,align=center,right=of expand] (score) {score each node\\$h_w(u)$};
+\node[draw,rounded corners,fill=orange!10,align=center,right=of expand] (score) {extract feature vectors, \\ score each node\\$h_w(u)$};
 \node[draw,rounded corners,fill=purple!10,align=center,right=of score] (keep) {next beam\\top $\beta$};
 \draw[->,thick] (parent)--(expand); \draw[->,thick] (expand)--(score); \draw[->,thick] (score)--(keep);
 \end{tikzpicture}}
@@ -691,7 +695,7 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
 \begin{block}{Solution: neuro-evolution}
 \begin{itemize}
   \item Treat all NN weights as \textbf{one vector $w$}.
-  \item Evaluate $w$ by running IMSBS on training instances.
+  \item Evaluate $w$ by running (inexpensive) IMSBS on training instances.
   \item \textbf{Fitness} = average subsequence length found.
 \end{itemize}
 \end{block}
