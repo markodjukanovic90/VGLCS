@@ -61,7 +61,7 @@ fill=green!15
 
 
 
-\title{Neuro-Evolved Heuristics for Variable Gapped Common Subsequence Identification}
+\title[Neuro-Evolved Heuristics for VGLCS...]{Neuro-Evolved Heuristics for Variable Gapped Common Subsequence Identification}
 
 \author[Djukanovic et al.  ]{Marko Djukanović\inst{1, 5}  \and
 Christian Blum\inst{2}  \and 
@@ -162,7 +162,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
              \item $\tilde{s}$ is a \textbf{subsequence} of $s$
              \item the gap constraint $G_s$ fulfilled resp. the \textit{positions of embedding} $\tilde{s}$ in $s$:
          \begin{itemize}
-         	\item consecutive embedding positions respect gap distances (not more than \textcolor{red}{allowed number of letters} inbetween)
+         	\item consecutive embedding positions respect gap distances (no more than the \textcolor{red}{given number of letters} inbetween allowed)
              %\item  suppose $i_1< \ldots <i_{|\tilde{s}|}$ are those \textbf{positions}  
              %\item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, \textcolor{red}{i_{j} - i_{j-1} \leq G_{s}(i_{j})+1}$  (consecutive positions respect gap distances = allowed \textit{number of letters inbetween})
          \end{itemize}
@@ -200,7 +200,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
        \begin{itemize}
        	\item   \textcolor{red}{NP-hard}  under arbitrary large $m$ 
         \end{itemize} 
-        \item Djukanovic et al. (2026): the first approach for general VGLCSP ($m$ arbitrary): \textcolor{red}{Iterative Beam search approach}
+        \item Djukanovic et al. (2026): the first approach for $m$ arbitrary: \textcolor{red}{Iterative Beam search approach}
         
    \end{itemize} \vspace{0.5cm}
    
@@ -223,7 +223,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         	\item transitions: valid extension of partial solutions (by one letter)
         \end{itemize} \vspace{0.3cm}
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
-        \item \textcolor{red}{\textbf{Many root/source nodes}} in the state graph---the position of leading letter in each common gapped subsequence free to select 
+        \item \textcolor{red}{\textbf{Many root/source nodes}} in the state space---the position of leading letter in each common gapped subsequence free to select 
         \begin{itemize}
         	\item   root state space subgraph (formulation) w.r.t. starting point (match)
         \end{itemize} 
@@ -336,10 +336,10 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \end{comment}
 
 
-\begin{frame}{An issue with the root-state-space formulation: disconnected components}
+\begin{frame}{Methodology: main components roughly}%{An issue with the root-state-space formulation: disconnected components}
 	
 	\begin{itemize}
-		\item  Generation of longest solution for a root (sub-)space is generally hard $\Rightarrow$ need an approx. approach (\textbf{Beam search} -- limited BFS)
+		\item  Generation of longest solution for a root (sub-)space is generally hard $\Rightarrow$ need an approx. approach for evaluation (\textbf{Beam search} -- \textcolor{red}{\textbf{limited BFS}}) \vspace{0.5cm}
 		\item  The root-state-space formulation may involve disconnected components generation  $\Rightarrow$ needs \textbf{iterative beam search} to explore all space 
 	\end{itemize} \vspace{0.3cm}
 	
@@ -564,9 +564,9 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.52\textwidth}
 \begin{itemize}
-  \item IMSBS needs a score to decide which candidate nodes stay in the beam
+  \item IMSBS needs a better score to decide which candid nodes stay in the beam
   %\item Hand-crafted upper bounds useful, but less reliable for hard settings
-  \item We learn a \textcolor{blue}{node evaluator}: a function assigning a promise score to a partial VGLCS solution
+  \item We learn \textcolor{blue}{a novel node evaluator}: a function assigning a promise score to a partial solution
 \end{itemize}
 \vspace{0.15cm}
 \begin{block}{Role of the learned heuristic}
@@ -613,7 +613,7 @@ It does \textbf{not} construct the solution directly; it ranks candidate states 
 \foreach \a in {1,...,5} \foreach \b in {1,...,4} {\draw[->,gray!50] (i\a)--(h\b);}
 \foreach \a in {1,...,4} \foreach \b in {1,...,3} {\draw[->,gray!50] (h\a)--(g\b);}
 \foreach \a in {1,...,3} {\draw[->,gray!60] (g\a)--(o);}
-\node[above] at (0,0) {features}; \node[above] at (3,0) {hidden + activation funcs}; \node[above] at (6,0) {score};
+\node[above] at (0,0) {\textcolor{blue}{features}}; \node[above] at (3,0) {\textcolor{blue}{hidden + activation funcs}}; \node[above] at (6,0) {\textcolor{blue}{score}};
 \end{tikzpicture}}
 \end{column}
 \end{columns}
@@ -621,10 +621,10 @@ It does \textbf{not} construct the solution directly; it ranks candidate states 
 
 \begin{frame}{State features for VGLCS node evaluation}
 \small
-For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of sufix positions of subproblem to be solved, $l^v$: lenght of partial solution), build a size-independent features:
+For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of subproblem to be solved, $l^v$: lenght of partial solution), build a size-independent features:
 \vspace{0.2cm}
 \begin{columns}[T,totalwidth=\textwidth]
-\begin{column}{0.33\textwidth}
+\begin{column}{0.31\textwidth}
 \begin{block}{Search progress}
 \begin{itemize}
 \item normalize positions: $F_i^v=p_i^v/|s_i|$
@@ -633,11 +633,11 @@ For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of sufix positions of 
 \end{itemize}
 \end{block}
 \end{column}
-\begin{column}{0.33\textwidth}
+\begin{column}{0.35\textwidth}
 \begin{block}{Gap flexibility}
 \begin{itemize}
-\item $G^{v}_i = G_{s_i}[p^v, \ldots]$
-\item $\max,\min,\mathrm{mean},\mathrm{std}$ of $\mathbf G^v$
+\item $G^{v}_i = G_{s_i}[p^v_i, \ldots]$
+\item $\max,\min,\mathrm{mean},\mathrm{std}$ %of $\mathbf G^v$
 \item describes how restrictive future extensions are
 \end{itemize}
 \end{block}
@@ -677,7 +677,7 @@ For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of sufix positions of 
 \draw[->,thick] (parent)--(expand); \draw[->,thick] (expand)--(score); \draw[->,thick] (score)--(keep);
 \end{tikzpicture}}
 \vspace{0.25cm}
-\begin{block}{Important distinction}
+\begin{block}{Important note}
 Learning is \textbf{offline}; during the final run the NN is only a fast scoring function.
 \end{block}
 \end{frame}
@@ -704,7 +704,7 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
 \end{itemize}
 \end{block}
 \[
-\max_w \frac{1}{|\mathcal T|}\sum_{I\in\mathcal T} f(\textsc{IMSBS}(I,h_w)).
+\max_w \frac{1}{|\mathcal T|}\sum_{I\in\mathcal T} f(\textsc{IMSBS}(I,h_w))
 \]
 \end{column}
 \end{columns}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  24 AUG 2026 08:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  24 AUG 2026 09:33
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1027,7 +1027,7 @@ Dictionary: translator-theorem-dictionary, Language: English
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
  (./optima-2026-djukanovic-extended.nav)
-Overfull \hbox (134.09656pt too wide) in paragraph at lines 94--94
+Overfull \hbox (4.31287pt too wide) in paragraph at lines 94--94
  [][][][]  
  []
 
@@ -1101,7 +1101,7 @@ LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 1
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1125,7 +1125,7 @@ line 117.
 [2
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1149,7 +1149,7 @@ line 134.
 [3
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1173,7 +1173,7 @@ line 151.
 [4
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1197,7 +1197,7 @@ line 172.
 [5
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1221,7 +1221,7 @@ line 193.
 [6
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1245,7 +1245,7 @@ line 213.
 [7
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1269,7 +1269,7 @@ line 232.
 [8
 
 ] Excluding 'comment' comment. Excluding 'comment' comment.
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1308,7 +1308,7 @@ Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
 
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1332,7 +1332,7 @@ line 559.
 [10
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1356,7 +1356,7 @@ line 588.
 [11
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1385,7 +1385,7 @@ LaTeX Font Warning: Font shape `T1/cmss/b/n' undefined
 (Font)              using `T1/cmss/m/n' instead on input line 658.
 
 
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1409,7 +1409,7 @@ line 658.
 [13
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1438,7 +1438,7 @@ LaTeX Font Warning: Font shape `T1/cmss/m/sc' undefined
 (Font)              using `T1/cmss/m/n' instead on input line 711.
 
 
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1462,7 +1462,7 @@ line 711.
 [15
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1486,7 +1486,7 @@ line 744.
 [16
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1510,7 +1510,7 @@ line 766.
 [17
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1534,7 +1534,7 @@ line 806.
 [18
 
 ]
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1576,7 +1576,7 @@ Overfull \vbox (9.89027pt too high) detected at line 915
  []
 
 
-Overfull \hbox (134.09656pt too wide) has occurred while \output is active
+Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
@@ -1618,10 +1618,10 @@ Package rerunfilecheck Info: File `optima-2026-djukanovic-extended.out' has not
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 28155 strings out of 479648
- 571921 string characters out of 5886115
- 820680 words of memory out of 5000000
- 45492 multiletter control sequences out of 15000+600000
+ 28158 strings out of 479648
+ 572041 string characters out of 5886115
+ 820913 words of memory out of 5000000
+ 45495 multiletter control sequences out of 15000+600000
  499972 words of font info for 99 fonts, out of 8000000 for 9000
  475 hyphenation exceptions out of 8191
  128i,18n,122p,433b,1104s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1654,10 +1654,10 @@ blic/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols
 /msbm10.pfb>
-Output written on optima-2026-djukanovic-extended.pdf (20 pages, 443463 bytes).
+Output written on optima-2026-djukanovic-extended.pdf (20 pages, 441943 bytes).
 
 PDF statistics:
- 1626 PDF objects out of 1728 (max. 8388607)
+ 1622 PDF objects out of 1728 (max. 8388607)
  898 compressed objects within 9 object streams
  41 named destinations out of 1000 (max. 500000)
  951 words of extra memory for PDF output out of 10000 (max. 10000000)
