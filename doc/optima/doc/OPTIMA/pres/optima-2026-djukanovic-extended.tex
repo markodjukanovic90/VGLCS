@@ -835,54 +835,84 @@ LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 \end{block}
 \end{frame}
 
-\begin{frame}{How close are we to the exact DP-1 solution ($m=2$)?}
+
+\begin{frame}{Conclusion}
+
+
+		\begin{itemize}
+			\item 	Learning an improved guidance promising (best-performing heuristic)
+			\begin{itemize}
+				\item statistically significantly better results w.r.t. the literature best approach
+			\end{itemize} \vspace{0.5cm}
+		    \item Low alphabet diversity, requires even stronger exploration/\textcolor{red}{\textbf{richer feature portfolio}}.
+		\end{itemize}
+
+\end{frame}
+
+
+
+% Final visible slide
+\begin{frame}
+	\begin{center}
+		\Large
+		Thank you for your attention!
+	\end{center}
+\end{frame}
+
+% -------------------------------------------------
+% BACKUP / Q&A SLIDE
+% -------------------------------------------------
+
+\begin{frame}{Ensemble-IMSBS vs. exact DP-1 solution ($m=2$)}
 	
 	\begin{columns}[T,onlytextwidth]
 		
-		% LEFT
 		\begin{column}{0.47\textwidth}
 			\centering
-			{ $|\Sigma|=2$}
+			{$|\Sigma|=2$}
 			
 			\vspace{0.3cm}
 			\scalebox{0.7}{
-			\begin{tabular}{c|c}
-				$n$ & Avg. Gap \\
-				\hline
-				50  & 1.0\% \\
-				100 & 6.5\% \\
-				200 & 10.0\% \\
-				500 & \alert{\textbf{24.4\%}} \\ \hline \hline
-			\end{tabular}}
+				\begin{tabular}{c|c}
+					$n$ & Avg. Gap \\
+					\hline
+					50  & 1.0\% \\
+					100 & 6.5\% \\
+					200 & 10.0\% \\
+					500 & \alert{\textbf{24.4\%}} \\
+					\hline\hline
+				\end{tabular}
+			}
 			
 			\vspace{0.2cm}
 			
-			\textbf{\footnotesize{Performance starts to degrade\\
-				for large instances.}}
-			
+			\textbf{\footnotesize{
+					Performance degrades as\\
+					the instance size increases.}}
 		\end{column}
 		
-		% RIGHT
 		\begin{column}{0.47\textwidth}
 			\centering
 			{$|\Sigma|=4$}
 			
 			\vspace{0.3cm}
-		    \scalebox{0.7}{	
-			\begin{tabular}{c|c}
-				$n$ & Avg. Gap \\
-				\hline
-				50  & 0.7\% \\
-				100 & 0.3\% \\
-				200 & 1.1\% \\
-				500 & \textbf{2.0\%} \\ \hline \hline
-			\end{tabular}}
+			\scalebox{0.7}{
+				\begin{tabular}{c|c}
+					$n$ & Avg. Gap \\
+					\hline
+					50  & 0.7\% \\
+					100 & 0.3\% \\
+					200 & 1.1\% \\
+					500 & \textbf{2.0\%} \\
+					\hline\hline
+				\end{tabular}
+			}
 			
 			\vspace{0.2cm}
 			
-			\textbf{\footnotesize{Near-optimal performance\\
-				across all instance sizes.}}
-			
+			\textbf{\footnotesize{
+					Near-optimal performance\\
+					across all instance sizes.}}
 		\end{column}
 		
 	\end{columns}
@@ -893,16 +923,8 @@ LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 		\footnotesize
 		\textbf{Ensemble-IMSBS stays within 2\% of DP-1\\
 			for all tested $|\Sigma|=4$ instances.}
-	\end{center} \\ 
-	\begin{block}{Conclusion}
-		\begin{itemize}
-			\item 	Learning an improved guidance promising (best-performing heuristic)
-		    \item Low alphabet diversity, requires even stronger exploration/\textcolor{red}{\textbf{richer feature portfolio}}.
-		\end{itemize}
-	\end{block}
-
+	\end{center}
+	
 \end{frame}
-
-
  
 \end{document}
