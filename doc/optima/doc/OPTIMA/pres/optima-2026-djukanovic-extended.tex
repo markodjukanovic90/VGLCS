@@ -112,7 +112,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
           \item how structural similarity affects sequence functionality 
        \end{itemize} \vspace{0.4cm}
        
-       \item \textbf{Subsequences}:  \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants (studied 50 years already)
+       \item Motifs can be \textbf{subsequences}:  \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants (studied 50 years already)
    \end{itemize}
 \end{frame}
 
@@ -123,46 +123,35 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         \textbf{Input}: Given an arbitrary set of sequences $S=\{s_1, \ldots, s_m\}$ \\
         \textbf{Task}: Find a   subsequence $s$  \textcolor{blue}{common} for all sequences from $S$ with \textcolor{blue}{maximum} possible length ($|s|$). 
     \end{definition} \vspace{0.5cm}
-    \begin{example}
-       Input: $S=$\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
-       LCS solution: $s=\text{\textcolor{red}{ATTC}}$
-    \end{example}
-        \vspace{0.3cm}
-       % \begin{itemize}
-    	%\item Basic problem in computational biology, well-solved  theoretically and practically 
-      %\end{itemize}
-\end{frame}
-
-\begin{frame}{LCS: Literature \& Problem Variants }
+   % \begin{example}
+    %   Input: $S=$\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
+    %   LCS solution: $s=\text{\textcolor{red}{ATTC}}$
+    %\end{example}
+    %   \vspace{0.3cm}
+  
+ \textbf{LCS: Literature \& Problem Variants }
   \begin{itemize}
-  \item For $m=2$, polynomially solvable: \textcolor{blue}{Dynamic programming} %Hunt-Szymanski, Hirschenberg,  ... 
+  \item For $m=2$, polynomially solvable, e.g. {Dynamic programming} %Hunt-Szymanski, Hirschenberg,  ... 
  \vspace{0.2cm}
-  \item When $m$ arbitrary large -- \textcolor{red}{$\mathcal{NP}$-hard}:
-   \begin{itemize}
-   \item %subject of interest over last 30 years --
-    approximation, meta-heuristic, but also exact approaches   
-   \end{itemize}  
+  \item When $m$ arbitrary large, it is \textcolor{red}{$\mathcal{NP}$-hard}:  approximation, meta-heuristic, exact approaches   
   \end{itemize}\vspace{0.5cm}
   
-  \textbf{Problem-related practical variants}:
-  \begin{itemize}
-  		\item   Repetition-free, Filled LCS problem, \textcolor{red}{Gapped LCS problem}
-  \end{itemize}
+  \textbf{Problem-related practical variants}:    Repetition-free, Filled LCS problem, \textcolor{red}{Gapped LCS problem}
 \end{frame}
 
 \begin{frame}{The gapped LCS problem (Peng and Yang, 2012)}
-   \begin{definition}[A gap sequence]
+   \begin{definition}[Gapped sequence]
        Given is a sequence $s$ and a function 
-       $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. A pair\textcolor{red}{$(s, G_s)$} is called a {gap sequence}.
+       $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. A pair\textcolor{red}{$(s, G_s)$} is called a {gapped sequence}.
    \end{definition} ($G_s$: To each position of seq. $s$, one number assigned) \vspace{0.5cm}
    
-   \begin{definition}[A gapped subsequence]
+   \begin{definition}[Gapped subsequence]
          Sequence $\tilde{s}$ is a \textcolor{red}{gapped subsequence} of $(s, G_s)$ iff 
          \begin{itemize}
              \item $\tilde{s}$ is a \textbf{subsequence} of $s$
              \item the gap constraint $G_s$ fulfilled resp. the \textit{positions of embedding} $\tilde{s}$ in $s$:
          \begin{itemize}
-         	\item consecutive embedding positions respect gap distances (no more than the \textcolor{red}{given number of letters} inbetween respected)
+         	\item consecutive embedding positions respect gap distances (no more than the \textcolor{red}{assigned number of letters} inbetween respected)
              %\item  suppose $i_1< \ldots <i_{|\tilde{s}|}$ are those \textbf{positions}  
              %\item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, \textcolor{red}{i_{j} - i_{j-1} \leq G_{s}(i_{j})+1}$  (consecutive positions respect gap distances = allowed \textit{number of letters inbetween})
          \end{itemize}
@@ -174,10 +163,10 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Problem definition}
 
    \begin{example}
-      $s=\texttt{AATTGC}$, $\textcolor{red}{G_s(\cdot)=1}$
+      $s=\texttt{AATTGC}$, $\textcolor{red}{G_s(\cdot)=1}$, $\tilde{s}=\texttt{ATG}$
       \begin{itemize}
-         \item  $\tilde{s}=\texttt{ATG}$, the embedding: \textcolor{red}{A}A\textcolor{red}{T}T\textcolor{red}{G}C (\textcolor{blue}{valid} gapped subsequence)
-         \item  $\tilde{s}=\texttt{ATG}$, the embedding: \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid} gapped subsequence)
+         \item the embedding \textcolor{red}{A}A\textcolor{red}{T}T\textcolor{red}{G}C (\textcolor{blue}{valid} gapped subsequence)
+         \item  the embedding \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid} gapped subsequence)
       \end{itemize}
    \end{example} \vspace{0.5cm}
     
@@ -218,14 +207,14 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	
     \begin{itemize}
         \item Based on the \textbf{state space graph formulation} of the problem \vspace{0.3cm}
-        \item \textbf{Nodes} corresp. to partial solutions and resp. subproblems be solved
+        \item \textbf{Nodes} corresp. to partial solutions and resp. subproblems to be solved
         \begin{itemize}
         	\item transitions: valid extension of partial solutions (by one letter)
         \end{itemize} \vspace{0.3cm}
         \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
         \item \textcolor{red}{\textbf{Many root/source nodes}} in the state space---the position of leading letter in each common gapped subsequence free to select 
         \begin{itemize}
-        	\item   root state space subgraph (formulation) w.r.t. starting point (match)
+        	\item   root state space subgraph (formulation) w.r.t. starting source (match)
         \end{itemize} 
     \end{itemize}
     
@@ -549,7 +538,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     	  	\item   $\textrm{UB}_2$: \textcolor{red}{\textit{Character Frequency Alignment}} score
     \end{enumerate} \\ \vspace{0.5cm}
     
-    Experimental evaluation \& Conclusions:
+    Experimental evaluation:
     \begin{itemize}
     	\item IMSBS able to efficiently run on large synthetic instances
     	%\item Obtain a large portion  of known optimal solutions for $m=2$
@@ -566,7 +555,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{itemize}
   \item IMSBS needs a better score to decide which candid nodes stay in the beam
   %\item Hand-crafted upper bounds useful, but less reliable for hard settings
-  \item We learn \textcolor{blue}{a novel node evaluator}: a function assigning a promise score to a partial solution
+  \item We learn \textcolor{blue}{a new node evaluator}: a function assigning a promise score to a partial solution
 \end{itemize}
 \vspace{0.15cm}
 \begin{block}{Role of the learned heuristic}
@@ -621,11 +610,11 @@ It does \textbf{not} construct the solution directly; it ranks candidate states 
 
 \begin{frame}{State features for VGLCS node evaluation}
 \small
-For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of subproblem to be solved, $l^v$: lenght of partial solution), build a size-independent features:
+For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of subproblem to be solved, $l^v$: length of partial solution), build a size-independent features:
 \vspace{0.2cm}
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.31\textwidth}
-\begin{block}{Search progress}
+\begin{block}{\textbf{Search progress}}
 \begin{itemize}
 \item normalize positions: $F_i^v=p_i^v/|s_i|$
 \item $\max,\min,\mathrm{mean},\mathrm{std}$ of $\mathbf F^v$
@@ -634,7 +623,7 @@ For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of
 \end{block}
 \end{column}
 \begin{column}{0.35\textwidth}
-\begin{block}{Gap flexibility}
+\begin{block}{\textbf{Gap flexibility}}
 \begin{itemize}
 \item $G^{v}_i = G_{s_i}[p^v_i, \ldots]$
 \item $\max,\min,\mathrm{mean},\mathrm{std}$ %of $\mathbf G^v$
@@ -643,7 +632,7 @@ For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of
 \end{block}
 \end{column}
 \begin{column}{0.30\textwidth}
-\begin{block}{Global context}
+\begin{block}{\textbf{Global context}}
 \begin{itemize}
 \item alphabet size $|\Sigma|$
 \item number of sequences $m$
@@ -700,7 +689,7 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
 \begin{itemize}
   \item Treat all NN weights as \textbf{one vector $w$}.
   \item Evaluate $w$ by running (inexpensive) IMSBS on training (32) instances.
-  \item \textbf{Fitness} = average subsequence length found.
+  \item \textbf{Fitness} = average subsequence length found
 \end{itemize}
 \end{block}
 \[
@@ -778,7 +767,7 @@ $\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ense
 \begin{block}{Training protocol}
 \begin{itemize}
 %\item 32 training + 32 validation instances
-\item   IMSBS utilized $\beta=500$, 100 beam iterations, max. 60 sec
+\item   IMSBS utilized $\beta=500$, max. 100 beam iterations or 60 sec
 \end{itemize}
 \end{block}
 \end{column}
@@ -846,7 +835,7 @@ LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 \end{block}
 \end{frame}
 
-\begin{frame}{How close are we to the exact DP-1 solution?}
+\begin{frame}{How close are we to the exact DP-1 solution ($m=2$)?}
 	
 	\begin{columns}[T,onlytextwidth]
 		
