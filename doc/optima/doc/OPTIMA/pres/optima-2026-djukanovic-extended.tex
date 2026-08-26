@@ -187,9 +187,9 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
        \item  Peng and Yang (2012, 2014):  $m=2$  version by \textcolor{red}{three dynamic programming} (DP) approaches 
        \item  Manea et al. (2024): complexity analysis investigated
        \begin{itemize}
-       	\item   \textcolor{red}{NP-hard}  under arbitrary large $m$ 
+       	\item   {\textcolor{red}$\mathcal{NP}$-hard } under arbitrary large $m$ 
         \end{itemize} 
-        \item Djukanovic et al. (2026): the first approach for $m$ arbitrary: \textcolor{red}{Iterative Beam search approach}
+        \item Djukanovic et al. (2026) proposed the first approach for $m$ arbitrary: \textcolor{red}{Iterative Beam search approach}
         
    \end{itemize} \vspace{0.5cm}
    
@@ -538,11 +538,11 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     	  	\item   $\textrm{UB}_2$: \textcolor{red}{\textit{Character Frequency Alignment}} score
     \end{enumerate} \\ \vspace{0.5cm}
     
-    Experimental evaluation:
+\textbf{Experimental evaluation:}
     \begin{itemize}
     	\item IMSBS able to efficiently run on large synthetic instances
     	%\item Obtain a large portion  of known optimal solutions for $m=2$
-    	\item \textbf{Weaknesses}: the performance of $\textrm{UB}_2$ seems to significantly drop for  large $n$ ($n=500$) and small $|\Sigma|$ ($|\Sigma|=2$)
+    	\item {Weaknesses}: the performance of $\textrm{UB}_2$ seems to significantly drop for  large $n$ ($=500$) and small $|\Sigma|$ ($=2$)
     \end{itemize} \vspace{0.7cm}
     $\Rightarrow$ \textcolor{red}{\textbf{Construction of a new heuristic guidance}}
 \end{frame}
@@ -643,7 +643,7 @@ For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of
 \end{columns}
 \vspace{0.5cm}
 \centering
-\textcolor{blue}{Feature sets tested:} $F_1$ = progress + gaps + length (9); $F_2=F_1+|\Sigma|$ (10); $F_3=F_2+m$ (11).
+\textcolor{blue}{Feature sets tested:} $F_1$ = progress + gaps (9); $F_2=F_1+|\Sigma|$ (10); $F_3=F_2+m$ (11).
 \end{frame}
 
 \begin{frame}{How the learned evaluator is used inside IMSBS}
@@ -842,9 +842,9 @@ LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 		\begin{itemize}
 			\item 	Learning an improved guidance promising (best-performing heuristic)
 			\begin{itemize}
-				\item statistically significantly better results w.r.t. the literature best approach
+				\item statistically significantly better results w.r.t. the literature-best approach
 			\end{itemize} \vspace{0.5cm}
-		    \item Low alphabet diversity, requires even stronger exploration/\textcolor{red}{\textbf{richer feature portfolio}}.
+		    \item Noticed for $|\Sigma|=2$ a stronger exploration/\textcolor{red}{\textbf{richer feature portfolio}} needed
 		\end{itemize}
 
 \end{frame}
