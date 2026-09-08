@@ -195,7 +195,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    
    \textbf{Motivation}:
    \begin{itemize}
-       \item  \textcolor{blue}{Genetics and molecular biology}: DNA/protein comparison analysis--distances between residues must be respected \vspace{0.2cm}
+       \item  \textcolor{blue}{Genetics and molecular biology}%: %DNA/protein comparison analysis--distances between residues must be respected \vspace{0.2cm}
        \item \textcolor{blue}{Time-series analysis}: in settings where events are required to occur within specified temporal delays~(Lainscsek et al. (2015))
    \end{itemize}
    
@@ -329,8 +329,8 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	
 	\begin{itemize}
 		\item  Generation of longest solution for a root (sub-)space is generally hard $\Rightarrow$ need an approx. approach for evaluation (\textbf{Beam search} -- \textcolor{red}{\textbf{limited BFS}}) \vspace{0.5cm}
-		\item  The root-state-space formulation may involve disconnected components generation  $\Rightarrow$ needs \textbf{iterative beam search} to explore all space 
-	\end{itemize} \vspace{0.3cm}
+		\item  The root-state-space formulation may involve disconnected components  $\Rightarrow$ needs \textbf{iterative beam search} to explore all space 
+	\end{itemize} \vspace{0.7cm}
 	
 	$\Longrightarrow$ \textcolor{red}{\textbf{ Iterative Multi Source Beam Search (IMSBS) approach}}. 
 \end{frame}
@@ -553,7 +553,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.52\textwidth}
 \begin{itemize}
-  \item IMSBS needs a better score to decide which candid nodes stay in the beam
+ % \item IMSBS needs a better score to decide which candid nodes stay in the beam
   %\item Hand-crafted upper bounds useful, but less reliable for hard settings
   \item We learn \textcolor{blue}{a new node evaluator}: a function assigning a promise score to a partial solution
 \end{itemize}
@@ -760,7 +760,7 @@ $\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ense
 \begin{column}{0.47\textwidth}
 \begin{block}{IMSBS parameters}
 \begin{itemize}
-\item tuned by \texttt{irace}  (parameters from the literature: $\beta=5000$
+\item tuned by \texttt{irace}  ($\beta=5000$
 \end{itemize}
 \end{block} \vspace{1.0cm}
 
@@ -842,7 +842,7 @@ LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 		\begin{itemize}
 			\item 	We successfully learned an improved guidance (best-performing heuristic) through a neuro-evolved process
 			\begin{itemize}
-				\item statistically significantly better results w.r.t. the literature-best approach
+				\item statistically significantly better results when compared to the literature-best approach
 			\end{itemize} \vspace{0.5cm}
 		    \item Noticed for $|\Sigma|=2$: a stronger exploration/\textcolor{red}{\textbf{richer feature portfolio}} needed
 		\end{itemize}
