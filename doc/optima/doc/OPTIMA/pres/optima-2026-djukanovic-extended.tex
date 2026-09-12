@@ -171,7 +171,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    \end{example} \vspace{0.5cm}
     
    \begin{definition}[The multiple (variable) gapped LCS problem -- MVGLCSP]
-        \textbf{Input}: Given is a set of $m$ gapped sequences $\{ (s_i, G_{s_i})\}_{i=1}^m \}$. \\
+        \textbf{Input}: Given is an arbitrary set of  gapped sequences $\{ (s_i, G_{s_i})\}_{i=1}^m \}$. \\
         \textbf{Task}: Find the longest  sequence $\tilde{s}$ so that 
         \begin{itemize}
             \item  $\tilde{s}$ is \textcolor{red}{\textbf{common subusequence}} of each $s_i$
@@ -210,7 +210,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
         \begin{itemize}
         	\item transitions: valid extensions of partial solutions (by one letter)
         \end{itemize} \vspace{0.3cm}
-        \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions immediately \vspace{0.3cm}
+        \item \textbf{Gap constraints}: incorporated to cut-off invalid extensions (edges) among the LCS extensions \vspace{0.3cm}
         \item \textcolor{red}{\textbf{Many root/source nodes}} in the state space---the position of leading letter in each common gapped subsequence free to select 
         \begin{itemize}
         	\item   root state space subgraph (formulation) w.r.t. starting source (match)
@@ -709,7 +709,7 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
   %\item Validation set monitors generalization and prevents overfitting.
 \end{itemize}
 \vspace{0.15cm}
-\begin{block}{Parameters used}
+\begin{block}{Parameters setting:}
 $n_{pop}=20$, $n_{elite}=1$, $n_{mutants}=7$, $p_{bias}=0.5$.
 \end{block}
 \end{column}
@@ -742,7 +742,7 @@ $n_{pop}=20$, $n_{elite}=1$, $n_{mutants}=7$, $p_{bias}=0.5$.
 \[
  r(v)=\alpha\,r_{h_{w^*}}(v)+(1-\alpha)\,r_{UB_2}(v).
 \]
-Lower rank $r(v)$ means higher priority in the beam.
+%Lower rank $r(v)$ means higher priority in the beam.
 \end{block}
 \vspace{0.15cm}
 %\centering
@@ -829,9 +829,9 @@ LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 \end{column}
 \end{columns}
 \vspace{0.15cm}
-\begin{block}{Takeaway}
-\textcolor{red}{The learned ensemble improves solution quality consistently, while keeping the original IMSBS machinery almost unchanged.}
-\end{block}
+%\begin{block}{Takeaway}
+%\textcolor{red}{The learned ensemble improves solution quality consistently, while keeping the original IMSBS machinery almost unchanged.}
+%\end{block}
 \end{frame}
 
 
@@ -839,7 +839,7 @@ LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 
 
 		\begin{itemize}
-			\item 	We successfully learned an improved guidance (best-performing heuristic) through a neuro-evolved process
+			\item 	We successfully learned an improved guidance  through a neuro-evolved process
 			\begin{itemize}
 				\item statistically significantly better results when compared to the literature-best approach
 			\end{itemize} \vspace{0.5cm}
