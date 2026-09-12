@@ -108,8 +108,8 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
        \end{itemize} \vspace{0.3cm}
         \item \textbf{One of central tasks in computational biology:} 
         \begin{itemize}
-        	\item  sequence comparison, finding \textbf{common motifs} between sequences
-          \item how structural similarity affects sequence functionality 
+        	\item  sequence comparison, find \textbf{common motifs} between sequences
+          \item structural similarity vs. sequence functionality 
        \end{itemize} \vspace{0.4cm}
        
        \item Motifs can be \textbf{subsequences}:  \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants (studied 50 years already)
@@ -131,9 +131,9 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
   
  \textbf{LCS: Literature \& Problem Variants }
   \begin{itemize}
-  \item For $m=2$, polynomially solvable, e.g. {Dynamic programming} %Hunt-Szymanski, Hirschenberg,  ... 
+  \item For $m=2$: polynomially solvable, e.g. {Dynamic programming} %Hunt-Szymanski, Hirschenberg,  ... 
  \vspace{0.2cm}
-  \item When $m$ arbitrary large, it is \textcolor{red}{$\mathcal{NP}$-hard}:  approximation, meta-heuristic, exact approaches   
+  \item When $m$ arbitrary large:   \textcolor{red}{$\mathcal{NP}$-hard}, e.g.,  approximation, meta-heuristic, exact approaches   
   \end{itemize}\vspace{0.5cm}
   
   \textbf{Problem-related practical variants}:    Repetition-free, Filled LCS problem, \textcolor{red}{Gapped LCS problem}
@@ -151,7 +151,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
              \item $\tilde{s}$ is a \textbf{subsequence} of $s$
              \item the gap constraint $G_s$ fulfilled resp. the \textit{positions of embedding} $\tilde{s}$ in $s$:
          \begin{itemize}
-         	\item consecutive embedding positions respect gap distances (no more than the \textcolor{red}{assigned number of letters} inbetween respected)
+         	\item consecutive embedding positions respect gap distances (no more than the \textcolor{red}{assigned number of letters} between respected)
              %\item  suppose $i_1< \ldots <i_{|\tilde{s}|}$ are those \textbf{positions}  
              %\item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, \textcolor{red}{i_{j} - i_{j-1} \leq G_{s}(i_{j})+1}$  (consecutive positions respect gap distances = allowed \textit{number of letters inbetween})
          \end{itemize}
@@ -187,10 +187,9 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
        \item  Peng and Yang (2012, 2014):  $m=2$  version by \textcolor{red}{three dynamic programming} (DP) approaches 
        \item  Manea et al. (2024): complexity analysis investigated
        \begin{itemize}
-       	\item   {\textcolor{red}$\mathcal{NP}$-hard } under arbitrary large $m$ 
+       	\item   {\textcolor{red}$\mathcal{NP}$-hard } when $m$ arbitrary 
         \end{itemize} 
         \item Djukanovic et al. (2026) proposed the first approach for $m$ arbitrary: \textcolor{red}{Iterative Beam search approach}
-        
    \end{itemize} \vspace{0.5cm}
    
    \textbf{Motivation}:
@@ -207,7 +206,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 	
     \begin{itemize}
         \item Based on the \textbf{state space graph formulation} of the problem \vspace{0.3cm}
-        \item \textbf{Nodes} corresp. to partial solutions and resp. subproblems to be solved
+        \item \textbf{Nodes} corresp. to partial solutions and resp. subproblems to solve
         \begin{itemize}
         	\item transitions: valid extensions of partial solutions (by one letter)
         \end{itemize} \vspace{0.3cm}
@@ -538,11 +537,11 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     	  	\item   $\textrm{UB}_2$: \textcolor{red}{\textit{Character Frequency Alignment}} score
     \end{enumerate} \\ \vspace{0.5cm}
     
-\textbf{Experimental evaluation:}
+\textbf{Conclusions about IMSBS:}
     \begin{itemize}
-    	\item IMSBS able to efficiently run on large synthetic instances
+    	\item efficiently executed on large synthetic instances
     	%\item Obtain a large portion  of known optimal solutions for $m=2$
-    	\item {Weaknesses}: the performance of $\textrm{UB}_2$ seems to significantly drop for  large $n$ ($=500$) and small $|\Sigma|$ ($=2$)
+    	\item {Weaknesses}: the performance of $\textrm{UB}_2$ improvable for  large $n$ ($=500$) and small $|\Sigma|$ ($=2$) --- $\text{UB}_2$ a weak guidance
     \end{itemize} \vspace{0.7cm}
     $\Rightarrow$ \textcolor{red}{\textbf{Construction of a new heuristic guidance}}
 \end{frame}
@@ -558,9 +557,9 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
   \item We learn \textcolor{blue}{a new node evaluator}: a function assigning a promise score to a partial solution
 \end{itemize}
 \vspace{0.15cm}
-\begin{block}{Role of the learned heuristic}
-It does \textbf{not} construct the solution directly; it ranks candidate states during search.
-\end{block}
+%\begin{block}{Role of the learned heuristic}
+%It does \textbf{not} construct the solution directly; it ranks candidate states during search.
+%\end{block}
 \end{column}
 \begin{column}{0.46\textwidth}
 \centering
@@ -671,7 +670,7 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
 \end{block}
 \end{frame}
 
-\begin{frame}{Why not standard supervised backpropagation?}
+\begin{frame}{Learning weights: Why not standard supervised backpropagation?}
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.50\textwidth}
 \begin{block}{Obstacle}
@@ -703,7 +702,7 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.50\textwidth}
 \begin{itemize}
-  \item Individual = \textcolor{red}{complete NN weight vector $w$}.
+  \item Individual = \textcolor{red}{complete NN weight vector $w$}
   \item Population of weights, evolution ... 
   %\item Initial weights sampled from $[-1,1]$.
   %\item Population refined by elitism, mutants and biased crossover.
@@ -760,7 +759,7 @@ $\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ense
 \begin{column}{0.47\textwidth}
 \begin{block}{IMSBS parameters}
 \begin{itemize}
-\item tuned by \texttt{irace}  ($\beta=5000$
+\item tuned by \texttt{irace}  ($\beta=5000$)
 \end{itemize}
 \end{block} \vspace{1.0cm}
 
@@ -781,12 +780,12 @@ $\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ense
 \item features: $F_1$, $F_2$, $F_3$
 \end{itemize}
 \end{block}
-\begin{block}{Selected architectures (split by diff. $m$)}
+\begin{block}{Selected architectures (split by diff. $m$), E.g.:}
 \begin{tabular}{c|l|l|c}
 $m$ & layers & act. & features \\\hline
-2 & 10-5-5 & ReLU & $F_2$\\
+%2 & 10-5-5 & ReLU & $F_2$\\
 3 & 10-10-5 & ReLU & $F_2$\\
-5 & 10-5-5 & sigmoid & $F_1$\\
+%5 & 10-5-5 & sigmoid & $F_1$\\
 10 & 10-5-5 & ReLU & $F_2$
 \end{tabular}
 \end{block}
