@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  12 SEP 2026 22:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.1.31)  15 SEP 2026 15:55
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1331,26 +1331,31 @@ line 547.
 [9
 
 ]
+Underfull \hbox (badness 10000) detected at line 578
+[][][][][][][][][]
+ []
+
+
 Overfull \hbox (4.31287pt too wide) has occurred while \output is active
  [][][][]  
  []
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 576.
+Package pdftex.def Info: IFEEL_1.png  used on input line 578.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 576.
+Package pdftex.def Info: cofunded_eu.png  used on input line 578.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 576.
+Package pdftex.def Info: slo_ministry.png  used on input line 578.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 576.
+line 578.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [10
 
@@ -1361,27 +1366,27 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 608.
+Package pdftex.def Info: IFEEL_1.png  used on input line 610.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 608.
+Package pdftex.def Info: cofunded_eu.png  used on input line 610.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 608.
+Package pdftex.def Info: slo_ministry.png  used on input line 610.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 608.
+line 610.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [11
 
 ]
 
 LaTeX Font Warning: Font shape `T1/cmss/b/n' undefined
-(Font)              using `T1/cmss/m/n' instead on input line 646.
+(Font)              using `T1/cmss/m/n' instead on input line 648.
 
 
 Overfull \hbox (4.31287pt too wide) has occurred while \output is active
@@ -1390,20 +1395,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 646.
+Package pdftex.def Info: IFEEL_1.png  used on input line 648.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 646.
+Package pdftex.def Info: cofunded_eu.png  used on input line 648.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 646.
+Package pdftex.def Info: slo_ministry.png  used on input line 648.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 646.
+line 648.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [12
 
@@ -1414,27 +1419,27 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 671.
+Package pdftex.def Info: IFEEL_1.png  used on input line 673.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 671.
+Package pdftex.def Info: cofunded_eu.png  used on input line 673.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 671.
+Package pdftex.def Info: slo_ministry.png  used on input line 673.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 671.
+line 673.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [13
 
 ]
 
 LaTeX Font Warning: Font shape `T1/cmss/m/sc' undefined
-(Font)              using `T1/cmss/m/n' instead on input line 699.
+(Font)              using `T1/cmss/m/n' instead on input line 701.
 
 
 Overfull \hbox (4.31287pt too wide) has occurred while \output is active
@@ -1443,20 +1448,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 699.
+Package pdftex.def Info: IFEEL_1.png  used on input line 701.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 699.
+Package pdftex.def Info: cofunded_eu.png  used on input line 701.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 699.
+Package pdftex.def Info: slo_ministry.png  used on input line 701.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 699.
+line 701.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [14
 
@@ -1467,20 +1472,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 732.
+Package pdftex.def Info: IFEEL_1.png  used on input line 734.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 732.
+Package pdftex.def Info: cofunded_eu.png  used on input line 734.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 732.
+Package pdftex.def Info: slo_ministry.png  used on input line 734.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 732.
+line 734.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [15
 
@@ -1491,20 +1496,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 754.
+Package pdftex.def Info: IFEEL_1.png  used on input line 756.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 754.
+Package pdftex.def Info: cofunded_eu.png  used on input line 756.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 754.
+Package pdftex.def Info: slo_ministry.png  used on input line 756.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 754.
+line 756.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [16
 
@@ -1515,20 +1520,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 794.
+Package pdftex.def Info: IFEEL_1.png  used on input line 796.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 794.
+Package pdftex.def Info: cofunded_eu.png  used on input line 796.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 794.
+Package pdftex.def Info: slo_ministry.png  used on input line 796.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 794.
+line 796.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [17
 
@@ -1539,20 +1544,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 835.
+Package pdftex.def Info: IFEEL_1.png  used on input line 837.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 835.
+Package pdftex.def Info: cofunded_eu.png  used on input line 837.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 835.
+Package pdftex.def Info: slo_ministry.png  used on input line 837.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 835.
+line 837.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [18
 
@@ -1563,20 +1568,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 849.
+Package pdftex.def Info: IFEEL_1.png  used on input line 851.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 849.
+Package pdftex.def Info: cofunded_eu.png  used on input line 851.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 849.
+Package pdftex.def Info: slo_ministry.png  used on input line 851.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 849.
+line 851.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [19
 
@@ -1587,20 +1592,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 859.
+Package pdftex.def Info: IFEEL_1.png  used on input line 861.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 859.
+Package pdftex.def Info: cofunded_eu.png  used on input line 861.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 859.
+Package pdftex.def Info: slo_ministry.png  used on input line 861.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 859.
+line 861.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [20
 
@@ -1611,20 +1616,20 @@ Overfull \hbox (4.31287pt too wide) has occurred while \output is active
 
 File: IFEEL_1.png Graphic file (type png)
 <use IFEEL_1.png>
-Package pdftex.def Info: IFEEL_1.png  used on input line 927.
+Package pdftex.def Info: IFEEL_1.png  used on input line 929.
 (pdftex.def)             Requested size: 10.32803pt x 9.33911pt.
 File: cofunded_eu.png Graphic file (type png)
 <use cofunded_eu.png>
-Package pdftex.def Info: cofunded_eu.png  used on input line 927.
+Package pdftex.def Info: cofunded_eu.png  used on input line 929.
 (pdftex.def)             Requested size: 28.63792pt x 9.33911pt.
 File: slo_ministry.png Graphic file (type png)
 <use slo_ministry.png>
-Package pdftex.def Info: slo_ministry.png  used on input line 927.
+Package pdftex.def Info: slo_ministry.png  used on input line 929.
 (pdftex.def)             Requested size: 31.28381pt x 9.33911pt.
 File: SMASH_CMYK-ENG-horizontal_on_white.pdf Graphic file (type pdf)
 <use SMASH_CMYK-ENG-horizontal_on_white.pdf>
 Package pdftex.def Info: SMASH_CMYK-ENG-horizontal_on_white.pdf  used on input 
-line 927.
+line 929.
 (pdftex.def)             Requested size: 37.92638pt x 10.13962pt.
 [21
 
@@ -1647,10 +1652,10 @@ Package rerunfilecheck Info: File `optima-2026-djukanovic-extended.out' has not
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 28148 strings out of 479648
- 571093 string characters out of 5886115
- 817472 words of memory out of 5000000
- 45479 multiletter control sequences out of 15000+600000
+ 28118 strings out of 479648
+ 570734 string characters out of 5886115
+ 815416 words of memory out of 5000000
+ 45449 multiletter control sequences out of 15000+600000
  502697 words of font info for 107 fonts, out of 8000000 for 9000
  475 hyphenation exceptions out of 8191
  128i,18n,122p,433b,1104s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1685,10 +1690,10 @@ ts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 msy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pf
 b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb
 >
-Output written on optima-2026-djukanovic-extended.pdf (21 pages, 454742 bytes).
+Output written on optima-2026-djukanovic-extended.pdf (21 pages, 454438 bytes).
 
 PDF statistics:
- 1623 PDF objects out of 1728 (max. 8388607)
+ 1627 PDF objects out of 1728 (max. 8388607)
  906 compressed objects within 10 object streams
  43 named destinations out of 1000 (max. 500000)
  807 words of extra memory for PDF output out of 10000 (max. 10000000)

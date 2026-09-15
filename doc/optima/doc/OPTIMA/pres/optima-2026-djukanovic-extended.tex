@@ -561,17 +561,19 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 %It does \textbf{not} construct the solution directly; it ranks candidate states during search.
 %\end{block}
 \end{column}
-\begin{column}{0.46\textwidth}
-\centering
-\scalebox{0.78}{
-\begin{tikzpicture}[node distance=0.9cm,>=Latex]
-\node[draw,rounded corners,fill=blue!8,align=center,minimum width=3.4cm] (v) {candidate node $v$\\partial solution};
-\node[draw,rounded corners,fill=green!10,align=center,below=of v,minimum width=3.4cm] (f) {feature vector\\$x(v)$};
-\node[draw,rounded corners,fill=orange!12,align=center,below=of f,minimum width=3.4cm] (n) {neural network\\$h_w(v)$};
-\node[draw,rounded corners,fill=purple!10,align=center,below=of n,minimum width=3.4cm] (b) {beam priority\\keep top $\beta$};
-\draw[->,thick] (v)--(f); \draw[->,thick] (f)--(n); \draw[->,thick] (n)--(b);
-\end{tikzpicture}}
-\end{column}
+
+%\begin{column}{0.46\textwidth}
+%\centering
+%\scalebox{0.78}{
+%\begin{tikzpicture}[node distance=0.9cm,>=Latex]
+%\node[draw,rounded corners,fill=blue!8,align=center,minimum width=3.4cm] (v) {candidate node $v$\\partial solution};
+%\node[draw,rounded corners,fill=green!10,align=center,below=of v,minimum width=3.4cm] (f) {feature vector\\$x(v)$};
+%\node[draw,rounded corners,fill=orange!12,align=center,below=of f,minimum width=3.4cm] (n) {neural network\\$h_w(v)$};
+%\node[draw,rounded corners,fill=purple!10,align=center,below=of n,minimum width=3.4cm] (b) {beam priority\\keep top $\beta$};
+%\draw[->,thick] (v)--(f); \draw[->,thick] (f)--(n); %\draw[->,thick] (n)--(b);
+%\end{tikzpicture}}
+%\end{column}
+
 \end{columns}
 \end{frame}
 
@@ -609,7 +611,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{State features for VGLCS node evaluation}
 \small
-For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of subproblem to be solved, $l^v$: length of partial solution), build a size-independent features:
+For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of subproblem to be solved, $l^v$: length of partial solution), build a \textbf{size-independent features}:
 \vspace{0.2cm}
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.31\textwidth}
@@ -624,9 +626,9 @@ For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of
 \begin{column}{0.35\textwidth}
 \begin{block}{\textbf{Gap flexibility}}
 \begin{itemize}
-\item $G^{v}_i = G_{s_i}[p^v_i, \ldots]$
+\item $G^{v}_i:$ gap values for the respective positions of the subproblem %G_{s_i}[p^v_i, \ldots]$
 \item $\max,\min,\mathrm{mean},\mathrm{std}$ %of $\mathbf G^v$
-\item describes how restrictive future extensions are
+\item how restrictive future extensions are
 \end{itemize}
 \end{block}
 \end{column}
