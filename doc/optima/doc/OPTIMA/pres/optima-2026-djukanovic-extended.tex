@@ -797,8 +797,7 @@ $m$ & layers & act. & features \\\hline
 \end{frame}
 
 \begin{frame}{Numerical results: Random and Real benchmarks}
-\begin{columns}[T,totalwidth=\textwidth]
-\begin{column}{0.55\textwidth}
+ 
 \begin{block}{\textsc{Random} benchmark}
 \centering
 \scalebox{0.7}{
@@ -814,24 +813,23 @@ $m=5,10$ & \textbf{10} & 3 & 3\\
 \vspace{0.15cm}
 \footnotesize Wilcoxon: $p=0.009$ on all groups.
 \end{block}
-\end{column}
-\begin{column}{0.40\textwidth}
+
+
 \begin{block}{\textsc{Real} benchmark}
 \centering
-\scalebox{0.5}{
+\scalebox{0.75}{
 \begin{tabular}{lccc}
 \toprule
 comparison & wins & ties & losses\\
 \midrule
-LIMSBS-Ensemble vs. IMSBS (20) & \textbf{12} & 7 & 1\\
+Ensemble-IMSBS vs. IMSBS (20) & \textbf{12} & 7 & 1\\
 \bottomrule
 \end{tabular}} \\
 \vspace{0.7cm}
 \footnotesize{Comparable runtime; larger gains on harder instances such as \textsc{Virus}}.
 \end{block}
-\end{column}
-\end{columns}
-\vspace{0.15cm}
+
+ 
 %\begin{block}{Takeaway}
 %\textcolor{red}{The learned ensemble improves solution quality consistently, while keeping the original IMSBS machinery almost unchanged.}
 %\end{block}
