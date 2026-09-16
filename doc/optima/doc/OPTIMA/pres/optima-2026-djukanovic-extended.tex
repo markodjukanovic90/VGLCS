@@ -643,8 +643,8 @@ For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of
 \end{column}
 \end{columns}
 \vspace{0.5cm}
-\centering
-\textcolor{blue}{Feature sets tested:} $F_1$ = progress + gaps (9); $F_2=F_1+|\Sigma|$ (10); $F_3=F_2+m$ (11).
+%\centering
+%\textcolor{blue}{Feature sets tested:} $F_1$ = progress + gaps (9); $F_2=F_1+|\Sigma|$ (10); $F_3=F_2+m$ (11).
 \end{frame}
 
 \begin{frame}{How the learned evaluator is used inside IMSBS}
@@ -735,7 +735,7 @@ $n_{pop}=20$, $n_{elite}=1$, $n_{mutants}=7$, $p_{bias}=0.5$.
 
 \begin{frame}{Rank-based ensemble: learned + analytical guidance}
 \begin{itemize}
-  \item Preliminary tests: the learned heuristic strong, but not uniformly best
+  \item \textbf{Preliminary tests}: the learned heuristic strong, but not uniformly best
   \item Hand-crafted upper bounds useful, especially in some small-$m$ cases
   \item Raw scores not directly comparable, \textbf{rankings} rather than scores combined
 \end{itemize}
@@ -758,7 +758,7 @@ $\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ense
 \begin{frame}{What was tuned? Experimental design}
 \small
 \begin{columns}[T,totalwidth=\textwidth]
-\begin{column}{0.47\textwidth}
+\begin{column}{0.27\textwidth}
 %\begin{block}{IMSBS parameters}
 %\begin{itemize}
 %\item tuned by \texttt{irace}  ($\beta=5000$)
@@ -773,22 +773,23 @@ $\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ense
 \end{block}
 \end{column}
 
-\begin{column}{0.50\textwidth}
+\begin{column}{0.70\textwidth}
 \begin{block}{NN design choices}
 \begin{itemize}
 \item 2 or 3 hidden layers
 \item 5 or 10 neurons per hidden layer
 \item activation: \texttt{tanh}, \texttt{ReLU}, \texttt{sigmoid}
-\item features: $F_1$, $F_2$, $F_3$
+\item different feature combinations %: $F_1$, $F_2$, $F_3$
 \end{itemize}
 \end{block}
 \begin{block}{Selected architectures (split by diff. $m$), E.g.:}
-\begin{tabular}{c|l|l|c}
+\begin{tabular}{c|l|l|l}
 $m$ & layers & act. & features \\\hline
 %2 & 10-5-5 & ReLU & $F_2$\\
-3 & 10-10-5 & ReLU & $F_2$\\
-%5 & 10-5-5 & sigmoid & $F_1$\\
-10 & 10-5-5 & ReLU & $F_2$
+3 & 10-10-5 & ReLU & search \& gap features + $|\Sigma|$ \\
+5 & 10-5-5 & sigmoid & search \& gap features\\
+\vdots &             & 
+%10 & 10-5-5 & ReLU & $F_2$
 \end{tabular}
 \end{block}
 \end{column}
