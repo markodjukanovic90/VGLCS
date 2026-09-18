@@ -166,7 +166,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       $s=\texttt{AATTGC}$, $\textcolor{red}{G_s(\cdot)=1}$, $\tilde{s}=\texttt{ATG}$
       \begin{itemize}
          \item the embedding \textcolor{red}{A}A\textcolor{red}{T}T\textcolor{red}{G}C (\textcolor{blue}{valid} gapped subsequence)
-         \item  the embedding \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid} gapped subsequence)
+         \item  the embedding \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid}, two letter between $> G_s[4]=1$)
       \end{itemize}
    \end{example} \vspace{0.5cm}
     
@@ -736,7 +736,7 @@ $n_{pop}=20$, $n_{elite}=1$, $n_{mutants}=7$, $p_{bias}=0.5$.
 \begin{frame}{Rank-based ensemble: learned + analytical guidance}
 \begin{itemize}
   \item \textbf{Preliminary tests}: the learned heuristic strong, but not uniformly best
-  \item Hand-crafted upper bounds useful, especially in some small-$m$ cases
+  \item Hand-crafted upper bounds useful, especially in some small-$m$ cases \vspace{0.3cm}
   \item Raw scores not directly comparable, \textbf{rankings} rather than scores combined
 \end{itemize}
 \vspace{0.25cm}
