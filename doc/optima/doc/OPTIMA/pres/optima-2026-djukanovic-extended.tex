@@ -112,7 +112,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
           \item structural similarity vs. sequence functionality 
        \end{itemize} \vspace{0.4cm}
        
-       \item Motifs = \textbf{subsequences} $\rightarrow$ \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants (studied 50 years already)
+       \item Motifs = common \textbf{subsequences} $\rightarrow$ \textcolor{blue}{\textbf{Longest commmon subsequence problem}} variants (studied 50 years already)
    \end{itemize}
 \end{frame}
 
@@ -121,7 +121,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
     
     \begin{definition}[LCSP]
         \textbf{Input}: Given an arbitrary set of sequences $S=\{s_1, \ldots, s_m\}$ \\
-        \textbf{Task}: Find a   subsequence $s$  \textcolor{blue}{common} for all sequences from $S$ with \textcolor{blue}{maximum} possible length ($|s|$). 
+        \textbf{Task}: Find a longest possible  subsequence $s$  \textcolor{blue}{common} for all sequences from $S$. %with \textcolor{blue}{maximum} possible length ($|s|$). 
     \end{definition} \vspace{0.5cm}
    % \begin{example}
     %   Input: $S=$\{\texttt{\textcolor{red}{A}A\textcolor{red}{T}\textcolor{red}{T}G\textcolor{red}{C}}, \texttt{\textcolor{red}{A}\textcolor{red}{T}\textcolor{red}{T}A\textcolor{red}{C}}\} \\ 
@@ -143,7 +143,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
    \begin{definition}[Gapped sequence]
        Given is a sequence $s$ and a function 
        $G_s \colon \{1, \ldots, |s|\} \mapsto \mathbb{N}$. A pair \textcolor{red}{$(s, G_s)$} is called a {gapped sequence}.
-   \end{definition} ($G_s$: To each position of seq. $s$, one number assigned) \vspace{0.5cm}
+   \end{definition} ($G_s$: one number assigned  to each position of $s$) \vspace{0.5cm}
    
    \begin{definition}[Gapped subsequence]
          Sequence $\tilde{s}$ is a \textcolor{red}{gapped subsequence} of $(s, G_s)$ iff 
@@ -151,7 +151,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
              \item $\tilde{s}$ is a \textbf{subsequence} of $s$
              \item the gap constraint $G_s$ fulfilled resp. the \textit{positions of embedding} $\tilde{s}$ in $s$:
          \begin{itemize}
-         	\item consecutive embedding positions respect gap distances (\textcolor{red}{assigned number of letters} between these positions)
+         	\item \textcolor{red}{upper bounds assigned on the number of letters} between  consecutive pairs of (embedding) positions
              %\item  suppose $i_1< \ldots <i_{|\tilde{s}|}$ are those \textbf{positions}  
              %\item ($\forall$ $j=2, \ldots, |\tilde{s}|)\, \textcolor{red}{i_{j} - i_{j-1} \leq G_{s}(i_{j})+1}$  (consecutive positions respect gap distances = allowed \textit{number of letters inbetween})
          \end{itemize}
@@ -166,11 +166,11 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
       $s=\texttt{AATTGC}$, $\textcolor{red}{G_s(\cdot)=1}$, $\tilde{s}=\texttt{ATG}$
       \begin{itemize}
          \item the embedding \textcolor{red}{A}A\textcolor{red}{T}T\textcolor{red}{G}C (\textcolor{blue}{valid} gapped subsequence)
-         \item  the embedding \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid}, two letter between $> G_s[4]=1$)
+         \item  the embedding \textcolor{red}{A}A{T}\textcolor{red}{T}\textcolor{red}{G}C (\textcolor{blue}{invalid}, two letter inbetween $> G_s[4]=1$)
       \end{itemize}
    \end{example} \vspace{0.5cm}
     
-   \begin{definition}[The multiple (variable) gapped LCS problem -- MVGLCSP]
+   \begin{definition}[The multiple gapped LCS problem]
         \textbf{Input}: Given is an arbitrary set of  gapped sequences $\{ (s_i, G_{s_i})\}_{i=1}^m \}$. \\
         \textbf{Task}: Find the longest  sequence $\tilde{s}$ so that 
         \begin{itemize}
@@ -187,9 +187,9 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
        \item  Peng and Yang (2012, 2014):  $m=2$  version by \textcolor{red}{three dynamic programming} (DP) approaches 
        \item  Manea et al. (2024): complexity analysis investigated
        \begin{itemize}
-       	\item   {\textcolor{red}$\mathcal{NP}$-hard } when $m$ arbitrary 
+       	\item   {\textcolor{red}$\mathcal{NP}$-hard }  ($m$ arbitrary) 
         \end{itemize} 
-        \item Djukanovic et al. (2026) proposed the first approach for $m$ arbitrary: \textcolor{red}{Iterative Beam search approach}
+        \item Djukanovic et al. (2026) the first approach for $m$ arbitrary: \textcolor{red}{Iterative Beam search approach}
    \end{itemize} \vspace{0.5cm}
    
    \textbf{Motivation}:
@@ -327,7 +327,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Methodology: main components roughly}%{An issue with the root-state-space formulation: disconnected components}
 	
 	\begin{itemize}
-		\item  Generation of longest common solutions for a root (sub-)space generally hard $\Rightarrow$  an approx. approach for evaluation (\textbf{Beam search} -- \textcolor{red}{\textbf{limited BFS}}) \vspace{0.5cm}
+		\item  Generation of longest common solutions for a root (sub-)space generally hard $\Rightarrow$  an approx. approach for evaluation (\textcolor{red}{\textbf{Beam search} -- \textbf{limited BFS}}) \vspace{0.5cm}
 		\item  The root-state-space formulation may involve disconnected components  $\Rightarrow$ needs \textbf{iterative beam search} to explore all search space 
 	\end{itemize} \vspace{0.7cm}
 	
@@ -672,7 +672,7 @@ Learning is \textbf{offline}; during the final run the NN is only a fast scoring
 \end{block}
 \end{frame}
 
-\begin{frame}{Learning weights: Why not standard supervised backpropagation?}
+\begin{frame}{Learning weight of NN evaluator: Why not standard supervised backpropagation?}
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.50\textwidth}
 \begin{block}{Obstacle(s)}
@@ -752,7 +752,7 @@ $n_{pop}=20$, $n_{elite}=1$, $n_{mutants}=7$, $p_{bias}=0.5$.
 %$m$ & 2 & 3 & 5 & 10 \\\hline
 %$\alpha$ & 0.60 & 0.50 & 0.35 & 0.15
 %\end{tabular} \\ \vspace{0.3cm}
-$\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ensemble-IMSBS approach}}.
+$\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot)$ in IMSBS:  \textcolor{red}{\textbf{Ensemble-IMSBS approach}}.
 \end{frame}
 
 \begin{frame}{What was tuned? Experimental design}
@@ -786,6 +786,7 @@ $\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot):$ \textcolor{red}{\textbf{Ense
 \begin{tabular}{c|l|l|l}
 $m$ & layers & act. & features \\\hline
 %2 & 10-5-5 & ReLU & $F_2$\\
+%2 & 10-5-5 & ReLU & $F_2$\\
 3 & 10-10-5 & ReLU & search \& gap features + $|\Sigma|$ \\
 5 & 10-5-5 & sigmoid & search \& gap features\\
 \vdots &             & 
@@ -811,7 +812,7 @@ $m=5,10$ & \textbf{10} & 3 & 3\\
 \bottomrule
 \end{tabular}} \\
 \vspace{0.15cm}
-\footnotesize Wilcoxon: $p=0.009$ on all groups.
+\footnotesize Wilcoxon: $p=0.009$ on all groups ($n\in\{50, 100, 200, 500\}$).
 \end{block}
 
 
