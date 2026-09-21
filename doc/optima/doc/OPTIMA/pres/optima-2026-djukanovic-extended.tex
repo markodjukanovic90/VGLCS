@@ -327,7 +327,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 \begin{frame}{Methodology: main components roughly}%{An issue with the root-state-space formulation: disconnected components}
 	
 	\begin{itemize}
-		\item  Generation of longest common solutions for a root (sub-)space generally hard $\Rightarrow$  an approx. approach for evaluation (\textcolor{red}{\textbf{Beam search} -- \textbf{limited BFS}}) \vspace{0.5cm}
+		\item  Generation of high-quality  solutions for a root (sub-)space generally hard $\Rightarrow$  an approx. approach for evaluation (\textcolor{red}{\textbf{Beam search} -- \textbf{limited BFS}}) \vspace{0.5cm}
 		\item  The root-state-space formulation may involve disconnected components  $\Rightarrow$ needs \textbf{iterative beam search} to explore all search space 
 	\end{itemize} \vspace{0.7cm}
 	
@@ -611,7 +611,7 @@ $^5$Institute of Information Sciences (IZUM), Maribor, Slovenia \\ \vspace{0.3cm
 
 \begin{frame}{State features for VGLCS node evaluation}
 \small
-For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions of subproblem to be solved, $l^v$: length of partial solution), build a \textbf{size-independent features}:
+For a state $\textbf{v}=(\mathbf p^v,l^v)$ ($p^v$: vector of suffix positions encoding subproblem to be solved, $l^v$: length of partial solution), build a \textbf{size-independent features}:
 \vspace{0.2cm}
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.31\textwidth}
