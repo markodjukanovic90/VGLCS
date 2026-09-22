@@ -737,7 +737,8 @@ $n_{pop}=20$, $n_{elite}=1$, $n_{mutants}=7$, $p_{bias}=0.5$.
 \begin{itemize}
   \item \textbf{Preliminary tests}: the learned heuristic strong, but not uniformly best
   \item Hand-crafted upper bounds useful, especially in some small-$m$ cases \vspace{0.3cm}
-  \item Raw scores not directly comparable, \textbf{rankings} rather than scores combined
+  \item %Raw scores not directly comparable,
+  Combine both into one: \textbf{rankings} rather than scores combined
 \end{itemize}
 \vspace{0.25cm}
 \begin{block}{Combined rank}
@@ -752,7 +753,7 @@ $n_{pop}=20$, $n_{elite}=1$, $n_{mutants}=7$, $p_{bias}=0.5$.
 %$m$ & 2 & 3 & 5 & 10 \\\hline
 %$\alpha$ & 0.60 & 0.50 & 0.35 & 0.15
 %\end{tabular} \\ \vspace{0.3cm}
-$\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot)$ in IMSBS:  \textcolor{red}{\textbf{Ensemble-IMSBS approach}}.
+$\Rightarrow \textrm{UB}_2$ replaced by $r(\cdot)$ into IMSBS:  \textcolor{red}{\textbf{Ensemble-IMSBS approach}}.
 \end{frame}
 
 \begin{frame}{What was tuned? Experimental design}
